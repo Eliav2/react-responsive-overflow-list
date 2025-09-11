@@ -1,7 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-})
+	plugins: [react()],
+	resolve: {
+		// this trick allows us to directly use the package from the root, without needing to compile typescript 
+		alias: {
+			"react-responsive-overflow-list": fileURLToPath(new URL("../src/index.ts", import.meta.url)),
+		},
+	},
+});
