@@ -24,7 +24,7 @@
 		"ui",
 		"typescript"
 	],
-	"author": "Cortanix",
+	"author": "Eliav Louski",
 	"license": "MIT",
 	"peerDependencies": {
 		"react": ">=16.8.0",

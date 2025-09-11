@@ -4,7 +4,7 @@
 
 ```tsx
 import React from "react";
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 const items = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"];
 
@@ -38,7 +38,7 @@ export function BasicExample() {
 
 ```tsx
 import React from "react";
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 const buttons = [
 	{ id: "new", label: "New", icon: "📄" },
@@ -95,7 +95,7 @@ export function ToolbarExample() {
 
 ```tsx
 import React, { useState } from "react";
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 const tags = ["React", "TypeScript", "CSS", "HTML", "JavaScript", "Node.js", "Express", "MongoDB"];
 
@@ -183,7 +183,7 @@ export function CustomOverflowExample() {
 
 ```tsx
 import React from "react";
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 const menuItems = ["Home", "About", "Services", "Portfolio", "Blog", "Contact", "Careers"];
 

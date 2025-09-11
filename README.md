@@ -1,4 +1,4 @@
-# @cortanix/overflow-list
+# react-responsive-overflow-list
 
 A responsive React component that shows as many items as can fit within constraints, hiding overflow items behind a configurable overflow renderer. Automatically recalculates visible items on resize.
 
@@ -15,7 +15,7 @@ A responsive React component that shows as many items as can fit within constrai
 ## Installation
 
 ```bash
-npm install @cortanix/overflow-list
+npm install react-responsive-overflow-list
 ```
 
 ## Quick Start
@@ -23,7 +23,7 @@ npm install @cortanix/overflow-list
 ### Basic Usage with Items Array
 
 ```tsx
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 const items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
 
@@ -46,7 +46,7 @@ function MyComponent() {
 ### Usage with Children Pattern
 
 ```tsx
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 function MyComponent() {
 	return (
@@ -64,7 +64,7 @@ function MyComponent() {
 ### Custom Overflow Renderer
 
 ```tsx
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 function MyComponent() {
 	return (
@@ -126,7 +126,7 @@ Inherits all standard div props. The container uses `display: flex` with `flex-w
 ### Custom Overflow Menu
 
 ```tsx
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 function CustomOverflowMenu({ items }: { items: string[] }) {
 	return (
@@ -155,7 +155,7 @@ function MyComponent() {
 ### Responsive Design
 
 ```tsx
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 function ResponsiveToolbar() {
 	return (
@@ -197,7 +197,7 @@ The default overflow menu is intentionally simple. For more advanced features li
 
 ```tsx
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { OverflowList } from "@cortanix/overflow-list";
+import { OverflowList } from "react-responsive-overflow-list";
 
 function RadixOverflowMenu({ items }: { items: string[] }) {
 	return (
@@ -229,7 +229,7 @@ function MyComponent() {
 
 ```tsx
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { OverflowList, createLimitedRangeExtractor } from "@cortanix/overflow-list";
+import { OverflowList, createLimitedRangeExtractor } from "react-responsive-overflow-list";
 
 function VirtualizedOverflowMenu({ items }: { items: string[] }) {
 	const parentRef = useRef<HTMLDivElement>(null);
