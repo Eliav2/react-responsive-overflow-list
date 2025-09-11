@@ -7,17 +7,10 @@
   gap: 4px;
 }
 
-.measuring {
-  visibility: hidden;
-}
-
 .defaultOverflowButton {
-  margin-left: 0px;
   border-radius: 4px;
-  background: transparent;
   border: 1px solid #ccc;
   padding: 4px 8px;
-  cursor: pointer;
   font-size: 12px;
 }
 

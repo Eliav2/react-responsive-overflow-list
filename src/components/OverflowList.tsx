@@ -23,6 +23,11 @@ type BaseOverflowListProps<T> = FlexProps & {
   renderOverflow?: (items: NoInfer<T>[]) => React.ReactNode;
   // would define the props to pass to the overflow indicator button
   renderOverflowProps?: Partial<DefaultOverflowMenuProps<T>>;
+
+  // after the container dimensions change, flush the state immediately (default is true)
+  // if true, using flushSync to update the state immediately - this can affect performance but avoid flickering
+  // if false, using requestAnimationFrame to update the state - this avoid forced reflow and improve performance
+  flushImmediately: boolean;
 };
 
 type OverflowListWithItems<T> = BaseOverflowListProps<T> & {
@@ -66,6 +71,7 @@ export const OverflowList = React.memo(
       renderOverflowProps,
       maxRows = 1,
       maxVisibleItems = 100,
+      flushImmediately = true,
       ...flexProps
     } = props;
 
@@ -123,7 +129,7 @@ export const OverflowList = React.memo(
     }, [phase, substructCount]);
 
     // if the container dimensions change, re-measure
-    const containerDims = useResizeObserver(containerRef, true);
+    const containerDims = useResizeObserver(containerRef, flushImmediately);
     useLayoutEffect(() => {
       if (phase === "normal") {
         setPhase("measuring");
