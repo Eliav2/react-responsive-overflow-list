@@ -56,6 +56,35 @@ header p {
   border: 1px solid #e0e0e0;
 }
 
+.controls {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.controls label {
+  font-weight: 500;
+  color: #495057;
+  font-size: 14px;
+}
+
+.max-rows-input {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 60px;
+  font-size: 14px;
+}
+
+.max-rows-input:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
 .demo-container {
   min-height: 60px;
   padding: 16px;
@@ -191,4 +220,27 @@ footer {
   .demo-container {
     min-width: 150px;
   }
+}
+
+.custom-overflow {
+  display: inline-block;
+}
+
+.example-section {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.example-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.example-section h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
 }

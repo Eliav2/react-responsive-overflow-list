@@ -2,6 +2,7 @@ import { useState } from "react";
 import { OverflowList } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { CustomOverflowExample } from "./CustomOverflowExample";
 import "./App.css";
 
 const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew", "Kiwi", "Lemon"];
@@ -10,60 +11,44 @@ const tags = ["React", "TypeScript", "CSS", "HTML", "JavaScript", "Node.js", "Ex
 
 const menuItems = ["Home", "About", "Services", "Portfolio", "Blog", "Contact", "Careers", "Support"];
 
-function CustomOverflowMenu({ items }: { items: string[] }) {
-  const [isOpen, setIsOpen] = useState(false);
+function MultiRowExample() {
+  const [maxRows, setMaxRows] = useState(2);
 
   return (
-    <div style={{ position: "relative" }}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          padding: "4px 8px",
-          backgroundColor: "#e3f2fd",
-          border: "1px solid #2196f3",
-          borderRadius: "4px",
-          color: "#1976d2",
-          cursor: "pointer",
-        }}
-      >
-        +{items.length} more
-      </button>
-      {isOpen && (
-        <div
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            zIndex: 1000,
-            backgroundColor: "white",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            padding: "8px",
-            minWidth: "120px",
-          }}
-        >
-          {items.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                padding: "4px 8px",
-                cursor: "pointer",
-                borderRadius: "2px",
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = "#f5f5f5";
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = "transparent";
-              }}
-            >
-              #{item}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    <section className="demo">
+      <h2>Multi-row Example</h2>
+      <p>Allow up to {maxRows} rows before overflow</p>
+      <div className="controls">
+        <label htmlFor="maxRows">Max Rows:</label>
+        <input
+          id="maxRows"
+          type="number"
+          min="1"
+          max="10"
+          value={maxRows}
+          onChange={(e) => setMaxRows(parseInt(e.target.value) || 1)}
+          className="max-rows-input"
+        />
+      </div>
+      <div className="code-preview">
+        <SyntaxHighlighter language="tsx" style={tomorrow}>
+          {`<OverflowList
+  items={fruits.concat(tags).concat(menuItems)}
+  renderItem={(item) => <span className="multi-item">{item}</span>}
+  maxRows={${maxRows}}
+  style={{ gap: "4px" }}
+/>`}
+        </SyntaxHighlighter>
+      </div>
+      <div className="demo-container">
+        <OverflowList
+          items={fruits.concat(tags).concat(menuItems)}
+          renderItem={(item) => <span className="multi-item">{item}</span>}
+          maxRows={maxRows}
+          style={{ gap: "4px" }}
+        />
+      </div>
+    </section>
   );
 }
 
@@ -78,7 +63,7 @@ function App() {
       <main>
         <section className="demo">
           <h2>Basic Example</h2>
-          <p>Simple list with default overflow menu</p>
+          <p>Simple list with default overflow element</p>
           <div className="code-preview">
             <SyntaxHighlighter language="tsx" style={tomorrow}>
               {`<OverflowList
@@ -88,7 +73,6 @@ function App() {
       {item}
     </span>
   )}
-  maxRows={1}
   style={{ gap: "8px" }}
 />`}
             </SyntaxHighlighter>
@@ -101,7 +85,6 @@ function App() {
                   {item}
                 </span>
               )}
-              maxRows={1}
               style={{ gap: "8px" }}
             />
           </div>
@@ -112,15 +95,15 @@ function App() {
           <p>Using children instead of items array</p>
           <div className="code-preview">
             <SyntaxHighlighter language="tsx" style={tomorrow}>
-              {`<OverflowList maxRows={1} style={{ gap: "8px" }}>
-  <button className="action-button">Action 1</button>
-  <button className="action-button">Action 2</button>
+              {`<OverflowList>
+  <button>Action 1</button>
+  <button>Action 2</button>
   ...
 </OverflowList>`}
             </SyntaxHighlighter>
           </div>
           <div className="demo-container">
-            <OverflowList maxRows={1} style={{ gap: "8px" }}>
+            <OverflowList style={{ gap: "8px" }}>
               <button className="action-button">Action 1</button>
               <button className="action-button">Action 2</button>
               <button className="action-button">Action 3</button>
@@ -131,92 +114,40 @@ function App() {
           </div>
         </section>
 
+        <MultiRowExample />
+
+        <CustomOverflowExample />
+
         <section className="demo">
-          <h2>Custom Overflow Menu</h2>
-          <p>Tags with custom overflow renderer</p>
+          <h2>Custom Host Element</h2>
+          <p>Using the 'as' prop to render as different HTML elements</p>
           <div className="code-preview">
             <SyntaxHighlighter language="tsx" style={tomorrow}>
-              {`<OverflowList
-  items={tags}
-  renderItem={(tag) => <span className="tag">#{tag}</span>}
-  renderOverflow={(items) => <CustomOverflowMenu items={items} />}
-  maxRows={2}
-  style={{ gap: "6px" }}
-/>`}
+              {`<OverflowList as="nav" style={{ gap: "8px" }}>
+  <a href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+</OverflowList>`}
             </SyntaxHighlighter>
           </div>
           <div className="demo-container">
-            <OverflowList
-              items={tags}
-              renderItem={(tag) => <span className="tag">#{tag}</span>}
-              renderOverflow={(items) => <CustomOverflowMenu items={items} />}
-              maxRows={2}
-              style={{ gap: "6px" }}
-            />
-          </div>
-        </section>
-
-        <section className="demo">
-          <h2>Navigation Menu</h2>
-          <p>Responsive navigation with styled overflow</p>
-          <div className="code-preview">
-            <SyntaxHighlighter language="tsx" style={tomorrow}>
-              {`<OverflowList
-  items={menuItems}
-  renderItem={(item) => (
-    <a href={\`#\${item.toLowerCase()}\`} className="nav-link">
-      {item}
-    </a>
-  )}
-  renderOverflowProps={{
-    triggerProps: {
-      className: "nav-overflow-button",
-    },
-  }}
-  maxRows={1}
-  style={{ gap: "2px" }}
-/>`}
-            </SyntaxHighlighter>
-          </div>
-          <div className="demo-container nav">
-            <OverflowList
-              items={menuItems}
-              renderItem={(item) => (
-                <a href={`#${item.toLowerCase()}`} className="nav-link">
-                  {item}
-                </a>
-              )}
-              renderOverflowProps={{
-                triggerProps: {
-                  className: "nav-overflow-button",
-                },
-              }}
-              maxRows={1}
-              style={{ gap: "2px" }}
-            />
-          </div>
-        </section>
-
-        <section className="demo">
-          <h2>Multi-row Example</h2>
-          <p>Allow up to 3 rows before overflow</p>
-          <div className="code-preview">
-            <SyntaxHighlighter language="tsx" style={tomorrow}>
-              {`<OverflowList
-  items={fruits.concat(tags).concat(menuItems)}
-  renderItem={(item) => <span className="multi-item">{item}</span>}
-  maxRows={3}
-  style={{ gap: "4px" }}
-/>`}
-            </SyntaxHighlighter>
-          </div>
-          <div className="demo-container">
-            <OverflowList
-              items={fruits.concat(tags).concat(menuItems)}
-              renderItem={(item) => <span className="multi-item">{item}</span>}
-              maxRows={3}
-              style={{ gap: "4px" }}
-            />
+            <OverflowList as="nav" style={{ gap: "8px" }}>
+              <a href="#home" className="demo-item demo-item--primary">
+                Home
+              </a>
+              <a href="#about" className="demo-item demo-item--primary">
+                About
+              </a>
+              <a href="#contact" className="demo-item demo-item--primary">
+                Contact
+              </a>
+              <a href="#services" className="demo-item demo-item--primary">
+                Services
+              </a>
+              <a href="#portfolio" className="demo-item demo-item--primary">
+                Portfolio
+              </a>
+            </OverflowList>
           </div>
         </section>
       </main>

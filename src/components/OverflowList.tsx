@@ -1,13 +1,15 @@
 import classNames from "classnames";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { useResizeObserver, useForkRef } from "../hooks";
-import { DefaultOverflowMenu, type DefaultOverflowMenuProps } from "./DefaultOverflowMenu";
+import { DefaultOverflowElement } from "./DefaultOverflowMenu";
 import styles from "./OverflowList.module.css";
 import { getRowPositionsData } from "../utils";
 
 export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-type BaseOverflowListProps<T> = FlexProps & {
+type BaseOverflowListProps<T> = Omit<FlexProps, "as"> & {
+  // Polymorphic component prop - allows changing the host element
+  as?: React.ElementType;
   // would define the minimum number of items that should be visible (default is 0)
   minVisibleItems?: number;
 
@@ -22,12 +24,12 @@ type BaseOverflowListProps<T> = FlexProps & {
   // overflow renderer, applied only to overflow items (default is a dropdown menu - DefaultOverflowMenu component)
   renderOverflow?: (items: NoInfer<T>[]) => React.ReactNode;
   // would define the props to pass to the overflow indicator button
-  renderOverflowProps?: Partial<DefaultOverflowMenuProps<T>>;
+  renderOverflowProps?: Partial<OverflowElementProps<T>>;
 
   // after the container dimensions change, flush the state immediately (default is true)
   // if true, using flushSync to update the state immediately - this can affect performance but avoid flickering
   // if false, using requestAnimationFrame to update the state - this avoid forced reflow and improve performance
-  flushImmediately: boolean;
+  flushImmediately?: boolean;
 };
 
 type OverflowListWithItems<T> = BaseOverflowListProps<T> & {
@@ -46,6 +48,13 @@ type OverflowListWithChildren<T> = BaseOverflowListProps<T> & {
 
 export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithChildren<T>;
 
+export interface OverflowElementProps<T> {
+  items: T[];
+//   renderItem: (item: T, index: number) => React.ReactNode;
+//   renderText?: (count: number) => React.ReactNode;
+//   triggerProps?: React.ButtonHTMLAttributes<HTMLDivElement>;
+}
+
 /**
  * Responsive container that shows as many items as can fit within maxRows,
  * hiding overflow items behind a configurable overflow renderer.
@@ -60,6 +69,7 @@ export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithCh
 export const OverflowList = React.memo(
   React.forwardRef(function OverflowList<T>(props: OverflowListProps<T>, forwardedRef: React.Ref<HTMLDivElement>) {
     const {
+      as: Component = "div",
       children,
       // if items is not provided, use children as items
       items = React.Children.toArray(children),
@@ -72,6 +82,7 @@ export const OverflowList = React.memo(
       maxRows = 1,
       maxVisibleItems = 100,
       flushImmediately = true,
+
       ...flexProps
     } = props;
 
@@ -86,18 +97,15 @@ export const OverflowList = React.memo(
     const overflowCount = items.length - finalVisibleCount;
     const showOverflow = overflowCount > 0 && phase !== "measuring";
 
-    const overflowElement = showOverflow ? (
-      renderOverflow ? (
-        renderOverflow(items.slice(finalVisibleCount) as T[])
-      ) : (
-        <DefaultOverflowMenu
-          items={items.slice(finalVisibleCount) as T[]}
-          visibleCount={finalVisibleCount}
-          renderItem={renderOverflowItem ?? renderItem}
-          {...renderOverflowProps}
-        />
-      )
-    ) : null;
+    const finalRenderOverflow = renderOverflow?.(items.slice(finalVisibleCount) as T[]) ?? (
+      <DefaultOverflowElement
+        items={items.slice(finalVisibleCount) as T[]}
+        // renderItem={renderOverflowItem ?? renderItem}
+        {...renderOverflowProps}
+      />
+    );
+
+    const overflowElement = showOverflow ? finalRenderOverflow : null;
 
     const overflowRef = useRef<HTMLDivElement>(null);
     // @ts-expect-error - ref is not exposed as type in jsx elements but it exists
@@ -108,7 +116,7 @@ export const OverflowList = React.memo(
       setPhase("measuring");
       setVisibleCount(items.length);
       setSubstructCount(0);
-    }, [items.length]);
+    }, [items.length, maxRows]);
 
     useLayoutEffect(() => {
       // in measurement, evaluate results
@@ -208,7 +216,7 @@ export const OverflowList = React.memo(
     }
 
     return (
-      <div {...flexProps} ref={finalContainerRef} className={classNames(styles.container, flexProps.className)}>
+      <Component {...flexProps} ref={finalContainerRef} className={classNames(styles.container, flexProps.className)}>
         {finalItems.map((item, index) => {
           const isVisible =
             phase ===
@@ -223,7 +231,7 @@ export const OverflowList = React.memo(
         })}
 
         {clonedOverflowElement}
-      </div>
+      </Component>
     );
   })
-) as <T>(props: OverflowListProps<T> & { ref?: React.Ref<HTMLDivElement> }) => React.ReactElement;
+) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLDivElement> }) => React.ReactElement;
