@@ -1,0 +1,221 @@
+import classNames from "classnames";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import { useResizeObserver, useForkRef } from "../hooks";
+import { DefaultOverflowMenu, type DefaultOverflowMenuProps } from "./DefaultOverflowMenu";
+import styles from "./OverflowList.module.css";
+import { getRowPositionsData } from "../utils";
+
+export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+type BaseOverflowListProps<T> = FlexProps & {
+	// would define the minimum number of items that should be visible (default is 0)
+	minVisibleItems?: number;
+
+	// would define the maximum number of rows that can be visible (default is 1)
+	maxRows?: number;
+
+	// would define the maximum number of items that can be visible (default is 100)
+	maxVisibleItems?: number;
+
+	// would define the overflow item renderer, applied only to overflow items (default is the same as renderItem)
+	renderOverflowItem?: (item: NoInfer<T>, index: number) => React.ReactNode;
+	// overflow renderer, applied only to overflow items (default is a dropdown menu - DefaultOverflowMenu component)
+	renderOverflow?: (items: NoInfer<T>[]) => React.ReactNode;
+	// would define the props to pass to the overflow indicator button
+	renderOverflowProps?: Partial<DefaultOverflowMenuProps<T>>;
+};
+
+type OverflowListWithItems<T> = BaseOverflowListProps<T> & {
+	// would define the items to render in the list
+	items: T[];
+	// would define the default item renderer, applied both to visible and overflow items
+	renderItem: (item: NoInfer<T>, index: number) => React.ReactNode;
+	children?: never;
+};
+
+type OverflowListWithChildren<T> = BaseOverflowListProps<T> & {
+	children: React.ReactNode;
+	items?: never;
+	renderItem?: never;
+};
+
+export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithChildren<T>;
+
+/**
+ * Responsive container that shows as many items as can fit within maxRows,
+ * hiding overflow items behind a configurable overflow renderer.
+ * Automatically recalculates visible items on resize.
+ *
+ * Technical details:
+ * Uses a three-phases approach:
+ * 1. "measuring" renders all items to calculate positions,
+ * 2. "measuring overflow" render all items fit in the container, try to add the overflow indicator item to the container. check if it opens a new row, if so, remove the last item from the last row.
+ * 3. "normal" phase shows only what fits within constraints. (this is the stable state that we want to keep)
+ */
+export const OverflowList = React.memo(
+	React.forwardRef(function OverflowList<T>(props: OverflowListProps<T>, forwardedRef: React.Ref<HTMLDivElement>) {
+		const {
+			children,
+			// if items is not provided, use children as items
+			items = React.Children.toArray(children),
+			minVisibleItems = 0,
+			renderOverflow,
+			// if renderItem is not provided, this component is used in the children pattern, means each item is simply a React.ReactNode
+			renderItem = (item) => item as React.ReactNode,
+			renderOverflowItem,
+			renderOverflowProps,
+			maxRows = 1,
+			maxVisibleItems = 100,
+			...flexProps
+		} = props;
+
+		const [visibleCount, setVisibleCount] = useState(items.length);
+		const [substructCount, setSubstructCount] = useState(0);
+		const [phase, setPhase] = useState<"normal" | "measuring" | "measuring-overflow-indicator">("normal");
+
+		const containerRef = useRef<HTMLDivElement>(null);
+		const finalContainerRef = useForkRef(containerRef, forwardedRef);
+		const finalVisibleCount = visibleCount - substructCount;
+
+		const overflowCount = items.length - finalVisibleCount;
+		const showOverflow = overflowCount > 0 && phase !== "measuring";
+
+		const overflowElement = showOverflow ? (
+			renderOverflow ? (
+				renderOverflow(items.slice(finalVisibleCount) as T[])
+			) : (
+				<DefaultOverflowMenu
+					items={items.slice(finalVisibleCount) as T[]}
+					visibleCount={finalVisibleCount}
+					renderItem={renderOverflowItem ?? renderItem}
+					{...renderOverflowProps}
+				/>
+			)
+		) : null;
+
+		const overflowRef = useRef<HTMLDivElement>(null);
+		// @ts-expect-error - ref is not exposed as type in jsx elements but it exists
+		const finalOverflowRef = useForkRef(overflowRef, overflowElement?.ref);
+
+		// Reset state when items change
+		useLayoutEffect(() => {
+			setPhase("measuring");
+			setVisibleCount(items.length);
+			setSubstructCount(0);
+		}, [items.length]);
+
+		useLayoutEffect(() => {
+			// in measurement, evaluate results
+			if (phase === "measuring") {
+				updateVisibleItems();
+				setPhase("measuring-overflow-indicator");
+			}
+		}, [phase]);
+
+		useLayoutEffect(() => {
+			// After placing the overflow indicator, evaluate if it ends up opening a new row
+			if (phase === "measuring-overflow-indicator") {
+				const updateWasNeeded = updateOverflowIndicator();
+				if (!updateWasNeeded) {
+					setPhase("normal");
+				}
+			}
+		}, [phase, substructCount]);
+
+		// if the container dimensions change, re-measure
+		const containerDims = useResizeObserver(containerRef);
+		useLayoutEffect(() => {
+			if (phase === "normal") {
+				setPhase("measuring");
+				setSubstructCount(0);
+			}
+		}, [containerDims]);
+
+		// Unified method that handles both growing and shrinking
+		// this function is called in measuring phase, and it is used to measure how many items can fit in the container
+		const updateVisibleItems = () => {
+			const rowData = getRowPositionsData(containerRef, overflowRef);
+			if (!rowData) return;
+
+			const { itemsSizesMap, rowPositions } = rowData;
+
+			// // edge case: if only 1 item is given, check if its width is bigger than the container width, if so set the maxRows to 0 (there is not enough space for the item, so we showing overflow indicator)
+			if (items.length === 1) {
+				const itemRef = itemsSizesMap[rowPositions[0]].elements.values().next().value;
+				const containerWidth = containerRef.current?.getBoundingClientRect().width ?? 0;
+				const itemWidth = itemRef?.getBoundingClientRect().width ?? 0;
+
+				if (itemWidth > containerWidth) return;
+			}
+
+			// Only take up to maxRows
+			const visibleRowPositions = rowPositions.slice(0, maxRows);
+
+			// only items in rows that conform to the maxRows constraint can be visible
+			let fittingCount = visibleRowPositions.reduce((acc, position) => {
+				return acc + itemsSizesMap[position].elements.size;
+			}, 0);
+
+			// Ensure we respect minVisibleItems
+			fittingCount = Math.max(fittingCount, minVisibleItems);
+
+			// Ensure we respect maxVisibleItems
+			fittingCount = Math.min(fittingCount, maxVisibleItems);
+
+			// Only update state if the number of visible items has changed
+			setVisibleCount(fittingCount);
+		};
+
+		const updateOverflowIndicator = () => {
+			if (!overflowRef.current) return false;
+			const rowData = getRowPositionsData(containerRef, overflowRef);
+			if (!rowData) return false;
+
+			const { rowPositions, itemsSizesMap } = rowData;
+
+			const overflowRect = overflowRef.current.getBoundingClientRect();
+			const overflowMiddleY = overflowRect.top + overflowRect.height / 2;
+			const lastRowTop = rowPositions[rowPositions.length - 1];
+			const lastRow = itemsSizesMap[lastRowTop];
+
+			// if the overflow indicator item opens a new row
+			if (overflowMiddleY > lastRow.bottom) {
+				setSubstructCount(substructCount + 1);
+				return true;
+			}
+			return false;
+		};
+
+		// Cloned overflow element that ensures ref is passed so we could measure dimensions on this element
+		const clonedOverflowElement = overflowElement
+			? React.cloneElement(overflowElement as React.ReactElement, { ref: finalOverflowRef })
+			: null;
+
+		// Get the items to render based on current state
+
+		// we can render only up to maxVisibleItems items and maxRows rows
+		let finalItems = items;
+		if (maxVisibleItems) {
+			finalItems = finalItems.slice(0, maxVisibleItems);
+		}
+
+		return (
+			<div {...flexProps} ref={finalContainerRef} className={classNames(styles.container, flexProps.className)}>
+				{finalItems.map((item, index) => {
+					const isVisible =
+						phase ===
+							// in measuring phase, show all items
+							"measuring" ||
+						// in 'normal' phase, show only the N items that fit
+						index < finalVisibleCount;
+					if (!isVisible) return null;
+					const itemComponent = renderItem(item as T, index);
+
+					return <React.Fragment key={index}>{itemComponent}</React.Fragment>;
+				})}
+
+				{clonedOverflowElement}
+			</div>
+		);
+	}),
+) as <T>(props: OverflowListProps<T> & { ref?: React.Ref<HTMLDivElement> }) => React.ReactElement;

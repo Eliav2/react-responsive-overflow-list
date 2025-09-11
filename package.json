@@ -1,0 +1,54 @@
+{
+	"name": "react-responsive-overflow-list",
+	"version": "1.0.0",
+	"description": "A responsive React component that shows as many items as can fit within constraints, hiding overflow items behind a configurable overflow renderer",
+	"main": "dist/index.js",
+	"module": "dist/index.esm.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsdown",
+		"dev": "tsdown --watch",
+		"test": "jest",
+		"lint": "eslint src --ext .ts,.tsx",
+		"type-check": "tsc --noEmit"
+	},
+	"keywords": [
+		"react",
+		"component",
+		"overflow",
+		"responsive",
+		"ui",
+		"typescript"
+	],
+	"author": "Cortanix",
+	"license": "MIT",
+	"peerDependencies": {
+		"react": ">=16.8.0",
+		"react-dom": ">=16.8.0"
+	},
+	"dependencies": {
+		"classnames": "^2.3.2"
+	},
+	"optionalDependencies": {
+		"@tanstack/react-virtual": "^3.0.0"
+	},
+	"devDependencies": {
+		"@types/react": "^18.0.0",
+		"@types/react-dom": "^18.0.0",
+		"react": "^18.3.1",
+		"tsdown": "^0.2.0",
+		"typescript": "^5.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/eliav2/react-responsive-overflow-list.git"
+	},
+	"bugs": {
+		"url": "https://github.com/eliav2/react-responsive-overflow-list/issues"
+	},
+	"homepage": "https://github.com/eliav2/react-responsive-overflow-list#readme"
+}
