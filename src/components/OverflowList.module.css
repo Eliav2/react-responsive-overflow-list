@@ -1,26 +1,26 @@
 .container {
-	position: relative;
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	min-width: 0;
-	gap: 4px;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+  gap: 4px;
 }
 
 .measuring {
-	visibility: hidden;
+  visibility: hidden;
 }
 
 .defaultOverflowButton {
-	margin-left: 0px;
-	border-radius: 4px;
-	background: transparent;
-	border: 1px solid #ccc;
-	padding: 4px 8px;
-	cursor: pointer;
-	font-size: 12px;
+  margin-left: 0px;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
 }
 
 .defaultOverflowButton:hover {
-	background: #f5f5f5;
+  background: #f5f5f5;
 }

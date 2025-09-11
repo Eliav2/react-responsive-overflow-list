@@ -1,8 +1,8 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-	entry: "src/index.ts",
-	format: ["cjs", "esm"],
-	dts: true,
-	external: ["react", "react-dom"],
+  entry: "src/index.ts",
+  format: ["cjs", "esm"],
+  dts: true,
+  external: ["react", "react-dom"],
 });

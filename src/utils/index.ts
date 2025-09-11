@@ -5,36 +5,36 @@ import React from "react";
  * and includes bottom position information
  */
 export interface NodePosition {
-	elements: Set<HTMLElement>;
-	bottom: number;
-	top: number;
+  elements: Set<HTMLElement>;
+  bottom: number;
+  top: number;
 }
 
 export function groupNodesByTopPosition(nodes: HTMLElement[]): Record<number, NodePosition> {
-	if (nodes.length === 0) return {};
+  if (nodes.length === 0) return {};
 
-	const result: Record<number, NodePosition> = {};
+  const result: Record<number, NodePosition> = {};
 
-	nodes.forEach((node) => {
-		const rect = node.getBoundingClientRect();
-		const top = Math.round(rect.top);
-		const bottom = Math.round(rect.bottom);
+  nodes.forEach((node) => {
+    const rect = node.getBoundingClientRect();
+    const top = Math.round(rect.top);
+    const bottom = Math.round(rect.bottom);
 
-		if (!result[top]) {
-			result[top] = {
-				elements: new Set<HTMLElement>(),
-				bottom: bottom,
-				top: top,
-			};
-		} else {
-			// Update bottom to be the maximum bottom of all elements in this row
-			result[top].bottom = Math.max(result[top].bottom, bottom);
-		}
+    if (!result[top]) {
+      result[top] = {
+        elements: new Set<HTMLElement>(),
+        bottom: bottom,
+        top: top,
+      };
+    } else {
+      // Update bottom to be the maximum bottom of all elements in this row
+      result[top].bottom = Math.max(result[top].bottom, bottom);
+    }
 
-		result[top].elements.add(node);
-	});
+    result[top].elements.add(node);
+  });
 
-	return result;
+  return result;
 }
 
 /**
@@ -42,23 +42,27 @@ export function groupNodesByTopPosition(nodes: HTMLElement[]): Record<number, No
  * Returns itemsSizesMap, rowPositions, and children or null if the container is not available
  */
 export function getRowPositionsData(
-	containerRef: React.RefObject<HTMLDivElement>,
-	overflowRef: React.RefObject<HTMLDivElement>,
-): { itemsSizesMap: Record<number, NodePosition>; rowPositions: number[]; children: HTMLElement[] } | null {
-	if (!containerRef.current) return null;
+  containerRef: React.RefObject<HTMLDivElement>,
+  overflowRef: React.RefObject<HTMLDivElement>,
+): {
+  itemsSizesMap: Record<number, NodePosition>;
+  rowPositions: number[];
+  children: HTMLElement[];
+} | null {
+  if (!containerRef.current) return null;
 
-	const container = containerRef.current;
-	const children = Array.from(container.children).filter((child) => overflowRef.current !== child) as HTMLElement[];
+  const container = containerRef.current;
+  const children = Array.from(container.children).filter((child) => overflowRef.current !== child) as HTMLElement[];
 
-	if (children.length === 0) return null;
+  if (children.length === 0) return null;
 
-	// Group elements by their vertical position (rows)
-	const itemsSizesMap = groupNodesByTopPosition(children);
+  // Group elements by their vertical position (rows)
+  const itemsSizesMap = groupNodesByTopPosition(children);
 
-	// Get all the vertical positions (rows)
-	const rowPositions = Object.keys(itemsSizesMap).map(Number);
+  // Get all the vertical positions (rows)
+  const rowPositions = Object.keys(itemsSizesMap).map(Number);
 
-	return { itemsSizesMap, rowPositions, children };
+  return { itemsSizesMap, rowPositions, children };
 }
 
 /**
@@ -72,22 +76,22 @@ export function getRowPositionsData(
  * @returns A range extractor function that can be used with useVirtualizer
  */
 export function createLimitedRangeExtractor(
-	maxItems: number,
+  maxItems: number,
 ): (range: { startIndex: number; endIndex: number; overscan: number; count: number }) => number[] {
-	return (range: { startIndex: number; endIndex: number; overscan: number; count: number }) => {
-		// Calculate the start and end with overscan applied
-		const startWithOverscan = Math.max(0, range.startIndex - range.overscan);
-		const endWithOverscan = Math.min(range.count - 1, range.endIndex + range.overscan);
+  return (range: { startIndex: number; endIndex: number; overscan: number; count: number }) => {
+    // Calculate the start and end with overscan applied
+    const startWithOverscan = Math.max(0, range.startIndex - range.overscan);
+    const endWithOverscan = Math.min(range.count - 1, range.endIndex + range.overscan);
 
-		// Calculate the total range size
-		const rangeSize = endWithOverscan - startWithOverscan + 1;
+    // Calculate the total range size
+    const rangeSize = endWithOverscan - startWithOverscan + 1;
 
-		// Limit to maxItems while respecting the actual range
-		const itemsToRender = Math.min(rangeSize, maxItems);
+    // Limit to maxItems while respecting the actual range
+    const itemsToRender = Math.min(rangeSize, maxItems);
 
-		// Create array of indexes starting from startWithOverscan
-		const arr = Array.from({ length: itemsToRender }, (_, i) => startWithOverscan + i);
+    // Create array of indexes starting from startWithOverscan
+    const arr = Array.from({ length: itemsToRender }, (_, i) => startWithOverscan + i);
 
-		return arr;
-	};
+    return arr;
+  };
 }

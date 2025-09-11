@@ -1,47 +1,56 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 export interface ResizeObserverDimensions {
-	width: number;
-	height: number;
-	contentWidth: number;
-	contentHeight: number;
+  width: number;
+  height: number;
+  contentWidth: number;
+  contentHeight: number;
 }
 
 export function useResizeObserver<T extends HTMLElement>(
-	elementRef: React.RefObject<T>,
+  elementRef: React.RefObject<T>,
+  flushImmediately: boolean = false
 ): ResizeObserverDimensions | null {
-	const resizeObserverRef = useRef<ResizeObserver | null>(null);
-	const [dimensions, setDimensions] = useState<ResizeObserverDimensions | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const [dimensions, setDimensions] = useState<ResizeObserverDimensions | null>(null);
 
-	// Initialize resize observer
-	useEffect(() => {
-		if (!elementRef.current) return;
+  // Initialize resize observer
+  useEffect(() => {
+    if (!elementRef.current) return;
 
-		// Create resize observer
-		resizeObserverRef.current = new ResizeObserver((entries) => {
-			// Use requestAnimationFrame to ensure DOM updates are complete
-			requestAnimationFrame(() => {
-				if (entries[0]) {
-					const entry = entries[0];
-					setDimensions({
-						width: entry.borderBoxSize[0]?.inlineSize ?? entry.target.clientWidth,
-						height: entry.borderBoxSize[0]?.blockSize ?? entry.target.clientHeight,
-						contentWidth: entry.contentRect.width,
-						contentHeight: entry.contentRect.height,
-					});
-				}
-			});
-		});
+    // Create resize observer
+    resizeObserverRef.current = new ResizeObserver((entries) => {
+      if (entries[0]) {
+        const entry = entries[0];
+        const updateDimensions = () => {
+          setDimensions({
+            width: entry.borderBoxSize[0]?.inlineSize ?? entry.target.clientWidth,
+            height: entry.borderBoxSize[0]?.blockSize ?? entry.target.clientHeight,
+            contentWidth: entry.contentRect.width,
+            contentHeight: entry.contentRect.height,
+          });
+        };
 
-		resizeObserverRef.current.observe(elementRef.current);
+        if (flushImmediately) {
+          // Update DOM immediately using flushSync
+          flushSync(updateDimensions);
+        } else {
+          // Use requestAnimationFrame to defer this update and avoid forced reflow
+          requestAnimationFrame(updateDimensions);
+        }
+      }
+    });
 
-		return () => {
-			if (resizeObserverRef.current) {
-				resizeObserverRef.current.disconnect();
-				resizeObserverRef.current = null;
-			}
-		};
-	}, [elementRef.current]);
+    resizeObserverRef.current.observe(elementRef.current);
 
-	return dimensions;
+    return () => {
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
+    };
+  }, [elementRef.current]);
+
+  return dimensions;
 }

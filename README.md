@@ -28,18 +28,25 @@ import { OverflowList } from "react-responsive-overflow-list";
 const items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
 
 function MyComponent() {
-	return (
-		<OverflowList
-			items={items}
-			renderItem={(item, index) => (
-				<span key={index} style={{ padding: "4px 8px", background: "#f0f0f0", borderRadius: "4px" }}>
-					{item}
-				</span>
-			)}
-			maxRows={1}
-			gap="2"
-		/>
-	);
+  return (
+    <OverflowList
+      items={items}
+      renderItem={(item, index) => (
+        <span
+          key={index}
+          style={{
+            padding: "4px 8px",
+            background: "#f0f0f0",
+            borderRadius: "4px",
+          }}
+        >
+          {item}
+        </span>
+      )}
+      maxRows={1}
+      gap="2"
+    />
+  );
 }
 ```
 
@@ -49,15 +56,15 @@ function MyComponent() {
 import { OverflowList } from "react-responsive-overflow-list";
 
 function MyComponent() {
-	return (
-		<OverflowList maxRows={1} gap="2">
-			<button>Action 1</button>
-			<button>Action 2</button>
-			<button>Action 3</button>
-			<button>Action 4</button>
-			<button>Action 5</button>
-		</OverflowList>
-	);
+  return (
+    <OverflowList maxRows={1} gap="2">
+      <button>Action 1</button>
+      <button>Action 2</button>
+      <button>Action 3</button>
+      <button>Action 4</button>
+      <button>Action 5</button>
+    </OverflowList>
+  );
 }
 ```
 
@@ -67,14 +74,14 @@ function MyComponent() {
 import { OverflowList } from "react-responsive-overflow-list";
 
 function MyComponent() {
-	return (
-		<OverflowList
-			items={items}
-			renderItem={(item) => <span>{item}</span>}
-			renderOverflow={(overflowItems) => <button>{overflowItems.length} more items</button>}
-			maxRows={2}
-		/>
-	);
+  return (
+    <OverflowList
+      items={items}
+      renderItem={(item) => <span>{item}</span>}
+      renderOverflow={(overflowItems) => <button>{overflowItems.length} more items</button>}
+      maxRows={2}
+    />
+  );
 }
 ```
 
@@ -129,26 +136,26 @@ Inherits all standard div props. The container uses `display: flex` with `flex-w
 import { OverflowList } from "react-responsive-overflow-list";
 
 function CustomOverflowMenu({ items }: { items: string[] }) {
-	return (
-		<details>
-			<summary>{items.length} more</summary>
-			<ul>
-				{items.map((item, index) => (
-					<li key={index}>{item}</li>
-				))}
-			</ul>
-		</details>
-	);
+  return (
+    <details>
+      <summary>{items.length} more</summary>
+      <ul>
+        {items.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </details>
+  );
 }
 
 function MyComponent() {
-	return (
-		<OverflowList
-			items={items}
-			renderItem={(item) => <span>{item}</span>}
-			renderOverflow={(items) => <CustomOverflowMenu items={items} />}
-		/>
-	);
+  return (
+    <OverflowList
+      items={items}
+      renderItem={(item) => <span>{item}</span>}
+      renderOverflow={(items) => <CustomOverflowMenu items={items} />}
+    />
+  );
 }
 ```
 
@@ -158,18 +165,25 @@ function MyComponent() {
 import { OverflowList } from "react-responsive-overflow-list";
 
 function ResponsiveToolbar() {
-	return (
-		<div style={{ width: "100%", resize: "horizontal", overflow: "auto", border: "1px solid #ccc" }}>
-			<OverflowList maxRows={1} gap="2" style={{ padding: "8px" }}>
-				<button>New</button>
-				<button>Open</button>
-				<button>Save</button>
-				<button>Print</button>
-				<button>Export</button>
-				<button>Settings</button>
-			</OverflowList>
-		</div>
-	);
+  return (
+    <div
+      style={{
+        width: "100%",
+        resize: "horizontal",
+        overflow: "auto",
+        border: "1px solid #ccc",
+      }}
+    >
+      <OverflowList maxRows={1} gap="2" style={{ padding: "8px" }}>
+        <button>New</button>
+        <button>Open</button>
+        <button>Save</button>
+        <button>Print</button>
+        <button>Export</button>
+        <button>Settings</button>
+      </OverflowList>
+    </div>
+  );
 }
 ```
 
@@ -200,28 +214,28 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { OverflowList } from "react-responsive-overflow-list";
 
 function RadixOverflowMenu({ items }: { items: string[] }) {
-	return (
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger asChild>
-				<button>+{items.length} more</button>
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content>
-				{items.map((item, index) => (
-					<DropdownMenu.Item key={index}>{item}</DropdownMenu.Item>
-				))}
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
-	);
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <button>+{items.length} more</button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        {items.map((item, index) => (
+          <DropdownMenu.Item key={index}>{item}</DropdownMenu.Item>
+        ))}
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
 }
 
 function MyComponent() {
-	return (
-		<OverflowList
-			items={items}
-			renderItem={(item) => <span>{item}</span>}
-			renderOverflow={(items) => <RadixOverflowMenu items={items} />}
-		/>
-	);
+  return (
+    <OverflowList
+      items={items}
+      renderItem={(item) => <span>{item}</span>}
+      renderOverflow={(items) => <RadixOverflowMenu items={items} />}
+    />
+  );
 }
 ```
 
@@ -232,39 +246,44 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { OverflowList, createLimitedRangeExtractor } from "react-responsive-overflow-list";
 
 function VirtualizedOverflowMenu({ items }: { items: string[] }) {
-	const parentRef = useRef<HTMLDivElement>(null);
+  const parentRef = useRef<HTMLDivElement>(null);
 
-	const virtualizer = useVirtualizer({
-		count: items.length,
-		getScrollElement: () => parentRef.current,
-		estimateSize: () => 35,
-		rangeExtractor: createLimitedRangeExtractor(100),
-	});
+  const virtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 35,
+    rangeExtractor: createLimitedRangeExtractor(100),
+  });
 
-	return (
-		<details>
-			<summary>+{items.length} more</summary>
-			<div ref={parentRef} style={{ height: "200px", overflow: "auto" }}>
-				<div style={{ height: `${virtualizer.getTotalSize()}px`, position: "relative" }}>
-					{virtualizer.getVirtualItems().map((virtualItem) => (
-						<div
-							key={virtualItem.key}
-							style={{
-								position: "absolute",
-								top: 0,
-								left: 0,
-								width: "100%",
-								height: `${virtualItem.size}px`,
-								transform: `translateY(${virtualItem.start}px)`,
-							}}
-						>
-							{items[virtualItem.index]}
-						</div>
-					))}
-				</div>
-			</div>
-		</details>
-	);
+  return (
+    <details>
+      <summary>+{items.length} more</summary>
+      <div ref={parentRef} style={{ height: "200px", overflow: "auto" }}>
+        <div
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            position: "relative",
+          }}
+        >
+          {virtualizer.getVirtualItems().map((virtualItem) => (
+            <div
+              key={virtualItem.key}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualItem.size}px`,
+                transform: `translateY(${virtualItem.start}px)`,
+              }}
+            >
+              {items[virtualItem.index]}
+            </div>
+          ))}
+        </div>
+      </div>
+    </details>
+  );
 }
 ```
 
