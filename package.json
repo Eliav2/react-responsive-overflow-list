@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "A responsive React component that shows as many items as can fit within constraints, hiding overflow items behind a configurable overflow renderer",
 	"main": "dist/index.js",
-	"module": "dist/index.esm.js",
+	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
 	"files": [
 		"dist",
@@ -14,7 +14,10 @@
 		"dev": "tsdown --watch",
 		"test": "jest",
 		"lint": "eslint src --ext .ts,.tsx",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"demo:dev": "pnpm --filter demo dev",
+		"demo:build": "pnpm --filter demo build",
+		"dev:all": "pnpm run dev & pnpm run demo:dev"
 	},
 	"keywords": [
 		"react",

@@ -1,7 +1,7 @@
 // Utility to combine refs (similar to MUI's useForkRef but simpler)
 import React from "react";
 
-export const useForkRef = <T,>(...refs: (React.Ref<T> | null)[]) => {
+export const useForkRef = <T,>(...refs: (React.Ref<T> | null)[]): React.RefCallback<T> | null => {
 	return React.useMemo(() => {
 		if (refs.every((ref) => ref == null)) {
 			return null;

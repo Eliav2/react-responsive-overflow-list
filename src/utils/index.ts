@@ -44,7 +44,7 @@ export function groupNodesByTopPosition(nodes: HTMLElement[]): Record<number, No
 export function getRowPositionsData(
 	containerRef: React.RefObject<HTMLDivElement>,
 	overflowRef: React.RefObject<HTMLDivElement>,
-) {
+): { itemsSizesMap: Record<number, NodePosition>; rowPositions: number[]; children: HTMLElement[] } | null {
 	if (!containerRef.current) return null;
 
 	const container = containerRef.current;
@@ -71,7 +71,9 @@ export function getRowPositionsData(
  * @param maxItems - Maximum number of items to render at once
  * @returns A range extractor function that can be used with useVirtualizer
  */
-export function createLimitedRangeExtractor(maxItems: number) {
+export function createLimitedRangeExtractor(
+	maxItems: number,
+): (range: { startIndex: number; endIndex: number; overscan: number; count: number }) => number[] {
 	return (range: { startIndex: number; endIndex: number; overscan: number; count: number }) => {
 		// Calculate the start and end with overscan applied
 		const startWithOverscan = Math.max(0, range.startIndex - range.overscan);
