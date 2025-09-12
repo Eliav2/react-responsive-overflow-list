@@ -17,6 +17,7 @@
     "type-check": "tsc --noEmit",
     "demo:dev": "pnpm --filter demo dev",
     "demo:build": "pnpm --filter demo build",
+    "demo:build:prod": "NODE_ENV=production pnpm --filter demo build",
     "dev:all": "pnpm run dev & pnpm run demo:dev"
   },
   "keywords": [
