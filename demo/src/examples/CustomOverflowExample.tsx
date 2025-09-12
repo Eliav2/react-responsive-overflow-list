@@ -91,6 +91,13 @@ const CustomOverflowElement = React.forwardRef<HTMLDivElement, { items: string[]
         <CollapsibleCodePreview
           title="Radix UI Dropdown Implementation"
           code={radixCodeExample}
+          usageCode={`<OverflowList
+  items={tags}
+  renderItem={(tag) => <span className="tag">#{tag}</span>}
+  renderOverflow={(items) => <RadixOverflowMenu items={items} />}
+  maxRows={1}
+  style={{ gap: "6px" }}
+/>`}
           defaultCollapsed={false}
         />
         <div className="demo-container">
@@ -115,6 +122,14 @@ const CustomOverflowElement = React.forwardRef<HTMLDivElement, { items: string[]
         <CollapsibleCodePreview
           title="Virtualized Radix UI Dropdown Implementation"
           code={virtualizedCodeExample}
+          usageCode={`<OverflowList
+  items={Array.from({ length: 10000 }, (_, i) => \`Item \${i + 1}\`)}
+  renderItem={(item) => <span className="tag">#{item}</span>}
+  renderOverflow={(items) => <VirtualizedRadixOverflowMenu items={items} />}
+  maxRows={5}
+  maxVisibleItems={100} // the default value is 100
+  style={{ gap: "6px" }}
+/>`}
           defaultCollapsed={true}
         />
         <div className="demo-container">

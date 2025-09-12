@@ -10,6 +10,7 @@ interface CollapsibleCodePreviewProps {
   language?: string;
   title?: string;
   defaultCollapsed?: boolean;
+  usageCode?: string;
 }
 
 export function CollapsibleCodePreview({
@@ -17,6 +18,7 @@ export function CollapsibleCodePreview({
   language = "tsx",
   title = "Code Example",
   defaultCollapsed = false,
+  usageCode,
 }: CollapsibleCodePreviewProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const [copied, setCopied] = useState(false);
@@ -25,6 +27,9 @@ export function CollapsibleCodePreview({
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // Combine usage code and implementation code if usageCode is provided
+  const combinedCode = usageCode ? `${usageCode}\n\n// Implementation:\n${code}` : code;
 
   return (
     <div className="collapsible-code-preview">
@@ -38,7 +43,7 @@ export function CollapsibleCodePreview({
           <span className="code-title">{title}</span>
         </button>
 
-        <CopyToClipboard text={code} onCopy={handleCopy}>
+        <CopyToClipboard text={combinedCode} onCopy={handleCopy}>
           <IconButton className="copy-button" aria-label="Copy code">
             {copied ? <Check size={16} className="copy-success" /> : <Copy size={16} />}
           </IconButton>
@@ -57,7 +62,7 @@ export function CollapsibleCodePreview({
               lineHeight: "1.5",
             }}
           >
-            {code}
+            {combinedCode}
           </SyntaxHighlighter>
         </div>
       )}
