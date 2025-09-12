@@ -50,9 +50,9 @@ export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithCh
 
 export interface OverflowElementProps<T> {
   items: T[];
-//   renderItem: (item: T, index: number) => React.ReactNode;
-//   renderText?: (count: number) => React.ReactNode;
-//   triggerProps?: React.ButtonHTMLAttributes<HTMLDivElement>;
+  //   renderItem: (item: T, index: number) => React.ReactNode;
+  //   renderText?: (count: number) => React.ReactNode;
+  //   triggerProps?: React.ButtonHTMLAttributes<HTMLDivElement>;
 }
 
 /**
@@ -233,5 +233,5 @@ export const OverflowList = React.memo(
         {clonedOverflowElement}
       </Component>
     );
-  })
+  }),
 ) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLDivElement> }) => React.ReactElement;

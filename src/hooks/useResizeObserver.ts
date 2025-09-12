@@ -10,7 +10,7 @@ export interface ResizeObserverDimensions {
 
 export function useResizeObserver<T extends HTMLElement>(
   elementRef: React.RefObject<T>,
-  flushImmediately: boolean = false
+  flushImmediately: boolean = false,
 ): ResizeObserverDimensions | null {
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const [dimensions, setDimensions] = useState<ResizeObserverDimensions | null>(null);
@@ -50,7 +50,7 @@ export function useResizeObserver<T extends HTMLElement>(
         resizeObserverRef.current = null;
       }
     };
-  }, [elementRef.current]);
+  }, [elementRef.current, flushImmediately]);
 
   return dimensions;
 }
