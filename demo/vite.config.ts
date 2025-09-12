@@ -8,10 +8,7 @@ export default defineConfig({
   resolve: {
     // Use built library in production, source in development
     alias: {
-      "react-responsive-overflow-list":
-        process.env.NODE_ENV === "production"
-          ? fileURLToPath(new URL("../dist/index.mjs", import.meta.url))
-          : fileURLToPath(new URL("../src/index.ts", import.meta.url)),
+      "react-responsive-overflow-list": fileURLToPath(new URL("../src/index.ts", import.meta.url)),
     },
   },
 });
