@@ -8,9 +8,11 @@ A responsive React component that shows as many items as can fit within constrai
 - ✅ **Flexible Rendering**: Support for both items array and children patterns
 - ✅ **Customizable Overflow**: Custom overflow renderers and styling
 - ✅ **TypeScript**: Full TypeScript support with comprehensive types
-- ✅ **Lightweight**: Simple, performant default overflow menu without heavy dependencies
-- ✅ **Accessibility**: Built with accessibility in mind
-- ✅ **Zero Dependencies**: Only peer dependencies on React and classnames for styling
+- ✅ **Lightweight**: Simple, performant default overflow element without heavy dependencies
+- ✅ **Polymorphic**: Use the `as` prop to render as different HTML elements
+- ✅ **Performance Control**: Configurable flush behavior for resize updates
+- ✅ **Multi-row Support**: Control maximum rows before overflow
+- ✅ **Minimal Dependencies**: Only peer dependencies on React and classnames for styling
 
 ## Installation
 
@@ -44,7 +46,7 @@ function MyComponent() {
         </span>
       )}
       maxRows={1}
-      gap="2"
+      style={{ gap: "8px" }}
     />
   );
 }
@@ -57,7 +59,7 @@ import { OverflowList } from "react-responsive-overflow-list";
 
 function MyComponent() {
   return (
-    <OverflowList maxRows={1} gap="2">
+    <OverflowList maxRows={1} style={{ gap: "8px" }}>
       <button>Action 1</button>
       <button>Action 2</button>
       <button>Action 3</button>
@@ -80,6 +82,40 @@ function MyComponent() {
       renderItem={(item) => <span>{item}</span>}
       renderOverflow={(overflowItems) => <button>{overflowItems.length} more items</button>}
       maxRows={2}
+      style={{ gap: "8px" }}
+    />
+  );
+}
+```
+
+### Polymorphic Component
+
+```tsx
+import { OverflowList } from "react-responsive-overflow-list";
+
+function MyComponent() {
+  return (
+    <OverflowList as="nav" style={{ gap: "8px" }}>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </OverflowList>
+  );
+}
+```
+
+### Performance Control
+
+```tsx
+import { OverflowList } from "react-responsive-overflow-list";
+
+function MyComponent() {
+  return (
+    <OverflowList
+      items={items}
+      renderItem={(item) => <span>{item}</span>}
+      flushImmediately={false} // Better performance, may cause slight flickering
+      style={{ gap: "8px" }}
     />
   );
 }
@@ -91,51 +127,55 @@ function MyComponent() {
 
 #### Core Props
 
-| Prop         | Type                                    | Default | Description                                      |
-| ------------ | --------------------------------------- | ------- | ------------------------------------------------ |
-| `items`      | `T[]`                                   | -       | Array of items to render (use with `renderItem`) |
-| `renderItem` | `(item: T, index: number) => ReactNode` | -       | Function to render each item                     |
-| `children`   | `ReactNode`                             | -       | Alternative to items/renderItem pattern          |
+| Prop         | Type                                    | Default | Description                                              |
+| ------------ | --------------------------------------- | ------- | -------------------------------------------------------- |
+| `items`      | `T[]`                                   | -       | Array of items to render (use with `renderItem`)         |
+| `renderItem` | `(item: T, index: number) => ReactNode` | -       | Function to render each item                             |
+| `children`   | `ReactNode`                             | -       | Alternative to items/renderItem pattern                  |
+| `as`         | `React.ElementType`                     | `"div"` | Polymorphic component - render as different HTML element |
 
 #### Layout Props
 
-| Prop              | Type               | Default | Description                                        |
-| ----------------- | ------------------ | ------- | -------------------------------------------------- |
-| `maxRows`         | `number`           | `1`     | Maximum number of rows before overflow             |
-| `maxVisibleItems` | `number`           | `100`   | Maximum number of visible items                    |
-| `minVisibleItems` | `number`           | `0`     | Minimum number of items to keep visible            |
-| `gap`             | `string \| number` | `"1"`   | Gap between items (supports theme values: "1"-"6") |
+| Prop              | Type     | Default | Description                             |
+| ----------------- | -------- | ------- | --------------------------------------- |
+| `maxRows`         | `number` | `1`     | Maximum number of rows before overflow  |
+| `maxVisibleItems` | `number` | `100`   | Maximum number of visible items         |
+| `minVisibleItems` | `number` | `0`     | Minimum number of items to keep visible |
 
 #### Overflow Props
 
-| Prop                  | Type                                    | Default               | Description                        |
-| --------------------- | --------------------------------------- | --------------------- | ---------------------------------- |
-| `renderOverflow`      | `(items: T[]) => ReactNode`             | `DefaultOverflowMenu` | Custom overflow renderer           |
-| `renderOverflowItem`  | `(item: T, index: number) => ReactNode` | `renderItem`          | Custom renderer for overflow items |
-| `renderOverflowProps` | `Partial<DefaultOverflowMenuProps<T>>`  | -                     | Props for default overflow menu    |
+| Prop                  | Type                                    | Default                  | Description                        |
+| --------------------- | --------------------------------------- | ------------------------ | ---------------------------------- |
+| `renderOverflow`      | `(items: T[]) => ReactNode`             | `DefaultOverflowElement` | Custom overflow renderer           |
+| `renderOverflowItem`  | `(item: T, index: number) => ReactNode` | `renderItem`             | Custom renderer for overflow items |
+| `renderOverflowProps` | `Partial<OverflowElementProps<T>>`      | -                        | Props for default overflow element |
+
+#### Performance Props
+
+| Prop               | Type      | Default | Description                                                                                       |
+| ------------------ | --------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `flushImmediately` | `boolean` | `true`  | Whether to flush updates immediately on resize (true = no flickering, false = better performance) |
 
 #### Style Props
 
-Inherits all standard div props. The container uses `display: flex` with `flex-wrap: wrap` and `align-items: center` by default. You can override any styles via the `style` prop or `className`.
+Inherits all standard HTML div props (or the element specified by `as`). The container uses `display: flex` with `flex-wrap: wrap` and `align-items: center` by default. You can override any styles via the `style` prop or `className`.
 
-### DefaultOverflowMenu Props
+### DefaultOverflowElement Props
 
-| Prop           | Type                                            | Default                          | Description                           |
-| -------------- | ----------------------------------------------- | -------------------------------- | ------------------------------------- |
-| `items`        | `T[]`                                           | -                                | Items to show in overflow menu        |
-| `visibleCount` | `number`                                        | -                                | Number of visible items (for context) |
-| `renderItem`   | `(item: T, index: number) => ReactNode`         | -                                | How to render each overflow item      |
-| `renderText`   | `(count: number) => ReactNode`                  | `(count) => \`+\${count} more\`` | Text for overflow trigger             |
-| `triggerProps` | `React.ButtonHTMLAttributes<HTMLButtonElement>` | -                                | Props for overflow trigger button     |
+| Prop    | Type  | Default | Description                       |
+| ------- | ----- | ------- | --------------------------------- |
+| `items` | `T[]` | -       | Items to show in overflow element |
+
+The `DefaultOverflowElement` is a simple component that displays `+{count} more` text. For more advanced overflow menus, use a custom `renderOverflow` function.
 
 ## Advanced Usage
 
-### Custom Overflow Menu
+### Custom Overflow Element
 
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
 
-function CustomOverflowMenu({ items }: { items: string[] }) {
+function CustomOverflowElement({ items }: { items: string[] }) {
   return (
     <details>
       <summary>{items.length} more</summary>
@@ -153,7 +193,8 @@ function MyComponent() {
     <OverflowList
       items={items}
       renderItem={(item) => <span>{item}</span>}
-      renderOverflow={(items) => <CustomOverflowMenu items={items} />}
+      renderOverflow={(items) => <CustomOverflowElement items={items} />}
+      style={{ gap: "8px" }}
     />
   );
 }
@@ -174,7 +215,7 @@ function ResponsiveToolbar() {
         border: "1px solid #ccc",
       }}
     >
-      <OverflowList maxRows={1} gap="2" style={{ padding: "8px" }}>
+      <OverflowList maxRows={1} style={{ padding: "8px", gap: "8px" }}>
         <button>New</button>
         <button>Open</button>
         <button>Save</button>
@@ -193,19 +234,20 @@ function ResponsiveToolbar() {
 
 The component uses a three-phase approach:
 
-1. **"measuring"** - Renders all items to calculate positions
-2. **"measuring overflow"** - Tests if overflow indicator fits without creating new row
+1. **"measuring"** - Renders all items to calculate positions and determine how many fit
+2. **"measuring-overflow-indicator"** - Tests if overflow indicator fits without creating new row
 3. **"normal"** - Shows final stable state with proper item count
 
 ### Performance
 
 - Uses `ResizeObserver` for efficient resize detection
 - Optimized re-renders with `React.memo` and careful state management
-- Simple default overflow menu for minimal bundle impact
+- Simple default overflow element for minimal bundle impact
+- Configurable flush behavior: `flushImmediately=true` (default) avoids flickering but may impact performance, `flushImmediately=false` improves performance but may cause slight flickering
 
-### Advanced Overflow Menus
+### Advanced Overflow Elements
 
-The default overflow menu is intentionally simple. For more advanced features like virtualization or complex UI frameworks, you can create custom overflow renderers:
+The default overflow element is intentionally simple. For more advanced features like dropdowns or complex UI frameworks, you can create custom overflow renderers:
 
 #### With Radix UI
 
@@ -213,7 +255,7 @@ The default overflow menu is intentionally simple. For more advanced features li
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { OverflowList } from "react-responsive-overflow-list";
 
-function RadixOverflowMenu({ items }: { items: string[] }) {
+function RadixOverflowElement({ items }: { items: string[] }) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -233,7 +275,8 @@ function MyComponent() {
     <OverflowList
       items={items}
       renderItem={(item) => <span>{item}</span>}
-      renderOverflow={(items) => <RadixOverflowMenu items={items} />}
+      renderOverflow={(items) => <RadixOverflowElement items={items} />}
+      style={{ gap: "8px" }}
     />
   );
 }
@@ -245,7 +288,7 @@ function MyComponent() {
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { OverflowList, createLimitedRangeExtractor } from "react-responsive-overflow-list";
 
-function VirtualizedOverflowMenu({ items }: { items: string[] }) {
+function VirtualizedOverflowElement({ items }: { items: string[] }) {
   const parentRef = useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
@@ -291,6 +334,18 @@ function VirtualizedOverflowMenu({ items }: { items: string[] }) {
 
 - All modern browsers that support `ResizeObserver`
 - React 16.8+ (hooks support required)
+
+## Dependencies
+
+### Required Dependencies
+
+- `react` (>=16.8.0) - Peer dependency
+- `react-dom` (>=16.8.0) - Peer dependency
+- `classnames` (^2.3.2) - For conditional CSS classes
+
+### Optional Dependencies
+
+- `@tanstack/react-virtual` (^3.0.0) - For virtualization support in custom overflow elements
 
 ## License
 
