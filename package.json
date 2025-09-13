@@ -17,7 +17,6 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "test": "jest",
     "lint": "eslint src --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
     "demo:dev": "pnpm --filter demo dev",
