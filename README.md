@@ -12,7 +12,7 @@ A responsive React component that shows as many items as can fit within constrai
 - ✅ **Polymorphic**: Use the `as` prop to render as different HTML elements
 - ✅ **Performance Control**: Configurable flush behavior for resize updates
 - ✅ **Multi-row Support**: Control maximum rows before overflow
-- ✅ **Minimal Dependencies**: Only peer dependencies on React and classnames for styling
+- ✅ **Minimal Dependencies**: Only peer dependencies on React
 
 ## Installation
 
@@ -341,7 +341,6 @@ function VirtualizedOverflowElement({ items }: { items: string[] }) {
 
 - `react` (>=16.8.0) - Peer dependency
 - `react-dom` (>=16.8.0) - Peer dependency
-- `classnames` (^2.3.2) - For conditional CSS classes
 
 ### Optional Dependencies
 

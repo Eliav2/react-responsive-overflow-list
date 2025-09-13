@@ -8,11 +8,8 @@ importers:
 
   .:
     dependencies:
-      classnames:
-        specifier: ^2.3.2
-        version: 2.5.1
       react-dom:
-        specifier: '>=18.0.0'
+        specifier: '>=16.8.0'
         version: 19.1.1(react@19.1.1)
     devDependencies:
       '@types/react':
@@ -30,10 +27,6 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.8.3
-    optionalDependencies:
-      '@tanstack/react-virtual':
-        specifier: ^3.0.0
-        version: 3.13.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   demo:
     dependencies:
@@ -49,9 +42,6 @@ importers:
       '@types/react-syntax-highlighter':
         specifier: ^15.5.13
         version: 15.5.13
-      classnames:
-        specifier: ^2.3.2
-        version: 2.5.1
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@19.1.1)

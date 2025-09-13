@@ -11,7 +11,7 @@ export const useForkRef = <T,>(...refs: (React.Ref<T> | null)[]): React.RefCallb
         if (typeof ref === "function") {
           ref(refValue);
         } else if (ref) {
-          (ref as React.MutableRefObject<T>).current = refValue;
+          (ref as React.RefObject<T>).current = refValue;
         }
       });
     };

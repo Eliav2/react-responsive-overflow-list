@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React from "react";
 import styles from "./OverflowList.module.css";
 import { OverflowElementProps } from "./OverflowList";
@@ -17,7 +16,7 @@ export const DefaultOverflowElement = React.forwardRef(function DefaultOverflowE
   const count = items.length;
 
   return (
-    <div ref={ref} className={classNames(styles.defaultOverflowButton)}>
+    <div ref={ref} className={styles.defaultOverflowButton}>
       {`+${count} more`}
     </div>
   );

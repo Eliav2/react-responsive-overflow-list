@@ -42,8 +42,8 @@ export function groupNodesByTopPosition(nodes: HTMLElement[]): Record<number, No
  * Returns itemsSizesMap, rowPositions, and children or null if the container is not available
  */
 export function getRowPositionsData(
-  containerRef: React.RefObject<HTMLDivElement>,
-  overflowRef: React.RefObject<HTMLDivElement>,
+  containerRef: React.RefObject<HTMLElement | null>,
+  overflowRef: React.RefObject<HTMLElement | null>
 ): {
   itemsSizesMap: Record<number, NodePosition>;
   rowPositions: number[];
@@ -63,35 +63,4 @@ export function getRowPositionsData(
   const rowPositions = Object.keys(itemsSizesMap).map(Number);
 
   return { itemsSizesMap, rowPositions, children };
-}
-
-/**
- * Creates a range extractor function for TanStack Virtual that limits the number of rendered items
- * while properly handling overscan for smooth scrolling performance
- *
- * Note: This is an optional utility for advanced use cases with virtualization.
- * The default OverflowMenu does not use virtualization.
- *
- * @param maxItems - Maximum number of items to render at once
- * @returns A range extractor function that can be used with useVirtualizer
- */
-export function createLimitedRangeExtractor(
-  maxItems: number,
-): (range: { startIndex: number; endIndex: number; overscan: number; count: number }) => number[] {
-  return (range: { startIndex: number; endIndex: number; overscan: number; count: number }) => {
-    // Calculate the start and end with overscan applied
-    const startWithOverscan = Math.max(0, range.startIndex - range.overscan);
-    const endWithOverscan = Math.min(range.count - 1, range.endIndex + range.overscan);
-
-    // Calculate the total range size
-    const rangeSize = endWithOverscan - startWithOverscan + 1;
-
-    // Limit to maxItems while respecting the actual range
-    const itemsToRender = Math.min(rangeSize, maxItems);
-
-    // Create array of indexes starting from startWithOverscan
-    const arr = Array.from({ length: itemsToRender }, (_, i) => startWithOverscan + i);
-
-    return arr;
-  };
 }

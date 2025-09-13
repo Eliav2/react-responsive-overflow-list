@@ -1,13 +1,12 @@
-import classNames from "classnames";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { useResizeObserver, useForkRef } from "../hooks";
 import { DefaultOverflowElement } from "./DefaultOverflowMenu";
 import styles from "./OverflowList.module.css";
 import { getRowPositionsData } from "../utils";
 
-export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {}
+type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
 
-type BaseOverflowListProps<T> = Omit<FlexProps, "as"> & {
+type BaseOverflowListProps<T> = BaseComponentProps & {
   // Polymorphic component prop - allows changing the host element
   as?: React.ElementType;
   // would define the minimum number of items that should be visible (default is 0)
@@ -50,9 +49,6 @@ export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithCh
 
 export interface OverflowElementProps<T> {
   items: T[];
-  //   renderItem: (item: T, index: number) => React.ReactNode;
-  //   renderText?: (count: number) => React.ReactNode;
-  //   triggerProps?: React.ButtonHTMLAttributes<HTMLDivElement>;
 }
 
 /**
@@ -67,7 +63,7 @@ export interface OverflowElementProps<T> {
  * 3. "normal" phase shows only what fits within constraints. (this is the stable state that we want to keep)
  */
 export const OverflowList = React.memo(
-  React.forwardRef(function OverflowList<T>(props: OverflowListProps<T>, forwardedRef: React.Ref<HTMLDivElement>) {
+  React.forwardRef(function OverflowList<T>(props: OverflowListProps<T>, forwardedRef: React.Ref<HTMLElement>) {
     const {
       as: Component = "div",
       children,
@@ -87,12 +83,12 @@ export const OverflowList = React.memo(
     } = props;
 
     const [visibleCount, setVisibleCount] = useState(items.length);
-    const [substructCount, setSubstructCount] = useState(0);
+    const [subtractCount, setSubtractCount] = useState(0);
     const [phase, setPhase] = useState<"normal" | "measuring" | "measuring-overflow-indicator">("normal");
 
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLElement>(null);
     const finalContainerRef = useForkRef(containerRef, forwardedRef);
-    const finalVisibleCount = visibleCount - substructCount;
+    const finalVisibleCount = visibleCount - subtractCount;
 
     const overflowCount = items.length - finalVisibleCount;
     const showOverflow = overflowCount > 0 && phase !== "measuring";
@@ -107,7 +103,7 @@ export const OverflowList = React.memo(
 
     const overflowElement = showOverflow ? finalRenderOverflow : null;
 
-    const overflowRef = useRef<HTMLDivElement>(null);
+    const overflowRef = useRef<HTMLElement>(null);
     // @ts-expect-error - ref is not exposed as type in jsx elements but it exists
     const finalOverflowRef = useForkRef(overflowRef, overflowElement?.ref);
 
@@ -115,7 +111,7 @@ export const OverflowList = React.memo(
     useLayoutEffect(() => {
       setPhase("measuring");
       setVisibleCount(items.length);
-      setSubstructCount(0);
+      setSubtractCount(0);
     }, [items.length, maxRows]);
 
     useLayoutEffect(() => {
@@ -134,14 +130,14 @@ export const OverflowList = React.memo(
           setPhase("normal");
         }
       }
-    }, [phase, substructCount]);
+    }, [phase, subtractCount]);
 
     // if the container dimensions change, re-measure
     const containerDims = useResizeObserver(containerRef, flushImmediately);
     useLayoutEffect(() => {
       if (phase === "normal") {
         setPhase("measuring");
-        setSubstructCount(0);
+        setSubtractCount(0);
       }
     }, [containerDims]);
 
@@ -194,7 +190,7 @@ export const OverflowList = React.memo(
 
       // if the overflow indicator item opens a new row(we check it by the middle of the item)
       if (overflowMiddleY > lastRow.bottom) {
-        setSubstructCount(substructCount + 1);
+        setSubtractCount(subtractCount + 1);
         return true;
       }
       return false;
@@ -202,7 +198,7 @@ export const OverflowList = React.memo(
 
     // Cloned overflow element that ensures ref is passed so we could measure dimensions on this element
     const clonedOverflowElement = overflowElement
-      ? React.cloneElement(overflowElement as React.ReactElement, {
+      ? React.cloneElement(overflowElement as React.ReactElement<any>, {
           ref: finalOverflowRef,
         })
       : null;
@@ -216,7 +212,11 @@ export const OverflowList = React.memo(
     }
 
     return (
-      <Component {...flexProps} ref={finalContainerRef} className={classNames(styles.container, flexProps.className)}>
+      <Component
+        {...flexProps}
+        ref={finalContainerRef}
+        className={`${styles.container}${flexProps.className ? ` ${flexProps.className}` : ""}`}
+      >
         {finalItems.map((item, index) => {
           const isVisible =
             phase ===
@@ -233,5 +233,5 @@ export const OverflowList = React.memo(
         {clonedOverflowElement}
       </Component>
     );
-  }),
-) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLDivElement> }) => React.ReactElement;
+  })
+) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLElement> }) => React.ReactElement;
