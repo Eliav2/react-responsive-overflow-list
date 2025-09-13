@@ -3,8 +3,9 @@ name: Deploy Demo to GitHub Pages
 on:
   push:
     branches: [main, master]
-  pull_request:
-    branches: [main, master]
+    paths:
+      - src/**
+      - demo/**
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
