@@ -2,12 +2,14 @@ name: release-and-publish
 
 on:
   push:
-    tags: ["v*"] # push a tag like v1.2.3
+    branches: [main]
+    paths:
+      - package.json
   workflow_dispatch:
 
 permissions:
-  contents: write # create GitHub Releases
-  id-token: write # OIDC for npm trusted publishing/provenance
+  contents: write # needed to create Releases (and tags via the release)
+  id-token: write # needed for npm Trusted Publishing / provenance
   packages: write
 
 jobs:
@@ -29,20 +31,44 @@ jobs:
       - run: pnpm -s test --if-present
       - run: pnpm -s build --if-present
 
-      - name: Verify tag equals package.json version
+      # Read package name/version
+      - name: Read package info
+        id: pkg
         run: |
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          TAG="${GITHUB_REF_NAME#v}"
-          [ "$PKG_VERSION" = "$TAG" ] || { echo "::error::Tag v$TAG != package.json $PKG_VERSION"; exit 1; }
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Resolved $NAME@$VERSION"
 
-      # With trusted publishing, provenance is attached automatically.
-      # Keep --access public for a scoped package's first publish.
+      # Skip if the exact version is already on npm
+      - name: Check if version already published
+        id: check
+        run: |
+          NAME='${{ steps.pkg.outputs.name }}'
+          VERSION='${{ steps.pkg.outputs.version }}'
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "publish=false" >> $GITHUB_OUTPUT
+            echo "Version $VERSION already on npm; skipping publish."
+          else
+            echo "publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      # Publish (Trusted Publishing: no token; provenance auto-attached)
       - name: Publish to npm
+        if: steps.check.outputs.publish == 'true'
         env:
-          NPM_CONFIG_PROVENANCE: "true" # harmless; ensures attestation
+          NPM_CONFIG_PROVENANCE: "true"
         run: pnpm publish --access public
 
-      - name: Create GitHub Release (auto notes)
+      # Create release; this also CREATES tag vX.Y.Z if it doesn't exist
+      - name: Ensure GitHub Release exists (auto-notes)
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --generate-notes
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ steps.pkg.outputs.version }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists."
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" --generate-notes
+          fi
