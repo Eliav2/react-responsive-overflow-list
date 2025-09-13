@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: process.env.NODE_ENV === "production" ? "/react-responsive-overflow-list/" : "/",
   resolve: {
-    // Use built library in production, source in development
+    // trick to avoid needing to build-watch the library when developing the demo
     alias: {
       "react-responsive-overflow-list": fileURLToPath(new URL("../src/index.ts", import.meta.url)),
     },
