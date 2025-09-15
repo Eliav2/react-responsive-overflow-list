@@ -1,380 +1,169 @@
 # react-responsive-overflow-list
 
-A responsive React component that shows as many items as can fit within constraints, hiding overflow items behind a configurable overflow renderer. Automatically recalculates visible items on resize.
+Responsive list for React that shows only items that fit and groups the rest into a customizable overflow element. Recalculates on resize.
 
-**📖 [Live Demo](https://eliav2.github.io/react-responsive-overflow-list/)**
+[![npm](https://img.shields.io/npm/v/react-responsive-overflow-list.svg)](https://www.npmjs.com/package/react-responsive-overflow-list)
+[![downloads](https://img.shields.io/npm/dm/react-responsive-overflow-list.svg)](https://www.npmjs.com/package/react-responsive-overflow-list)
+![types](https://img.shields.io/badge/TypeScript-ready-blue)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/react-responsive-overflow-list)](https://bundlephobia.com/package/react-responsive-overflow-list)
+[![license](https://img.shields.io/npm/l/react-responsive-overflow-list.svg)](./LICENSE)
+
+**🔗 Live demo:** https://eliav2.github.io/react-responsive-overflow-list/
+
+---
 
 ## Features
 
-- ✅ **Responsive**: Automatically adjusts to container size changes
-- ✅ **Flexible Rendering**: Support for both items array and children patterns
-- ✅ **Customizable Overflow**: Custom overflow renderers and styling
-- ✅ **TypeScript**: Full TypeScript support with comprehensive types
-- ✅ **Lightweight**: Simple, performant default overflow element without heavy dependencies
-- ✅ **Polymorphic**: Use the `as` prop to render as different HTML elements
-- ✅ **Performance Control**: Configurable flush behavior for resize updates
-- ✅ **Multi-row Support**: Control maximum rows before overflow
-- ✅ **Minimal Dependencies**: Only peer dependencies on React
+- **Responsive** (ResizeObserver-based)
+- **Two render modes**: items + `renderItem` **or** `children`
+- **Custom overflow** element (button/menu/details/etc.)
+- **TypeScript + generics**, comprehensive types
+- **Polymorphic** root via `as`
+- **Multi-row** via `maxRows`
+- **Performance toggle**: `flushImmediately`
+- **Lightweight**, simple default overflow element
+- **Minimal deps**: React peer deps only
 
-## Installation
+## Install
 
 ```bash
-npm install react-responsive-overflow-list
+npm i react-responsive-overflow-list
 ```
 
-## Quick Start
+## Usage
 
-> 💡 **See it in action**: Check out the [live demo](https://eliav2.github.io/react-responsive-overflow-list/) to see all examples and features in action!
+> In real apps you’ll usually **wrap `OverflowList`** with your own component (design tokens, a11y menus, virtualization, search). See **Recipes** below and the demo for a full wrapper.
 
-### Basic Usage with Items Array
+### Items + `renderItem` (most common)
 
-The most common pattern using an array of items with a custom render function.
+Minimal usage with an items array and render function.
 
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
 
-const items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
+const items = ["One", "Two", "Three", "Four", "Five"];
 
-function MyComponent() {
+export default function Example() {
   return (
     <OverflowList
       items={items}
-      renderItem={(item, index) => (
-        <span
-          key={index}
-          style={{
-            padding: "4px 8px",
-            background: "#f0f0f0",
-            borderRadius: "4px",
-          }}
-        >
-          {item}
-        </span>
-      )}
+      renderItem={(item) => <span style={{ padding: 4 }}>{item}</span>}
+      style={{ gap: 8 }} // root is display:flex; flex-wrap:wrap
       maxRows={1}
-      style={{ gap: "8px" }}
     />
   );
 }
 ```
 
-### Usage with Children Pattern
+### Children pattern
 
-Alternative pattern using React children instead of an items array.
-
-```tsx
-import { OverflowList } from "react-responsive-overflow-list";
-
-function MyComponent() {
-  return (
-    <OverflowList maxRows={1} style={{ gap: "8px" }}>
-      <button>Action 1</button>
-      <button>Action 2</button>
-      <button>Action 3</button>
-      <button>Action 4</button>
-      <button>Action 5</button>
-    </OverflowList>
-  );
-}
-```
-
-### Custom Overflow Renderer
-
-Customize the overflow indicator with your own component or styling.
+Use children instead of `items + renderItem`.
 
 ```tsx
-import { OverflowList } from "react-responsive-overflow-list";
-
-function MyComponent() {
-  return (
-    <OverflowList
-      items={items}
-      renderItem={(item) => <span>{item}</span>}
-      renderOverflow={(overflowItems) => <button>{overflowItems.length} more items</button>}
-      maxRows={2}
-      style={{ gap: "8px" }}
-    />
-  );
-}
+<OverflowList style={{ gap: 8 }}>
+  <button>A</button>
+  <button>B</button>
+  <button>C</button>
+  <button>D</button>
+</OverflowList>
 ```
 
-### Polymorphic Component
+### Custom overflow element
 
-Use the `as` prop to render as different HTML elements (div, nav, section, etc.).
+Provide your own overflow UI (button, menu, details/summary, etc.).
 
 ```tsx
-import { OverflowList } from "react-responsive-overflow-list";
-
-function MyComponent() {
-  return (
-    <OverflowList as="nav" style={{ gap: "8px" }}>
-      <a href="#home">Home</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </OverflowList>
-  );
-}
+<OverflowList
+  items={items}
+  renderItem={(item) => <span>{item}</span>}
+  renderOverflow={(hidden) => <button>+{hidden.length} more</button>}
+/>
 ```
 
-### Performance Control
+### Polymorphic root
 
-Control how updates are applied during resize with the `flushImmediately` prop.
+Render using a different HTML element via `as`.
 
 ```tsx
-import { OverflowList } from "react-responsive-overflow-list";
-
-function MyComponent() {
-  return (
-    <OverflowList
-      items={items}
-      renderItem={(item) => <span>{item}</span>}
-      flushImmediately={false} // Better performance, may cause slight flickering
-      style={{ gap: "8px" }}
-    />
-  );
-}
+<OverflowList as="nav">
+  <a href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+</OverflowList>
 ```
 
-> 🔧 **Performance tuning**: See the [flushImmediately demo](https://eliav2.github.io/react-responsive-overflow-list/#flush-immediately-example) to understand the trade-offs between performance and visual smoothness.
+### Performance control
 
-## API Reference
-
-### OverflowList Props
-
-#### Core Props
-
-| Prop         | Type                                    | Default | Description                                              |
-| ------------ | --------------------------------------- | ------- | -------------------------------------------------------- |
-| `items`      | `T[]`                                   | -       | Array of items to render (use with `renderItem`)         |
-| `renderItem` | `(item: T, index: number) => ReactNode` | -       | Function to render each item                             |
-| `children`   | `ReactNode`                             | -       | Alternative to items/renderItem pattern                  |
-| `as`         | `React.ElementType`                     | `"div"` | Polymorphic component - render as different HTML element |
-
-#### Layout Props
-
-| Prop              | Type     | Default | Description                             |
-| ----------------- | -------- | ------- | --------------------------------------- |
-| `maxRows`         | `number` | `1`     | Maximum number of rows before overflow  |
-| `maxVisibleItems` | `number` | `100`   | Maximum number of visible items         |
-| `minVisibleItems` | `number` | `0`     | Minimum number of items to keep visible |
-
-#### Overflow Props
-
-| Prop                  | Type                                    | Default                  | Description                        |
-| --------------------- | --------------------------------------- | ------------------------ | ---------------------------------- |
-| `renderOverflow`      | `(items: T[]) => ReactNode`             | `DefaultOverflowElement` | Custom overflow renderer           |
-| `renderOverflowItem`  | `(item: T, index: number) => ReactNode` | `renderItem`             | Custom renderer for overflow items |
-| `renderOverflowProps` | `Partial<OverflowElementProps<T>>`      | -                        | Props for default overflow element |
-
-#### Performance Props
-
-| Prop               | Type      | Default | Description                                                                                       |
-| ------------------ | --------- | ------- | ------------------------------------------------------------------------------------------------- |
-| `flushImmediately` | `boolean` | `true`  | Whether to flush updates immediately on resize (true = no flickering, false = better performance) |
-
-#### Style Props
-
-Inherits all standard HTML div props (or the element specified by `as`). The container uses `display: flex` with `flex-wrap: wrap` and `align-items: center` by default. You can override any styles via the `style` prop or `className`.
-
-### DefaultOverflowElement Props
-
-| Prop    | Type  | Default | Description                       |
-| ------- | ----- | ------- | --------------------------------- |
-| `items` | `T[]` | -       | Items to show in overflow element |
-
-The `DefaultOverflowElement` is a simple component that displays `+{count} more` text. For more advanced overflow menus, use a custom `renderOverflow` function.
-
-## Advanced Usage
-
-### Custom Overflow Element
-
-Create a custom overflow component using HTML details/summary for collapsible menus.
+Trade visual smoothness vs peak performance during rapid resize.
 
 ```tsx
-import { OverflowList } from "react-responsive-overflow-list";
-
-function CustomOverflowElement({ items }: { items: string[] }) {
-  return (
-    <details>
-      <summary>{items.length} more</summary>
-      <ul>
-        {items.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-    </details>
-  );
-}
-
-function MyComponent() {
-  return (
-    <OverflowList
-      items={items}
-      renderItem={(item) => <span>{item}</span>}
-      renderOverflow={(items) => <CustomOverflowElement items={items} />}
-      style={{ gap: "8px" }}
-    />
-  );
-}
+<OverflowList
+  items={items}
+  renderItem={(item) => <span>{item}</span>}
+  flushImmediately={false} // uses rAF; faster under rapid resize, may flicker briefly
+/>
 ```
 
-### Advanced Overflow Elements
+See the **Flush Immediately** example in the live demo.
 
-The default overflow element is intentionally simple. For more advanced features like dropdowns or complex UI, you can create custom overflow renderers
+---
 
-> 💡 **Creating Your Own Wrappers**: In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs, design system, and UI framework. The examples below are demonstrations of what's possible.
+## API (most used)
 
-#### Radix UI + Virtualization Example
+| Prop                  | Type                                    | Default      | Notes                                                                 |
+| --------------------- | --------------------------------------- | ------------ | --------------------------------------------------------------------- |
+| `items`               | `T[]`                                   | —            | Use with `renderItem`. Omit when using children.                      |
+| `renderItem`          | `(item: T, index: number) => ReactNode` | —            | How to render each item.                                              |
+| `children`            | `ReactNode`                             | —            | Alternative to `items + renderItem`.                                  |
+| `as`                  | `React.ElementType`                     | `"div"`      | Polymorphic root element.                                             |
+| `maxRows`             | `number`                                | `1`          | Visible rows before overflow.                                         |
+| `maxVisibleItems`     | `number`                                | `100`        | Hard cap on visible items.                                            |
+| `minVisibleItems`     | `number`                                | `0`          | Keep at least N visible.                                              |
+| `renderOverflow`      | `(hidden: T[]) => ReactNode`            | default chip | Custom overflow UI.                                                   |
+| `renderOverflowItem`  | `(item: T, i: number) => ReactNode`     | `renderItem` | For expanded lists/menus.                                             |
+| `renderOverflowProps` | `Partial<OverflowElementProps<T>>`      | —            | Props for default overflow.                                           |
+| `flushImmediately`    | `boolean`                               | `true`       | `true` (flushSync, no flicker) vs `false` (rAF, faster under resize). |
 
-This is an example implementation showing how to wrap OverflowList with Radix UI dropdown and virtualization support. In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs and design system.
+**Styles:** Root uses `display:flex; flex-wrap:wrap; align-items:center;`. Override via `style`/`className`.
 
-The example demonstrates:
+**Default overflow element:** A tiny chip that renders `+{count} more`. Replace via `renderOverflow`.
 
-- **Automatic virtualization** for large datasets (1000+ items)
-- **Built-in search functionality** for filtering items
-- **Radix UI integration** with full accessibility support
-- **Performance optimizations** and customizable thresholds
+---
 
-```tsx
-import { RadixVirtualizedOverflowList } from "./examples/RadixVirtualizedOverflowList";
+## Recipes (wrap & extend)
 
-function MyComponent() {
-  return (
-    <RadixVirtualizedOverflowList
-      items={largeDataset}
-      renderItem={(item) => <span>{item}</span>}
-      virtualizationThreshold={100} // Enable virtualization for 100+ items
-      enableSearch={true} // Add search functionality
-      searchPlaceholder="Search items..."
-      style={{ gap: "8px" }}
-    />
-  );
-}
-```
+It’s **expected** you’ll wrap `OverflowList` for product needs (design system styling, a11y menus, virtualization, search).
 
-> 🚀 **Example Implementation**: See the [Radix UI + Virtualization demo](https://eliav2.github.io/react-responsive-overflow-list/#radix-ui-virtualization-example) for a complete example with both small and large datasets.
->
-> ⚠️ **Important**: This is just an example showing how to wrap OverflowList. In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs and design system.
->
-> 📁 **Source Code**: [View implementation on GitHub](https://github.com/eliav2/react-responsive-overflow-list/blob/main/demo/src/examples/RadixVirtualizedOverflowList.tsx)
+- **Radix UI + Virtualization wrapper** (search, large datasets, a11y, perf):
 
-#### With Virtualization
+  - **Demo:** see “[Radix UI + Virtualization](<(https://eliav2.github.io/react-responsive-overflow-list/#radix-ui-virtualization-example)>)” in the live site
+  - **Source:** `demo/src/examples/RadixVirtualizedOverflowList.tsx`
+  - Uses `@tanstack/react-virtual` and the helper `createLimitedRangeExtractor(...)`.
 
-```tsx
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { OverflowList, createLimitedRangeExtractor } from "react-responsive-overflow-list";
+---
 
-function VirtualizedOverflowElement({ items }: { items: string[] }) {
-  const parentRef = useRef<HTMLDivElement>(null);
+## How it works (short)
 
-  const virtualizer = useVirtualizer({
-    count: items.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 35,
-    rangeExtractor: createLimitedRangeExtractor(100),
-  });
+1. Measure all items and compute how many fit within `maxRows`.
+2. Re-test with the overflow indicator; if it would create a new row, hide one more item.
+3. Render the stable “normal” state until container size changes.
 
-  return (
-    <details>
-      <summary>+{items.length} more</summary>
-      <div ref={parentRef} style={{ height: "200px", overflow: "auto" }}>
-        <div
-          style={{
-            height: `${virtualizer.getTotalSize()}px`,
-            position: "relative",
-          }}
-        >
-          {virtualizer.getVirtualItems().map((virtualItem) => (
-            <div
-              key={virtualItem.key}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualItem.size}px`,
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-            >
-              {items[virtualItem.index]}
-            </div>
-          ))}
-        </div>
-      </div>
-    </details>
-  );
-}
-```
+`flushImmediately=true` → immediate, flicker-free (uses `flushSync`).
+`flushImmediately=false` → defer with rAF; smoother under rapid resize, may flicker.
 
-## Technical Details
+### Edge cases handled
 
-### How It Works
+- Single wide item exceeding container width
+- `minVisibleItems` / `maxVisibleItems` respected
+- Varying item widths, responsive content
+- Multi-row overflow detection
 
-The `OverflowList` component uses a sophisticated three-phase measurement strategy to determine exactly how many items can fit within the container constraints. This approach ensures accurate overflow detection while maintaining optimal performance.
+---
 
-#### Three-Phase Measurement Strategy
+## Requirements
 
-The component operates in three distinct phases, each serving a specific purpose:
-
-1. **"measuring" Phase**
-
-   - Renders all items to calculate their positions and dimensions
-   - Uses `getBoundingClientRect()` to measure actual rendered sizes
-   - Determines how many items fit within the specified `maxRows` constraint
-   - This phase is invisible to users but essential for accurate calculations
-
-2. **"measuring-overflow-indicator" Phase**
-
-   - Tests whether the overflow indicator (e.g., "+3 more" button) fits without creating a new row
-   - If the overflow indicator would cause a new row to appear, removes the last visible item
-   - This ensures the overflow indicator doesn't inadvertently increase the row count
-   - Uses geometric calculations to determine if the overflow element's middle point exceeds the last row's bottom boundary
-
-3. **"normal" Phase**
-   - Shows the final stable state with the correct number of visible items
-   - This is the only phase visible to users
-   - Maintains this state until container dimensions change
-
-#### Browser Painting Synchronization
-
-The component leverages React's rendering cycle and browser painting mechanisms for optimal performance:
-
-- **When `flushImmediately=true` (default)**: Uses `flushSync()` to synchronously update the DOM and immediately measure dimensions. This prevents flickering but may impact performance during rapid resize events.
-
-- **When `flushImmediately=false`**: Uses `requestAnimationFrame()` to defer updates until the next paint cycle. This avoids forced reflows and improves performance but may cause slight visual flickering during resize.
-
-The measurement process works by:
-
-1. Letting the browser paint the current state
-2. Synchronously measuring element positions and dimensions
-3. Calculating the optimal number of visible items
-4. Updating the DOM with the new state
-
-#### Performance Optimizations
-
-- **ResizeObserver Integration**: Uses `ResizeObserver` for efficient resize detection without polling
-- **React.memo**: Optimized re-renders with careful state management
-- **Minimal Re-renders**: Only updates when the number of visible items actually changes
-- **Efficient DOM Queries**: Batches DOM measurements to minimize layout thrashing
-
-#### Edge Cases Handled
-
-- **Single Item Overflow**: When only one item is provided and it's wider than the container
-- **Minimum Items**: Respects `minVisibleItems` to ensure critical items remain visible
-- **Maximum Items**: Honors `maxVisibleItems` to prevent excessive rendering
-- **Dynamic Content**: Handles items with varying sizes and responsive content
-
-## Browser Support
-
-- All modern browsers that support `ResizeObserver`
-- React 16.8+ (hooks support required)
-
-## Dependencies
-
-### Required Dependencies
-
-- `react` (>=16.8.0) - Peer dependency
-- `react-dom` (>=16.8.0) - Peer dependency
+- React ≥ 16.8 (hooks)
+- Modern browsers with `ResizeObserver`
 
 ## License
 
@@ -382,4 +171,8 @@ MIT
 
 ## Contributing
 
-Issues and pull requests are welcome! Please check our contributing guidelines.
+Issues and PRs welcome. See the repo for examples and dev setup.
+
+```
+::contentReference[oaicite:0]{index=0}
+```
