@@ -5,6 +5,7 @@
   align-items: center;
   min-width: 0;
   gap: 4px;
+  contain: layout style;
 }
 
 .defaultOverflowButton {

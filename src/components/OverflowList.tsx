@@ -125,10 +125,10 @@ export const OverflowList = React.memo(
     useLayoutEffect(() => {
       // After placing the overflow indicator, evaluate if it ends up opening a new row
       if (phase === "measuring-overflow-indicator") {
-          const updateWasNeeded = updateOverflowIndicator();
-          if (!updateWasNeeded) {
-            setPhase("normal");
-          }
+        const updateWasNeeded = updateOverflowIndicator();
+        if (!updateWasNeeded) {
+          setPhase("normal");
+        }
       }
     }, [phase, subtractCount]);
 
@@ -190,7 +190,7 @@ export const OverflowList = React.memo(
 
       // if the overflow indicator item opens a new row(we check it by the middle of the item)
       if (overflowMiddleY > lastRow.bottom) {
-        setSubtractCount(subtractCount + 1);
+        setSubtractCount((c) => c + 1);
         return true;
       }
       return false;
