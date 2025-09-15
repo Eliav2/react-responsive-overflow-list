@@ -4,7 +4,6 @@ Responsive list for React that shows only items that fit and groups the rest int
 
 [![npm](https://img.shields.io/npm/v/react-responsive-overflow-list.svg)](https://www.npmjs.com/package/react-responsive-overflow-list)
 [![downloads](https://img.shields.io/npm/dm/react-responsive-overflow-list.svg)](https://www.npmjs.com/package/react-responsive-overflow-list)
-![types](https://img.shields.io/badge/TypeScript-ready-blue)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/react-responsive-overflow-list)](https://bundlephobia.com/package/react-responsive-overflow-list)
 [![license](https://img.shields.io/npm/l/react-responsive-overflow-list.svg)](./LICENSE)
 
@@ -130,19 +129,19 @@ See the **Flush Immediately** example in the live demo.
 
 ---
 
-## Recipes (wrap & extend)
+## Wrap & extend
 
-It’s **expected** you’ll wrap `OverflowList` for product needs (design system styling, a11y menus, virtualization, search).
+It’s **expected** you’ll wrap `OverflowList` for product needs (design system styling, a11y menus, virtualization, search). for example:
 
 - **Radix UI + Virtualization wrapper** (search, large datasets, a11y, perf):
 
-  - **Demo:** see “[Radix UI + Virtualization](<(https://eliav2.github.io/react-responsive-overflow-list/#radix-ui-virtualization-example)>)” in the live site
-  - **Source:** `demo/src/examples/RadixVirtualizedOverflowList.tsx`
+  - **Demo:** see [Radix UI + Virtualization](https://eliav2.github.io/react-responsive-overflow-list/#radix-ui-virtualization-example) in the live site
+  - [**Source**](demo/src/examples/RadixVirtualizedOverflowList.tsx)
   - Uses `@tanstack/react-virtual` and the helper `createLimitedRangeExtractor(...)`.
 
 ---
 
-## How it works (short)
+## How it works
 
 1. Measure all items and compute how many fit within `maxRows`.
 2. Re-test with the overflow indicator; if it would create a new row, hide one more item.
