@@ -167,11 +167,3 @@ It’s **expected** you’ll wrap `OverflowList` for product needs (design syste
 ## License
 
 MIT
-
-## Contributing
-
-Issues and PRs welcome. See the repo for examples and dev setup.
-
-```
-::contentReference[oaicite:0]{index=0}
-```

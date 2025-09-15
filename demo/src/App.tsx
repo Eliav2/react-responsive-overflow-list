@@ -5,6 +5,7 @@ import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Theme, Switch } from "@radix-ui/themes";
 import { CustomOverflowExample } from "./examples/CustomOverflowExample";
 import { RadixVirtualizedOverflowList } from "./examples/RadixVirtualizedOverflowList";
+import { Github } from "lucide-react";
 import "./App.css";
 
 const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew", "Kiwi", "Lemon"];
@@ -127,6 +128,25 @@ function App() {
         <header>
           <h1>React Responsive Overflow List</h1>
           <p>A responsive component that automatically handles overflow items</p>
+          <a
+            href="https://github.com/eliav2/react-responsive-overflow-list"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="github-link"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              marginTop: "12px",
+              color: "#0366d6",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: "500",
+            }}
+          >
+            <Github size={16} />
+            View on GitHub
+          </a>
         </header>
 
         <main>
