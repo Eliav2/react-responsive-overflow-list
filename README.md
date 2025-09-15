@@ -218,138 +218,15 @@ function MyComponent() {
 }
 ```
 
-### Responsive Design
-
-Create responsive toolbars and interfaces that adapt to container size changes.
-
-```tsx
-import { OverflowList } from "react-responsive-overflow-list";
-
-function ResponsiveToolbar() {
-  return (
-    <div
-      style={{
-        width: "100%",
-        resize: "horizontal",
-        overflow: "auto",
-        border: "1px solid #ccc",
-      }}
-    >
-      <OverflowList maxRows={1} style={{ padding: "8px", gap: "8px" }}>
-        <button>New</button>
-        <button>Open</button>
-        <button>Save</button>
-        <button>Print</button>
-        <button>Export</button>
-        <button>Settings</button>
-      </OverflowList>
-    </div>
-  );
-}
-```
-
-> 🎯 **Try it yourself**: The [live demo](https://eliav2.github.io/react-responsive-overflow-list/) includes interactive examples where you can resize containers to see the responsive behavior in real-time.
-
-## Technical Details
-
-### How It Works
-
-The `OverflowList` component uses a sophisticated three-phase measurement strategy to determine exactly how many items can fit within the container constraints. This approach ensures accurate overflow detection while maintaining optimal performance.
-
-#### Three-Phase Measurement Strategy
-
-The component operates in three distinct phases, each serving a specific purpose:
-
-1. **"measuring" Phase**
-
-   - Renders all items to calculate their positions and dimensions
-   - Uses `getBoundingClientRect()` to measure actual rendered sizes
-   - Determines how many items fit within the specified `maxRows` constraint
-   - This phase is invisible to users but essential for accurate calculations
-
-2. **"measuring-overflow-indicator" Phase**
-
-   - Tests whether the overflow indicator (e.g., "+3 more" button) fits without creating a new row
-   - If the overflow indicator would cause a new row to appear, removes the last visible item
-   - This ensures the overflow indicator doesn't inadvertently increase the row count
-   - Uses geometric calculations to determine if the overflow element's middle point exceeds the last row's bottom boundary
-
-3. **"normal" Phase**
-   - Shows the final stable state with the correct number of visible items
-   - This is the only phase visible to users
-   - Maintains this state until container dimensions change
-
-#### Browser Painting Synchronization
-
-The component leverages React's rendering cycle and browser painting mechanisms for optimal performance:
-
-- **When `flushImmediately=true` (default)**: Uses `flushSync()` to synchronously update the DOM and immediately measure dimensions. This prevents flickering but may impact performance during rapid resize events.
-
-- **When `flushImmediately=false`**: Uses `requestAnimationFrame()` to defer updates until the next paint cycle. This avoids forced reflows and improves performance but may cause slight visual flickering during resize.
-
-The measurement process works by:
-
-1. Letting the browser paint the current state
-2. Synchronously measuring element positions and dimensions
-3. Calculating the optimal number of visible items
-4. Updating the DOM with the new state
-
-#### Performance Optimizations
-
-- **ResizeObserver Integration**: Uses `ResizeObserver` for efficient resize detection without polling
-- **React.memo**: Optimized re-renders with careful state management
-- **Minimal Re-renders**: Only updates when the number of visible items actually changes
-- **Efficient DOM Queries**: Batches DOM measurements to minimize layout thrashing
-
-#### Edge Cases Handled
-
-- **Single Item Overflow**: When only one item is provided and it's wider than the container
-- **Minimum Items**: Respects `minVisibleItems` to ensure critical items remain visible
-- **Maximum Items**: Honors `maxVisibleItems` to prevent excessive rendering
-- **Dynamic Content**: Handles items with varying sizes and responsive content
-
 ### Advanced Overflow Elements
 
-The default overflow element is intentionally simple. For more advanced features like dropdowns or complex UI frameworks, you can create custom overflow renderers. The examples below show different approaches you can take:
+The default overflow element is intentionally simple. For more advanced features like dropdowns or complex UI, you can create custom overflow renderers
 
 > 💡 **Creating Your Own Wrappers**: In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs, design system, and UI framework. The examples below are demonstrations of what's possible.
 
-#### With Radix UI
-
-```tsx
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { OverflowList } from "react-responsive-overflow-list";
-
-function RadixOverflowElement({ items }: { items: string[] }) {
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <button>+{items.length} more</button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        {items.map((item, index) => (
-          <DropdownMenu.Item key={index}>{item}</DropdownMenu.Item>
-        ))}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
-  );
-}
-
-function MyComponent() {
-  return (
-    <OverflowList
-      items={items}
-      renderItem={(item) => <span>{item}</span>}
-      renderOverflow={(items) => <RadixOverflowElement items={items} />}
-      style={{ gap: "8px" }}
-    />
-  );
-}
-```
-
 #### Radix UI + Virtualization Example
 
-This is an **EXAMPLE** implementation showing how to wrap OverflowList with Radix UI dropdown and virtualization support. In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs and design system.
+This is an example implementation showing how to wrap OverflowList with Radix UI dropdown and virtualization support. In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs and design system.
 
 The example demonstrates:
 
@@ -428,6 +305,64 @@ function VirtualizedOverflowElement({ items }: { items: string[] }) {
   );
 }
 ```
+
+## Technical Details
+
+### How It Works
+
+The `OverflowList` component uses a sophisticated three-phase measurement strategy to determine exactly how many items can fit within the container constraints. This approach ensures accurate overflow detection while maintaining optimal performance.
+
+#### Three-Phase Measurement Strategy
+
+The component operates in three distinct phases, each serving a specific purpose:
+
+1. **"measuring" Phase**
+
+   - Renders all items to calculate their positions and dimensions
+   - Uses `getBoundingClientRect()` to measure actual rendered sizes
+   - Determines how many items fit within the specified `maxRows` constraint
+   - This phase is invisible to users but essential for accurate calculations
+
+2. **"measuring-overflow-indicator" Phase**
+
+   - Tests whether the overflow indicator (e.g., "+3 more" button) fits without creating a new row
+   - If the overflow indicator would cause a new row to appear, removes the last visible item
+   - This ensures the overflow indicator doesn't inadvertently increase the row count
+   - Uses geometric calculations to determine if the overflow element's middle point exceeds the last row's bottom boundary
+
+3. **"normal" Phase**
+   - Shows the final stable state with the correct number of visible items
+   - This is the only phase visible to users
+   - Maintains this state until container dimensions change
+
+#### Browser Painting Synchronization
+
+The component leverages React's rendering cycle and browser painting mechanisms for optimal performance:
+
+- **When `flushImmediately=true` (default)**: Uses `flushSync()` to synchronously update the DOM and immediately measure dimensions. This prevents flickering but may impact performance during rapid resize events.
+
+- **When `flushImmediately=false`**: Uses `requestAnimationFrame()` to defer updates until the next paint cycle. This avoids forced reflows and improves performance but may cause slight visual flickering during resize.
+
+The measurement process works by:
+
+1. Letting the browser paint the current state
+2. Synchronously measuring element positions and dimensions
+3. Calculating the optimal number of visible items
+4. Updating the DOM with the new state
+
+#### Performance Optimizations
+
+- **ResizeObserver Integration**: Uses `ResizeObserver` for efficient resize detection without polling
+- **React.memo**: Optimized re-renders with careful state management
+- **Minimal Re-renders**: Only updates when the number of visible items actually changes
+- **Efficient DOM Queries**: Batches DOM measurements to minimize layout thrashing
+
+#### Edge Cases Handled
+
+- **Single Item Overflow**: When only one item is provided and it's wider than the container
+- **Minimum Items**: Respects `minVisibleItems` to ensure critical items remain visible
+- **Maximum Items**: Honors `maxVisibleItems` to prevent excessive rendering
+- **Dynamic Content**: Handles items with varying sizes and responsive content
 
 ## Browser Support
 
