@@ -1,9 +1,17 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
+import { vitePrerenderPlugin } from "vite-prerender-plugin";
+import path from "node:path";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    vitePrerenderPlugin({
+      renderTarget: "#root",
+      prerenderScript: path.resolve(__dirname, "src/prerender.tsx"),
+    }),
+  ],
   base: process.env.NODE_ENV === "production" ? "/react-responsive-overflow-list/" : "/",
   resolve: {
     // trick to avoid needing to build-watch the library when developing the demo
