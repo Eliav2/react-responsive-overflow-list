@@ -82,7 +82,7 @@ function FlushImmediatelyExample() {
           <label htmlFor="flush-toggle">Flush Immediately:</label>
           <Switch id="flush-toggle" checked={flushImmediately} onCheckedChange={setFlushImmediately} />
           <span style={{ fontSize: "14px", color: "#666" }}>
-            {flushImmediately ? "Enabled (may cause flickering)" : "Disabled (better performance)"}
+            {flushImmediately ? "Enabled (No flickering)" : "Disabled (better performance)"}
           </span>
         </div>
       </div>
