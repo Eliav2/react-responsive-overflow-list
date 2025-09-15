@@ -18,8 +18,8 @@ const CustomOverflowElement = React.forwardRef<HTMLDivElement, OverflowElementPr
 
 export function CustomOverflowExample() {
   return (
-    <section className="demo" id="custom-overflow-example">
-      <h2>Custom Overflow Element</h2>
+    <section className="demo">
+      <h2 id="custom-overflow-example">Custom Overflow Element</h2>
       <p>You would generally want to provide your own overflow element</p>
 
       {/* Example 1: Simple overflow function */}
