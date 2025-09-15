@@ -28,6 +28,8 @@ npm install react-responsive-overflow-list
 
 ### Basic Usage with Items Array
 
+The most common pattern using an array of items with a custom render function.
+
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
 
@@ -58,6 +60,8 @@ function MyComponent() {
 
 ### Usage with Children Pattern
 
+Alternative pattern using React children instead of an items array.
+
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
 
@@ -75,6 +79,8 @@ function MyComponent() {
 ```
 
 ### Custom Overflow Renderer
+
+Customize the overflow indicator with your own component or styling.
 
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
@@ -94,6 +100,8 @@ function MyComponent() {
 
 ### Polymorphic Component
 
+Use the `as` prop to render as different HTML elements (div, nav, section, etc.).
+
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
 
@@ -109,6 +117,8 @@ function MyComponent() {
 ```
 
 ### Performance Control
+
+Control how updates are applied during resize with the `flushImmediately` prop.
 
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
@@ -178,6 +188,8 @@ The `DefaultOverflowElement` is a simple component that displays `+{count} more`
 
 ### Custom Overflow Element
 
+Create a custom overflow component using HTML details/summary for collapsible menus.
+
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
 
@@ -207,6 +219,8 @@ function MyComponent() {
 ```
 
 ### Responsive Design
+
+Create responsive toolbars and interfaces that adapt to container size changes.
 
 ```tsx
 import { OverflowList } from "react-responsive-overflow-list";
@@ -361,7 +375,7 @@ function MyComponent() {
 }
 ```
 
-> 🚀 **Example Implementation**: See the [Radix UI + Virtualization demo](https://eliav2.github.io/react-responsive-overflow-list/#radix-ui--virtualization-example) for a complete example with both small and large datasets.
+> 🚀 **Example Implementation**: See the [Radix UI + Virtualization demo](https://eliav2.github.io/react-responsive-overflow-list/#radix-ui-virtualization-example) for a complete example with both small and large datasets.
 >
 > ⚠️ **Important**: This is just an example showing how to wrap OverflowList. In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs and design system.
 >

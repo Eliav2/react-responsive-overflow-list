@@ -17,7 +17,7 @@ function MultiRowExample() {
   const [maxRows, setMaxRows] = useState(2);
 
   return (
-    <section className="demo">
+    <section className="demo" id="multi-row-example">
       <h2>Multi-row Example</h2>
       <p>Allow up to {maxRows} rows before overflow</p>
       <div className="code-preview">
@@ -59,7 +59,7 @@ function FlushImmediatelyExample() {
   const [flushImmediately, setFlushImmediately] = useState(false);
 
   return (
-    <section className="demo">
+    <section className="demo" id="flush-immediately-example">
       <h2>Flush Immediately Example</h2>
       <p>
         Control how updates are applied when the container resizes.
@@ -130,7 +130,7 @@ function App() {
         </header>
 
         <main>
-          <section className="demo">
+          <section className="demo" id="basic-example">
             <h2>Basic Example</h2>
             <p>Simple list with default overflow element</p>
             <div className="code-preview">
@@ -159,7 +159,7 @@ function App() {
             </div>
           </section>
 
-          <section className="demo">
+          <section className="demo" id="children-pattern">
             <h2>Children Pattern</h2>
             <p>Using children instead of items array</p>
             <div className="code-preview">
@@ -187,7 +187,7 @@ function App() {
 
           <CustomOverflowExample />
 
-          <section className="demo">
+          <section className="demo" id="custom-host-element">
             <h2>Custom Host Element</h2>
             <p>Using the 'as' prop to render as different HTML elements</p>
             <div className="code-preview">
@@ -220,7 +220,7 @@ function App() {
             </div>
           </section>
 
-          <section className="demo">
+          <section className="demo" id="radix-ui-virtualization-example">
             <h2>Radix UI + Virtualization Example</h2>
             <p>
               This is an EXAMPLE implementation showing how to wrap OverflowList with Radix UI dropdown and
