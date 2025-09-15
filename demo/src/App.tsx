@@ -4,6 +4,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Theme, Switch } from "@radix-ui/themes";
 import { CustomOverflowExample } from "./examples/CustomOverflowExample";
+import { RadixVirtualizedOverflowList } from "./examples/RadixVirtualizedOverflowList";
 import "./App.css";
 
 const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew", "Kiwi", "Lemon"];
@@ -218,6 +219,96 @@ function App() {
               </OverflowList>
             </div>
           </section>
+
+          <section className="demo">
+            <h2>Radix UI + Virtualization Example</h2>
+            <p>
+              This is an EXAMPLE implementation showing how to wrap OverflowList with Radix UI dropdown and
+              virtualization. In real-world applications, it's expected that you'll wrap OverflowList with your own
+              components tailored to your specific needs, design system, and UI framework.
+            </p>
+            <div className="code-preview">
+              <SyntaxHighlighter language="tsx" style={tomorrow}>
+                {`import { RadixVirtualizedOverflowList } from "./examples/RadixVirtualizedOverflowList";
+
+// Small dataset - uses simple dropdown
+<RadixVirtualizedOverflowList
+  items={tags}
+  renderItem={(tag) => <span className="tag">#{tag}</span>}
+  style={{ gap: "6px" }}
+/>
+
+// Large dataset - automatically uses virtualization
+<RadixVirtualizedOverflowList
+  items={Array.from({ length: 1000 }, (_, i) => \`Item \${i + 1}\`)}
+  renderItem={(item) => <span className="tag">#{item}</span>}
+  virtualizationThreshold={50}
+  enableSearch={true}
+  style={{ gap: "6px" }}
+/>`}
+              </SyntaxHighlighter>
+            </div>
+
+            <div className="demo-container">
+              <h4 style={{ margin: "0 0 12px 0", fontSize: "16px" }}>Small Dataset (Simple Dropdown)</h4>
+              <RadixVirtualizedOverflowList
+                items={tags}
+                renderItem={(tag) => <span className="tag">#{tag}</span>}
+                style={{ gap: "6px" }}
+              />
+            </div>
+
+            <div className="demo-container" style={{ marginTop: "24px" }}>
+              <h4 style={{ margin: "0 0 12px 0", fontSize: "16px" }}>
+                Large Dataset (Virtualized Dropdown with Search)
+              </h4>
+              <RadixVirtualizedOverflowList
+                items={Array.from({ length: 1000 }, (_, i) => `Item ${i + 1}`)}
+                renderItem={(item) => <span className="tag">#{item}</span>}
+                virtualizationThreshold={50}
+                enableSearch={true}
+                searchPlaceholder="Search items..."
+                style={{ gap: "6px" }}
+              />
+            </div>
+
+            <div className="demo-note">
+              <strong>This example demonstrates:</strong>
+              <ul style={{ margin: "8px 0", paddingLeft: "20px" }}>
+                <li>
+                  <strong>Automatic virtualization:</strong> Switches to virtualized dropdown when item count exceeds
+                  threshold
+                </li>
+                <li>
+                  <strong>Search functionality:</strong> Built-in search/filter for large datasets
+                </li>
+                <li>
+                  <strong>Radix UI integration:</strong> Full accessibility and keyboard navigation support
+                </li>
+                <li>
+                  <strong>Customizable:</strong> Configurable thresholds, styling, and behavior
+                </li>
+                <li>
+                  <strong>Performance optimized:</strong> Efficient rendering for thousands of items
+                </li>
+              </ul>
+              <p style={{ margin: "12px 0 0 0", fontStyle: "italic", color: "#666" }}>
+                <strong>Note:</strong> This is just an example implementation. In real-world applications, it's expected
+                that you'll wrap OverflowList with your own components tailored to your specific needs and design
+                system.
+                <br />
+                <strong>Source:</strong>{" "}
+                <a
+                  href="https://github.com/eliav2/react-responsive-overflow-list/blob/main/demo/src/examples/RadixVirtualizedOverflowList.tsx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View implementation on GitHub
+                </a>
+              </p>
+            </div>
+          </section>
+
           <FlushImmediatelyExample />
 
           {/* <div className="demo-container"></div> */}

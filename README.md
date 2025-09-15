@@ -2,6 +2,8 @@
 
 A responsive React component that shows as many items as can fit within constraints, hiding overflow items behind a configurable overflow renderer. Automatically recalculates visible items on resize.
 
+**📖 [Live Demo](https://eliav2.github.io/react-responsive-overflow-list/)**
+
 ## Features
 
 - ✅ **Responsive**: Automatically adjusts to container size changes
@@ -21,6 +23,8 @@ npm install react-responsive-overflow-list
 ```
 
 ## Quick Start
+
+> 💡 **See it in action**: Check out the [live demo](https://eliav2.github.io/react-responsive-overflow-list/) to see all examples and features in action!
 
 ### Basic Usage with Items Array
 
@@ -120,6 +124,8 @@ function MyComponent() {
   );
 }
 ```
+
+> 🔧 **Performance tuning**: See the [flushImmediately demo](https://eliav2.github.io/react-responsive-overflow-list/#flush-immediately-example) to understand the trade-offs between performance and visual smoothness.
 
 ## API Reference
 
@@ -228,26 +234,71 @@ function ResponsiveToolbar() {
 }
 ```
 
+> 🎯 **Try it yourself**: The [live demo](https://eliav2.github.io/react-responsive-overflow-list/) includes interactive examples where you can resize containers to see the responsive behavior in real-time.
+
 ## Technical Details
 
-### Measurement Strategy
+### How It Works
 
-The component uses a three-phase approach:
+The `OverflowList` component uses a sophisticated three-phase measurement strategy to determine exactly how many items can fit within the container constraints. This approach ensures accurate overflow detection while maintaining optimal performance.
 
-1. **"measuring"** - Renders all items to calculate positions and determine how many fit
-2. **"measuring-overflow-indicator"** - Tests if overflow indicator fits without creating new row
-3. **"normal"** - Shows final stable state with proper item count
+#### Three-Phase Measurement Strategy
 
-### Performance
+The component operates in three distinct phases, each serving a specific purpose:
 
-- Uses `ResizeObserver` for efficient resize detection
-- Optimized re-renders with `React.memo` and careful state management
-- Simple default overflow element for minimal bundle impact
-- Configurable flush behavior: `flushImmediately=true` (default) avoids flickering but may impact performance, `flushImmediately=false` improves performance but may cause slight flickering
+1. **"measuring" Phase**
+
+   - Renders all items to calculate their positions and dimensions
+   - Uses `getBoundingClientRect()` to measure actual rendered sizes
+   - Determines how many items fit within the specified `maxRows` constraint
+   - This phase is invisible to users but essential for accurate calculations
+
+2. **"measuring-overflow-indicator" Phase**
+
+   - Tests whether the overflow indicator (e.g., "+3 more" button) fits without creating a new row
+   - If the overflow indicator would cause a new row to appear, removes the last visible item
+   - This ensures the overflow indicator doesn't inadvertently increase the row count
+   - Uses geometric calculations to determine if the overflow element's middle point exceeds the last row's bottom boundary
+
+3. **"normal" Phase**
+   - Shows the final stable state with the correct number of visible items
+   - This is the only phase visible to users
+   - Maintains this state until container dimensions change
+
+#### Browser Painting Synchronization
+
+The component leverages React's rendering cycle and browser painting mechanisms for optimal performance:
+
+- **When `flushImmediately=true` (default)**: Uses `flushSync()` to synchronously update the DOM and immediately measure dimensions. This prevents flickering but may impact performance during rapid resize events.
+
+- **When `flushImmediately=false`**: Uses `requestAnimationFrame()` to defer updates until the next paint cycle. This avoids forced reflows and improves performance but may cause slight visual flickering during resize.
+
+The measurement process works by:
+
+1. Letting the browser paint the current state
+2. Synchronously measuring element positions and dimensions
+3. Calculating the optimal number of visible items
+4. Updating the DOM with the new state
+
+#### Performance Optimizations
+
+- **ResizeObserver Integration**: Uses `ResizeObserver` for efficient resize detection without polling
+- **React.memo**: Optimized re-renders with careful state management
+- **Minimal Re-renders**: Only updates when the number of visible items actually changes
+- **Efficient DOM Queries**: Batches DOM measurements to minimize layout thrashing
+
+#### Edge Cases Handled
+
+- **Single Item Overflow**: When only one item is provided and it's wider than the container
+- **Minimum Items**: Respects `minVisibleItems` to ensure critical items remain visible
+- **Maximum Items**: Honors `maxVisibleItems` to prevent excessive rendering
+- **Dynamic Content**: Handles items with varying sizes and responsive content
 
 ### Advanced Overflow Elements
 
-The default overflow element is intentionally simple. For more advanced features like dropdowns or complex UI frameworks, you can create custom overflow renderers:
+The default overflow element is intentionally simple. For more advanced features like dropdowns or complex UI frameworks, you can create custom overflow renderers. The examples below show different approaches you can take:
+
+> 💡 **Creating Your Own Wrappers**: In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs, design system, and UI framework. The examples below are demonstrations of what's possible.
 
 #### With Radix UI
 
@@ -281,6 +332,40 @@ function MyComponent() {
   );
 }
 ```
+
+#### Radix UI + Virtualization Example
+
+This is an **EXAMPLE** implementation showing how to wrap OverflowList with Radix UI dropdown and virtualization support. In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs and design system.
+
+The example demonstrates:
+
+- **Automatic virtualization** for large datasets (1000+ items)
+- **Built-in search functionality** for filtering items
+- **Radix UI integration** with full accessibility support
+- **Performance optimizations** and customizable thresholds
+
+```tsx
+import { RadixVirtualizedOverflowList } from "./examples/RadixVirtualizedOverflowList";
+
+function MyComponent() {
+  return (
+    <RadixVirtualizedOverflowList
+      items={largeDataset}
+      renderItem={(item) => <span>{item}</span>}
+      virtualizationThreshold={100} // Enable virtualization for 100+ items
+      enableSearch={true} // Add search functionality
+      searchPlaceholder="Search items..."
+      style={{ gap: "8px" }}
+    />
+  );
+}
+```
+
+> 🚀 **Example Implementation**: See the [Radix UI + Virtualization demo](https://eliav2.github.io/react-responsive-overflow-list/#radix-ui--virtualization-example) for a complete example with both small and large datasets.
+>
+> ⚠️ **Important**: This is just an example showing how to wrap OverflowList. In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs and design system.
+>
+> 📁 **Source Code**: [View implementation on GitHub](https://github.com/eliav2/react-responsive-overflow-list/blob/main/demo/src/examples/RadixVirtualizedOverflowList.tsx)
 
 #### With Virtualization
 
@@ -341,10 +426,6 @@ function VirtualizedOverflowElement({ items }: { items: string[] }) {
 
 - `react` (>=16.8.0) - Peer dependency
 - `react-dom` (>=16.8.0) - Peer dependency
-
-### Optional Dependencies
-
-- `@tanstack/react-virtual` (^3.0.0) - For virtualization support in custom overflow elements
 
 ## License
 
