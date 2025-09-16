@@ -48,7 +48,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eliav2/react-responsive-overflow-list.git"
+    "url": "git+https://github.com/eliav2/react-responsive-overflow-list.git"
   },
   "bugs": {
     "url": "https://github.com/eliav2/react-responsive-overflow-list/issues"
