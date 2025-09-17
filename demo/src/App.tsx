@@ -7,7 +7,6 @@ import { CustomHostElementExample } from "./examples/CustomHostElementExample";
 import { RadixVirtualizationExample } from "./examples/RadixVirtualizationExample";
 import { FlushImmediatelyExample } from "./examples/FlushImmediatelyExample";
 import { OneItemWiderExample } from "./examples/OneItemWiderExample";
-import { MinVisibleItemsExample } from "./examples/MinVisibleItemsExample";
 import { MaxRowsOverflowExample } from "./examples/MaxRowsOverflowExample";
 import { Github } from "lucide-react";
 import "./App.css";
@@ -49,7 +48,6 @@ function App() {
           <RadixVirtualizationExample />
           <FlushImmediatelyExample />
           <OneItemWiderExample />
-          <MinVisibleItemsExample />
           <MaxRowsOverflowExample />
         </main>
 

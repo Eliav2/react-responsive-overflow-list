@@ -119,7 +119,6 @@ See the **Flush Immediately** example in the live demo.
 | `as`                  | `React.ElementType`                     | `"div"`      | Polymorphic root element.                                             |
 | `maxRows`             | `number`                                | `1`          | Visible rows before overflow.                                         |
 | `maxVisibleItems`     | `number`                                | `100`        | Hard cap on visible items.                                            |
-| `minVisibleItems`     | `number`                                | `0`          | Keep at least N visible.                                              |
 | `renderOverflow`      | `(hidden: T[]) => ReactNode`            | default chip | Custom overflow UI.                                                   |
 | `renderOverflowItem`  | `(item: T, i: number) => ReactNode`     | `renderItem` | For expanded lists/menus.                                             |
 | `renderOverflowProps` | `Partial<OverflowElementProps<T>>`      | —            | Props for default overflow.                                           |
@@ -155,7 +154,7 @@ It’s **expected** you’ll wrap `OverflowList` for product needs (design syste
 ### Edge cases handled
 
 - Single wide item exceeding container width
-- `minVisibleItems` / `maxVisibleItems` respected
+- `maxRows` / `maxVisibleItems` respected
 - Varying item widths, responsive content
 - Multi-row overflow detection
 
