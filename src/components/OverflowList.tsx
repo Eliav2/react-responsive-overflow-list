@@ -149,13 +149,16 @@ export const OverflowList = React.memo(
 
       const { itemsSizesMap, rowPositions } = rowData;
 
-      // // edge case: if only 1 item is given, check if its width is bigger than the container width, if so set the maxRows to 0 (there is not enough space for the item, so we showing overflow indicator)
+      // edge case: if only 1 item is given, check if its width is bigger than the container width, if so set the maxRows to 0 (there is not enough space for the item, so we showing overflow indicator)
       if (items.length === 1) {
         const itemRef = itemsSizesMap[rowPositions[0]].elements.values().next().value;
         const containerWidth = containerRef.current?.getBoundingClientRect().width ?? 0;
         const itemWidth = itemRef?.getBoundingClientRect().width ?? 0;
 
-        if (itemWidth > containerWidth) return;
+        if (itemWidth > containerWidth) {
+          setVisibleCount(0);
+        } else setVisibleCount(1);
+        return;
       }
 
       // Only take up to maxRows
@@ -168,6 +171,7 @@ export const OverflowList = React.memo(
 
       // Ensure we respect minVisibleItems
       fittingCount = Math.max(fittingCount, minVisibleItems);
+      console.log("fittingCount", fittingCount);
 
       // Ensure we respect maxVisibleItems
       fittingCount = Math.min(fittingCount, maxVisibleItems);

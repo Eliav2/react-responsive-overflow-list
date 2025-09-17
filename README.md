@@ -138,7 +138,7 @@ It’s **expected** you’ll wrap `OverflowList` for product needs (design syste
 - **Radix UI + Virtualization wrapper** (search, large datasets, a11y, perf):
 
   - **Demo:** see [Radix UI + Virtualization](https://eliav2.github.io/react-responsive-overflow-list/#radix-ui-virtualization-example) in the live site
-  - [**Source**](demo/src/examples/RadixVirtualizedOverflowList.tsx)
+  - [**Source**](demo/src/components/RadixVirtualizedOverflowList.tsx)
   - Uses `@tanstack/react-virtual` and the helper `createLimitedRangeExtractor(...)`.
 
 ---

@@ -7,14 +7,17 @@ import { useVirtualizer } from "@tanstack/react-virtual";
  * RadixVirtualizedOverflowList - Example wrapper component
  *
  * This is an EXAMPLE implementation showing how to wrap OverflowList with Radix UI
- * dropdown and virtualization support. In real applications, you should create
- * your own wrapper components tailored to your specific needs and design system.
+ * dropdown and virtualization support. In real-world applications, it's expected
+ * that you'll wrap OverflowList with your own components tailored to your specific
+ * needs, design system, and UI framework.
  *
  * This example demonstrates:
  * - Radix UI dropdown with proper accessibility
  * - Virtualization for large item lists (1000+ items)
  * - Automatic virtualization threshold detection
  * - Customizable styling and behavior
+ *
+ * Source: https://github.com/eliav2/react-responsive-overflow-list/blob/main/demo/src/components/RadixVirtualizedOverflowList.tsx
  */
 
 interface RadixVirtualizedOverflowListProps<T> extends Omit<OverflowListProps<T>, "renderOverflow"> {
@@ -119,7 +122,7 @@ const VirtualizedDropdown = React.forwardRef<
             ...dropdownStyle,
           }}
         >
-          <div style={{ padding: "8px" }}>
+          <>
             {enableSearch && (
               <div style={{ marginBottom: "8px" }}>
                 <input
@@ -130,7 +133,6 @@ const VirtualizedDropdown = React.forwardRef<
                   style={{
                     width: "100%",
                     padding: "6px 8px",
-                    border: "1px solid #ccc",
                     borderRadius: "4px",
                     fontSize: "14px",
                   }}
@@ -143,9 +145,14 @@ const VirtualizedDropdown = React.forwardRef<
             ) : (
               <div
                 style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  alignItems: "flex-start",
                   position: "relative",
+                  border: "1px solid #ccc",
                   height: `${virtualizer.getTotalSize()}px`,
-                  width: `${containerWidth}px`,
+                  minWidth: `${containerWidth}px`,
                 }}
               >
                 {virtualItems.map((virtualItem) => {
@@ -160,6 +167,7 @@ const VirtualizedDropdown = React.forwardRef<
                         top: 0,
                         left: 0,
                         transform: `translateY(${virtualItem.start}px)`,
+                        textWrap: "nowrap",
                         width: "100%",
                       }}
                       data-index={virtualItem.index}
@@ -181,7 +189,7 @@ const VirtualizedDropdown = React.forwardRef<
                 })}
               </div>
             )}
-          </div>
+          </>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     );
@@ -230,7 +238,8 @@ const SimpleDropdown = React.forwardRef<
  * RadixVirtualizedOverflowList - Example wrapper component
  *
  * This is an EXAMPLE showing how to wrap OverflowList with Radix UI and virtualization.
- * In production apps, create your own wrapper components tailored to your needs.
+ * In real-world applications, it's expected that you'll wrap OverflowList with your own
+ * components tailored to your specific needs, design system, and UI framework.
  */
 export function RadixVirtualizedOverflowList<T = string>({
   virtualizationThreshold = 100,

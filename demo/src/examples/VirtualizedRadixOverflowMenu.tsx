@@ -66,6 +66,7 @@ const VirtualizedRadixOverflowMenu = React.forwardRef<HTMLButtonElement, { items
                     top: 0,
                     left: 0,
                     transform: `translateY(${virtualItem.start}px)`,
+                    textWrap: "nowrap",
                   }}
                   data-index={virtualItem.index}
                   ref={(node) => {
