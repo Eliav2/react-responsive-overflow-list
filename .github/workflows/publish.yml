@@ -8,71 +8,30 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write # needed to create Releases (and tags via the release)
-  id-token: write # needed for npm Trusted Publishing / provenance
+  contents: write
+  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
         with: { version: 9 }
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: "https://registry.npmjs.org"
-          cache: "pnpm"
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -s test --if-present
       - run: pnpm -s build
+      - run: pnpm -s test --if-present
 
-      # Read package name/version
-      - name: Read package info
-        id: pkg
-        run: |
-          NAME=$(node -p "require('./package.json').name")
-          VERSION=$(node -p "require('./package.json').version")
-          echo "name=$NAME" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Resolved $NAME@$VERSION"
-
-      # Skip if the exact version is already on npm
-      - name: Check if version already published
-        id: check
-        run: |
-          NAME='${{ steps.pkg.outputs.name }}'
-          VERSION='${{ steps.pkg.outputs.version }}'
-          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
-            echo "publish=false" >> $GITHUB_OUTPUT
-            echo "Version $VERSION already on npm; skipping publish."
-            echo "✅ Version $VERSION is already published. Exiting workflow."
-            exit 0
-          else
-            echo "publish=true" >> $GITHUB_OUTPUT
-          fi
-
-      # Publish (Trusted Publishing: no token; provenance auto-attached)
-      # ensure npm is new enough for trusted publishing + provenance
+      # ✅ Required: npm >= 11.5.1 for Trusted Publishing
       - run: npm i -g npm@latest
-      - name: Publish to npm
-        if: steps.check.outputs.publish == 'true'
+
+      - name: Publish
         env:
           NPM_CONFIG_PROVENANCE: "true"
         run: npm publish --access public
-
-      # Create release; this also CREATES tag vX.Y.Z if it doesn't exist
-      - name: Ensure GitHub Release exists (auto-notes)
-        if: steps.check.outputs.publish == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG="v${{ steps.pkg.outputs.version }}"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release $TAG already exists."
-          else
-            gh release create "$TAG" --target "$GITHUB_SHA" --generate-notes
-          fi
