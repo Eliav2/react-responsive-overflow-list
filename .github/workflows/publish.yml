@@ -56,6 +56,8 @@ jobs:
           fi
 
       # Publish (Trusted Publishing: no token; provenance auto-attached)
+      # ensure npm is new enough for trusted publishing + provenance
+      - run: npm i -g npm@latest
       - name: Publish to npm
         if: steps.check.outputs.publish == 'true'
         env:
