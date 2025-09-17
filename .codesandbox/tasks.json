@@ -1,12 +1,11 @@
 {
-  "setupTasks": ["pnpm -C demo install"],
+  "setupTasks": ["pnpm install --frozen-lockfile"],
   "tasks": {
     "dev": {
-      "name": "Demo (Vite)",
-      "command": "pnpm -C demo dev --host",
+      "name": "Demo (Vite + local lib)",
+      "command": "pnpm -s dev",
       "runAtStart": true,
       "preview": { "port": 5173 }
-    },
-    "build": { "name": "Build demo", "command": "pnpm -C demo build" }
+    }
   }
 }
