@@ -1,0 +1,12 @@
+{
+  "setupTasks": ["pnpm -C demo install"],
+  "tasks": {
+    "dev": {
+      "name": "Demo (Vite)",
+      "command": "pnpm -C demo dev --host",
+      "runAtStart": true,
+      "preview": { "port": 5173 }
+    },
+    "build": { "name": "Build demo", "command": "pnpm -C demo build" }
+  }
+}
