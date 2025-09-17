@@ -9,6 +9,8 @@ Responsive list for React that shows only items that fit and groups the rest int
 
 **🔗 Live demo:** https://eliav2.github.io/react-responsive-overflow-list/
 
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/Eliav2/react-responsive-overflow-list)
+
 ---
 
 ## Features
