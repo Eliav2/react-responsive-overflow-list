@@ -9,8 +9,6 @@ type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
 type BaseOverflowListProps<T> = BaseComponentProps & {
   // Polymorphic component prop - allows changing the host element
   as?: React.ElementType;
-  // would define the minimum number of items that should be visible (default is 0)
-  minVisibleItems?: number;
 
   // would define the maximum number of rows that can be visible (default is 1)
   maxRows?: number;
@@ -69,7 +67,6 @@ export const OverflowList = React.memo(
       children,
       // if items is not provided, use children as items
       items = React.Children.toArray(children),
-      minVisibleItems = 0,
       renderOverflow,
       // if renderItem is not provided, this component is used in the children pattern, means each item is simply a React.ReactNode
       renderItem = (item) => item as React.ReactNode,
@@ -149,13 +146,16 @@ export const OverflowList = React.memo(
 
       const { itemsSizesMap, rowPositions } = rowData;
 
-      // // edge case: if only 1 item is given, check if its width is bigger than the container width, if so set the maxRows to 0 (there is not enough space for the item, so we showing overflow indicator)
+      // edge case: if only 1 item is given, check if its width is bigger than the container width, if so set the maxRows to 0 (there is not enough space for the item, so we showing overflow indicator)
       if (items.length === 1) {
         const itemRef = itemsSizesMap[rowPositions[0]].elements.values().next().value;
         const containerWidth = containerRef.current?.getBoundingClientRect().width ?? 0;
         const itemWidth = itemRef?.getBoundingClientRect().width ?? 0;
 
-        if (itemWidth > containerWidth) return;
+        if (itemWidth > containerWidth) {
+          setVisibleCount(0);
+        } else setVisibleCount(1);
+        return;
       }
 
       // Only take up to maxRows
@@ -165,9 +165,6 @@ export const OverflowList = React.memo(
       let fittingCount = visibleRowPositions.reduce((acc, position) => {
         return acc + itemsSizesMap[position].elements.size;
       }, 0);
-
-      // Ensure we respect minVisibleItems
-      fittingCount = Math.max(fittingCount, minVisibleItems);
 
       // Ensure we respect maxVisibleItems
       fittingCount = Math.min(fittingCount, maxVisibleItems);

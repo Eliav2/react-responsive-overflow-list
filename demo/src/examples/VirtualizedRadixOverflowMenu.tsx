@@ -66,6 +66,7 @@ const VirtualizedRadixOverflowMenu = React.forwardRef<HTMLButtonElement, { items
                     top: 0,
                     left: 0,
                     transform: `translateY(${virtualItem.start}px)`,
+                    textWrap: "nowrap",
                   }}
                   data-index={virtualItem.index}
                   ref={(node) => {
@@ -94,7 +95,7 @@ const VirtualizedRadixOverflowMenu = React.forwardRef<HTMLButtonElement, { items
  * @param maxItems - Maximum number of items to render at once
  * @returns A range extractor function that can be used with useVirtualizer
  */
-export function createLimitedRangeExtractor(maxItems: number) {
+function createLimitedRangeExtractor(maxItems: number) {
   return (range: { startIndex: number; endIndex: number; overscan: number; count: number }) => {
     // Calculate the start and end with overscan applied
     const startWithOverscan = Math.max(0, range.startIndex - range.overscan);
