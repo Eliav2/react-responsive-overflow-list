@@ -10,7 +10,6 @@ on:
 permissions:
   contents: write # needed to create Releases (and tags via the release)
   id-token: write # needed for npm Trusted Publishing / provenance
-  packages: write
 
 jobs:
   publish:
@@ -61,7 +60,7 @@ jobs:
         if: steps.check.outputs.publish == 'true'
         env:
           NPM_CONFIG_PROVENANCE: "true"
-        run: pnpm publish --access public
+        run: npm publish --access public
 
       # Create release; this also CREATES tag vX.Y.Z if it doesn't exist
       - name: Ensure GitHub Release exists (auto-notes)
