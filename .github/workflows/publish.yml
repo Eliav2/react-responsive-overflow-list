@@ -50,6 +50,8 @@ jobs:
           if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
             echo "publish=false" >> $GITHUB_OUTPUT
             echo "Version $VERSION already on npm; skipping publish."
+            echo "✅ Version $VERSION is already published. Exiting workflow."
+            exit 0
           else
             echo "publish=true" >> $GITHUB_OUTPUT
           fi
@@ -63,6 +65,7 @@ jobs:
 
       # Create release; this also CREATES tag vX.Y.Z if it doesn't exist
       - name: Ensure GitHub Release exists (auto-notes)
+        if: steps.check.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
