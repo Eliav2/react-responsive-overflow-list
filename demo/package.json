@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:local": "pnpm install --link-workspace-packages && pnpm dev",
+    "dev:published": "pnpm install && pnpm dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -18,7 +20,7 @@
     "react": "^19.1.1",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^19.1.1",
-    "react-responsive-overflow-list": "workspace:*",
+    "react-responsive-overflow-list": "latest",
     "react-syntax-highlighter": "^15.6.6"
   },
   "devDependencies": {
