@@ -8,6 +8,7 @@ import { RadixVirtualizationExample } from "./examples/RadixVirtualizationExampl
 import { FlushImmediatelyExample } from "./examples/FlushImmediatelyExample";
 import { OneItemWiderExample } from "./examples/OneItemWiderExample";
 import { MaxRowsOverflowExample } from "./examples/MaxRowsOverflowExample";
+import { ReverseOrderExample } from "./examples/ReverseOrderExample";
 import { Github } from "lucide-react";
 import "./App.css";
 
@@ -49,6 +50,7 @@ function App() {
           <FlushImmediatelyExample />
           <OneItemWiderExample />
           <MaxRowsOverflowExample />
+          <ReverseOrderExample />
         </main>
 
         <footer>

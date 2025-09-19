@@ -53,7 +53,7 @@ export interface OverflowElementProps<T> {
  * Responsive container that shows as many items as can fit within maxRows,
  * hiding overflow items behind a configurable overflow renderer.
  * Automatically recalculates visible items on resize.
- *
+ * 
  * Technical details:
  * Uses a three-phases approach:
  * 1. "measuring" renders all items to calculate positions,
@@ -93,7 +93,6 @@ export const OverflowList = React.memo(
     const finalRenderOverflow = renderOverflow?.(items.slice(finalVisibleCount) as T[]) ?? (
       <DefaultOverflowElement
         items={items.slice(finalVisibleCount) as T[]}
-        // renderItem={renderOverflowItem ?? renderItem}
         {...renderOverflowProps}
       />
     );
@@ -114,7 +113,7 @@ export const OverflowList = React.memo(
     useLayoutEffect(() => {
       // in measurement, evaluate results
       if (phase === "measuring") {
-        updateVisibleItems();
+        countVisibleItems();
         setPhase("measuring-overflow-indicator");
       }
     }, [phase]);
@@ -140,7 +139,7 @@ export const OverflowList = React.memo(
 
     // Unified method that handles both growing and shrinking
     // this function is called in measuring phase, and it is used to measure how many items can fit in the container
-    const updateVisibleItems = () => {
+    const countVisibleItems = () => {
       const rowData = getRowPositionsData(containerRef, overflowRef);
       if (!rowData) return;
 
