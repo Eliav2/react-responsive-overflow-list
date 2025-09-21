@@ -1,8 +1,8 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
-import { useResizeObserver, useForkRef } from "../hooks";
+import React, { useRef, useState } from "react";
+import { useForkRef, useIsoLayoutEffect, useResizeObserver } from "../hooks";
+import { getRowPositionsData } from "../utils";
 import { DefaultOverflowElement } from "./DefaultOverflowMenu";
 import styles from "./OverflowList.module.css";
-import { getRowPositionsData } from "../utils";
 
 type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
 
@@ -79,6 +79,7 @@ export const OverflowList = React.memo(
       ...flexProps
     } = props;
 
+
     const [visibleCount, setVisibleCount] = useState(items.length);
     const [subtractCount, setSubtractCount] = useState(0);
     const [phase, setPhase] = useState<"normal" | "measuring" | "measuring-overflow-indicator">("normal");
@@ -91,11 +92,7 @@ export const OverflowList = React.memo(
     const showOverflow = overflowCount > 0 && phase !== "measuring";
 
     const finalRenderOverflow = renderOverflow?.(items.slice(finalVisibleCount) as T[]) ?? (
-      <DefaultOverflowElement
-        items={items.slice(finalVisibleCount) as T[]}
-        // renderItem={renderOverflowItem ?? renderItem}
-        {...renderOverflowProps}
-      />
+      <DefaultOverflowElement items={items.slice(finalVisibleCount) as T[]} {...renderOverflowProps} />
     );
 
     const overflowElement = showOverflow ? finalRenderOverflow : null;
@@ -105,21 +102,21 @@ export const OverflowList = React.memo(
     const finalOverflowRef = useForkRef(overflowRef, overflowElement?.ref);
 
     // Reset state when items change
-    useLayoutEffect(() => {
+    useIsoLayoutEffect(() => {
       setPhase("measuring");
       setVisibleCount(items.length);
       setSubtractCount(0);
     }, [items.length, maxRows]);
 
-    useLayoutEffect(() => {
+    useIsoLayoutEffect(() => {
       // in measurement, evaluate results
       if (phase === "measuring") {
-        updateVisibleItems();
+        countVisibleItems();
         setPhase("measuring-overflow-indicator");
       }
     }, [phase]);
 
-    useLayoutEffect(() => {
+    useIsoLayoutEffect(() => {
       // After placing the overflow indicator, evaluate if it ends up opening a new row
       if (phase === "measuring-overflow-indicator") {
         const updateWasNeeded = updateOverflowIndicator();
@@ -131,7 +128,7 @@ export const OverflowList = React.memo(
 
     // if the container dimensions change, re-measure
     const containerDims = useResizeObserver(containerRef, flushImmediately);
-    useLayoutEffect(() => {
+    useIsoLayoutEffect(() => {
       if (phase === "normal") {
         setPhase("measuring");
         setSubtractCount(0);
@@ -140,7 +137,7 @@ export const OverflowList = React.memo(
 
     // Unified method that handles both growing and shrinking
     // this function is called in measuring phase, and it is used to measure how many items can fit in the container
-    const updateVisibleItems = () => {
+    const countVisibleItems = () => {
       const rowData = getRowPositionsData(containerRef, overflowRef);
       if (!rowData) return;
 
@@ -196,8 +193,8 @@ export const OverflowList = React.memo(
     // Cloned overflow element that ensures ref is passed so we could measure dimensions on this element
     const clonedOverflowElement = overflowElement
       ? React.cloneElement(overflowElement as React.ReactElement<any>, {
-          ref: finalOverflowRef,
-        })
+        ref: finalOverflowRef,
+      })
       : null;
 
     // Get the items to render based on current state
@@ -217,8 +214,8 @@ export const OverflowList = React.memo(
         {finalItems.map((item, index) => {
           const isVisible =
             phase ===
-              // in measuring phase, show all items
-              "measuring" ||
+            // in measuring phase, show all items
+            "measuring" ||
             // in 'normal' phase, show only the N items that fit
             index < finalVisibleCount;
           if (!isVisible) return null;
