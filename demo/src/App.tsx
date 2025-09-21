@@ -1,3 +1,4 @@
+import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { CustomOverflowExample } from "./examples/CustomOverflowExample";
 import { BasicExample } from "./examples/BasicExample";

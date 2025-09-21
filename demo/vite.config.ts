@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
+import vike from "vike/plugin";
 
-import { ssr } from "vite-plugin-ssr/plugin";
+// import { ssr } from "vite-plugin-ssr/plugin";
 
 export default defineConfig(() => {
   const appMode = process.env.VITE_APP_MODE || ("spa" as "spa" | "ssr");
@@ -18,26 +19,29 @@ export default defineConfig(() => {
     },
   };
 
-  if (appMode === "spa") {
-    return {
-      plugins: [react()],
-      ...sharedConfig,
-    };
-  }
+  // if (appMode === "spa") {
+  //   return {
+  //     plugins: [react()],
+  //     ...sharedConfig,
+  //   };
+  // }
 
   // ssr mode
   return {
     plugins: [
+      // ssr({
+      //   prerender: true,
+      // }),
       react(),
+      vike(),
       // vitePrerenderPlugin({
       //   renderTarget: "#root",
       //   prerenderScript: path.resolve(__dirname, "src/prerender.tsx"),
       // }),
-      ssr({
-        prerender: true,
-      }),
     ],
-
+    // build: {
+    //   minify: false,
+    // },
     ssr: {
       // Don't externalize React for SSR
       noExternal: ["react-responsive-overflow-list", "react-syntax-highlighter", "@types/react-syntax-highlighter"],

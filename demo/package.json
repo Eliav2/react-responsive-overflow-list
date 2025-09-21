@@ -7,13 +7,13 @@
     "dev": "pnpm dev:spa",
     "dev:local": "pnpm install --link-workspace-packages && pnpm dev",
     "dev:published": "pnpm install --no-link-workspace-packages && pnpm dev",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && pnpm build:ssr",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "dev:ssr": "VITE_APP_MODE=ssr vite",
-    "dev:spa": "VITE_APP_MODE=spa vite",
-    "build:ssr": "VITE_APP_MODE=ssr vite build && vite-plugin-ssr prerender",
-    "build:spa": "VITE_APP_MODE=spa vite build"
+    "dev:ssr": "VITE_APP_MODE=ssr vike dev",
+    "dev:spa": "VITE_APP_MODE=spa vike dev",
+    "build:ssr": "VITE_APP_MODE=ssr vike build",
+    "build:spa": "VITE_APP_MODE=spa vike build",
+    "preview": "vike preview"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -25,8 +25,10 @@
     "react": "^19.1.1",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^19.1.1",
-    "react-responsive-overflow-list": "lastest",
+    "react-responsive-overflow-list": "workspace:*",
     "react-syntax-highlighter": "^15.6.6",
+    "vike": "^0.4.240",
+    "vike-react": "^0.6.6",
     "vite-plugin-ssr": "^0.4.142"
   },
   "devDependencies": {
