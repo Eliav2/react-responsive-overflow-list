@@ -1,9 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Copy, ChevronDown, ChevronRight, Check } from "lucide-react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { IconButton } from "@radix-ui/themes";
+
+// SSR-safe copy functionality
+function CopyToClipboardWrapper({ children, text, onCopy }: any) {
+  const [CopyToClipboard, setCopyToClipboard] = useState<any>(null);
+  
+  useEffect(() => {
+    // Dynamically import on client-side only
+    if (typeof window !== 'undefined') {
+      import('react-copy-to-clipboard').then((module) => {
+        setCopyToClipboard(() => module.default);
+      });
+    }
+  }, []);
+  
+  if (!CopyToClipboard) {
+    // Fallback during SSR or before component loads
+    return children;
+  }
+  
+  return <CopyToClipboard text={text} onCopy={onCopy}>{children}</CopyToClipboard>;
+}
 
 interface CollapsibleCodePreviewProps {
   code: string;
@@ -43,11 +63,11 @@ export function CollapsibleCodePreview({
           <span className="code-title">{title}</span>
         </button>
 
-        <CopyToClipboard text={combinedCode} onCopy={handleCopy}>
+        <CopyToClipboardWrapper text={combinedCode} onCopy={handleCopy}>
           <IconButton className="copy-button" aria-label="Copy code">
             {copied ? <Check size={16} className="copy-success" /> : <Copy size={16} />}
           </IconButton>
-        </CopyToClipboard>
+        </CopyToClipboardWrapper>
       </div>
 
       {!isCollapsed && (
