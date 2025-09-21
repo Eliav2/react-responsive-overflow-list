@@ -134,7 +134,7 @@ const CustomOverflowElement = React.forwardRef<HTMLDivElement, { items: string[]
         />
         <div className="demo-container">
           <OverflowList
-            items={Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`)}
+            items={Array.from({ length: 10000 }, (_, i) => `Item ${i + 1}`)}
             renderItem={(item) => <span className="tag">#{item}</span>}
             renderOverflow={(items) => <VirtualizedRadixOverflowMenu items={items} />}
             maxRows={5}
