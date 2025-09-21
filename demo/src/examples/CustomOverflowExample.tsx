@@ -1,12 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { OverflowList, type OverflowElementProps } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { CollapsibleCodePreview } from "../components/CollapsibleCodePreview";
-import { VirtualizedRadixOverflowMenu } from "./VirtualizedRadixOverflowMenu";
 import { RadixOverflowMenu } from "./RadixOverflowMenu";
-import virtualizedCodeExample from "./VirtualizedRadixOverflowMenu?raw";
 import radixCodeExample from "./RadixOverflowMenu?raw";
+import { VirtualizedRadixOverflowMenu } from "./VirtualizedRadixOverflowMenu";
+import virtualizedCodeExample from "./VirtualizedRadixOverflowMenu?raw";
 
 const tags = ["React", "TypeScript", "CSS", "HTML", "JavaScript", "Node.js", "Express", "MongoDB", "Vite", "ESLint"];
 
@@ -17,7 +17,6 @@ const CustomOverflowElement = React.forwardRef<HTMLDivElement, OverflowElementPr
 ));
 
 export function CustomOverflowExample() {
-
   return (
     <section className="demo">
       <h2 id="custom-overflow-example">Custom Overflow Element</h2>
