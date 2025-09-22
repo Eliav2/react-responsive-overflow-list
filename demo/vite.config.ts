@@ -15,7 +15,7 @@ export default defineConfig(() => {
       // Handle CommonJS modules
       // external: ["react-copy-to-clipboard"],
     },
-    base: process.env.NODE_ENV === "production" ? "/react-responsive-overflow-list/" : "/",
+    base: "/react-responsive-overflow-list/",
     resolve: {
       // trick to avoid needing to build-watch the library when developing the demo
       alias: {
