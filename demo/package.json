@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "pnpm dev:spa",
     "dev:local": "pnpm install --link-workspace-packages && pnpm dev",
-    "dev:published": "pnpm install --no-link-workspace-packages && VITE_PUBLISHED_PACKAGE=true pnpm dev",
+    "dev:published": "pnpm install --no-link-workspace-packages && pnpm dev",
     "build": "tsc -b && pnpm build:ssr",
     "lint": "eslint .",
     "dev:ssr": "VITE_APP_MODE=ssr vike dev",

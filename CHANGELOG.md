@@ -2,7 +2,10 @@
 
 ## 0.2.1
 
-ship default styles as css-in-js instead of css file (better for shipping)
+some polishing, and build changes:
+
+- ship default styles as css-in-js instead of css file (better for shipping)
+- package.json is now type:"module".
 
 ## 0.2.0
 

@@ -106,8 +106,6 @@ export const OverflowList = React.memo(
       setSubtractCount(0);
     }, [items.length, maxRows]);
 
-    // console.log("phase", phase);
-
     useIsoLayoutEffect(() => {
       // in measurement, evaluate results
       if (phase === "measuring") {
@@ -181,8 +179,6 @@ export const OverflowList = React.memo(
       const overflowMiddleY = overflowRect.top + overflowRect.height / 2;
       const lastRowTop = rowPositions[rowPositions.length - 1];
       const lastRow = itemsSizesMap[lastRowTop];
-      // console.log("overflowMiddleY", overflowMiddleY);
-      // console.log("lastRow.bottom", lastRow.bottom);
 
       // if the overflow indicator item opens a new row(we check it by the middle of the item)
       if (overflowMiddleY > lastRow.bottom) {
@@ -234,11 +230,7 @@ export const OverflowList = React.memo(
 ) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLElement> }) => React.ReactElement;
 
 const DEFAULT_CONTAINER_STYLES: React.CSSProperties = {
-  position: "relative",
   display: "flex",
   flexWrap: "wrap",
-  alignItems: "center",
-  minWidth: 0,
-  gap: "4px",
   contain: "layout style",
 };
