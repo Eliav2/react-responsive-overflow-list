@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "pnpm dev:spa",
     "dev:local": "pnpm install --link-workspace-packages && pnpm dev",
-    "dev:published": "pnpm install --no-link-workspace-packages && pnpm dev",
+    "dev:published": "pnpm install --no-link-workspace-packages && VITE_PUBLISHED_PACKAGE=true pnpm dev",
     "build": "tsc -b && pnpm build:ssr",
     "lint": "eslint .",
     "dev:ssr": "VITE_APP_MODE=ssr vike dev",
@@ -47,8 +47,6 @@
     "tslib": "^2.8.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2",
-    "vite-plugin-prerender": "^1.0.8",
-    "vite-prerender-plugin": "^0.5.12"
+    "vite": "^7.1.2"
   }
 }

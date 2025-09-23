@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import { useForkRef, useIsoLayoutEffect, useResizeObserver } from "../hooks";
 import { getRowPositionsData } from "../utils";
 import { DefaultOverflowElement } from "./DefaultOverflowMenu";
-import styles from "./OverflowList.module.css";
 
 type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
 
@@ -76,10 +75,8 @@ export const OverflowList = React.memo(
       maxVisibleItems = 100,
       flushImmediately = true,
 
-      ...flexProps
+      ...containerProps
     } = props;
-
-    // console.log("OverflowList");
 
     const [visibleCount, setVisibleCount] = useState(items.length);
     const [subtractCount, setSubtractCount] = useState(0);
@@ -189,7 +186,7 @@ export const OverflowList = React.memo(
 
       // if the overflow indicator item opens a new row(we check it by the middle of the item)
       if (overflowMiddleY > lastRow.bottom) {
-        // setSubtractCount((c) => c + 1);
+        setSubtractCount((c) => c + 1);
         return true;
       }
       return false;
@@ -210,11 +207,13 @@ export const OverflowList = React.memo(
       finalItems = finalItems.slice(0, maxVisibleItems);
     }
 
-    const className = `${styles.container ?? ""}${flexProps.className ?? ""}`;
-    const classNameProp = className ? { className } : {};
+    const containerStyles: React.CSSProperties = {
+      ...DEFAULT_CONTAINER_STYLES,
+      ...containerProps.style,
+    };
 
     return (
-      <Component {...flexProps} ref={finalContainerRef} {...classNameProp}>
+      <Component {...containerProps} ref={finalContainerRef} style={containerStyles}>
         {finalItems.map((item, index) => {
           const isVisible =
             phase ===
@@ -233,3 +232,13 @@ export const OverflowList = React.memo(
     );
   })
 ) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLElement> }) => React.ReactElement;
+
+const DEFAULT_CONTAINER_STYLES: React.CSSProperties = {
+  position: "relative",
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  minWidth: 0,
+  gap: "4px",
+  contain: "layout style",
+};
