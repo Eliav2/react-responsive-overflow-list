@@ -53,7 +53,7 @@ export interface OverflowElementProps<T> {
  * Responsive container that shows as many items as can fit within maxRows,
  * hiding overflow items behind a configurable overflow renderer.
  * Automatically recalculates visible items on resize.
- * 
+ *
  * Technical details:
  * Uses a three-phases approach:
  * 1. "measuring" renders all items to calculate positions,
@@ -79,6 +79,7 @@ export const OverflowList = React.memo(
       ...flexProps
     } = props;
 
+    // console.log("OverflowList");
 
     const [visibleCount, setVisibleCount] = useState(items.length);
     const [subtractCount, setSubtractCount] = useState(0);
@@ -107,6 +108,8 @@ export const OverflowList = React.memo(
       setVisibleCount(items.length);
       setSubtractCount(0);
     }, [items.length, maxRows]);
+
+    // console.log("phase", phase);
 
     useIsoLayoutEffect(() => {
       // in measurement, evaluate results
@@ -181,10 +184,12 @@ export const OverflowList = React.memo(
       const overflowMiddleY = overflowRect.top + overflowRect.height / 2;
       const lastRowTop = rowPositions[rowPositions.length - 1];
       const lastRow = itemsSizesMap[lastRowTop];
+      // console.log("overflowMiddleY", overflowMiddleY);
+      // console.log("lastRow.bottom", lastRow.bottom);
 
       // if the overflow indicator item opens a new row(we check it by the middle of the item)
       if (overflowMiddleY > lastRow.bottom) {
-        setSubtractCount((c) => c + 1);
+        // setSubtractCount((c) => c + 1);
         return true;
       }
       return false;
@@ -193,8 +198,8 @@ export const OverflowList = React.memo(
     // Cloned overflow element that ensures ref is passed so we could measure dimensions on this element
     const clonedOverflowElement = overflowElement
       ? React.cloneElement(overflowElement as React.ReactElement<any>, {
-        ref: finalOverflowRef,
-      })
+          ref: finalOverflowRef,
+        })
       : null;
 
     // Get the items to render based on current state
@@ -205,17 +210,16 @@ export const OverflowList = React.memo(
       finalItems = finalItems.slice(0, maxVisibleItems);
     }
 
+    const className = `${styles.container ?? ""}${flexProps.className ?? ""}`;
+    const classNameProp = className ? { className } : {};
+
     return (
-      <Component
-        {...flexProps}
-        ref={finalContainerRef}
-        className={`${styles.container}${flexProps.className ? ` ${flexProps.className}` : ""}`}
-      >
+      <Component {...flexProps} ref={finalContainerRef} {...classNameProp}>
         {finalItems.map((item, index) => {
           const isVisible =
             phase ===
-            // in measuring phase, show all items
-            "measuring" ||
+              // in measuring phase, show all items
+              "measuring" ||
             // in 'normal' phase, show only the N items that fit
             index < finalVisibleCount;
           if (!isVisible) return null;
