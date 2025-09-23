@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import { useForkRef, useIsoLayoutEffect, useResizeObserver } from "../hooks";
 import { getRowPositionsData } from "../utils";
 import { DefaultOverflowElement } from "./DefaultOverflowMenu";
-import styles from "./OverflowList.module.css";
 
 type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
 
@@ -53,7 +52,7 @@ export interface OverflowElementProps<T> {
  * Responsive container that shows as many items as can fit within maxRows,
  * hiding overflow items behind a configurable overflow renderer.
  * Automatically recalculates visible items on resize.
- * 
+ *
  * Technical details:
  * Uses a three-phases approach:
  * 1. "measuring" renders all items to calculate positions,
@@ -76,9 +75,8 @@ export const OverflowList = React.memo(
       maxVisibleItems = 100,
       flushImmediately = true,
 
-      ...flexProps
+      ...containerProps
     } = props;
-
 
     const [visibleCount, setVisibleCount] = useState(items.length);
     const [subtractCount, setSubtractCount] = useState(0);
@@ -193,8 +191,8 @@ export const OverflowList = React.memo(
     // Cloned overflow element that ensures ref is passed so we could measure dimensions on this element
     const clonedOverflowElement = overflowElement
       ? React.cloneElement(overflowElement as React.ReactElement<any>, {
-        ref: finalOverflowRef,
-      })
+          ref: finalOverflowRef,
+        })
       : null;
 
     // Get the items to render based on current state
@@ -205,17 +203,18 @@ export const OverflowList = React.memo(
       finalItems = finalItems.slice(0, maxVisibleItems);
     }
 
+    const containerStyles: React.CSSProperties = {
+      ...DEFAULT_CONTAINER_STYLES,
+      ...containerProps.style,
+    };
+
     return (
-      <Component
-        {...flexProps}
-        ref={finalContainerRef}
-        className={`${styles.container}${flexProps.className ? ` ${flexProps.className}` : ""}`}
-      >
+      <Component {...containerProps} ref={finalContainerRef} style={containerStyles}>
         {finalItems.map((item, index) => {
           const isVisible =
             phase ===
-            // in measuring phase, show all items
-            "measuring" ||
+              // in measuring phase, show all items
+              "measuring" ||
             // in 'normal' phase, show only the N items that fit
             index < finalVisibleCount;
           if (!isVisible) return null;
@@ -229,3 +228,9 @@ export const OverflowList = React.memo(
     );
   })
 ) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLElement> }) => React.ReactElement;
+
+const DEFAULT_CONTAINER_STYLES: React.CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  contain: "layout style",
+};

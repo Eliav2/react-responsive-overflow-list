@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+some polishing, and build changes:
+
+- ship default styles as css-in-js instead of css file (better for shipping)
+- package.json is now type:"module".
+
 ## 0.2.0
 
 - dropped `minVisibleItems` prop in favor of simplicity (same effect can achieved with reversed flex direction and reversing the items array)

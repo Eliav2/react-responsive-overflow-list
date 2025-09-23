@@ -1,11 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { fileURLToPath, URL } from "node:url";
 import vike from "vike/plugin";
 
 export default defineConfig(() => {
   const appMode = process.env.VITE_APP_MODE || ("spa" as "spa" | "ssr");
   console.log(`VITE_APP_MODE is "${appMode}"`);
+  const isProduction = process.env.NODE_ENV === "production";
 
   return {
     plugins: [react(), vike()],
@@ -15,12 +15,6 @@ export default defineConfig(() => {
       // Handle CommonJS modules
       // external: ["react-copy-to-clipboard"],
     },
-    base: "/react-responsive-overflow-list/",
-    resolve: {
-      // trick to avoid needing to build-watch the library when developing the demo
-      alias: {
-        "react-responsive-overflow-list": fileURLToPath(new URL("../src/index.ts", import.meta.url)),
-      },
-    },
+    base: isProduction ? "/react-responsive-overflow-list/" : "/",
   };
 });

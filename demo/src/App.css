@@ -337,3 +337,22 @@ footer {
 .code-preview-content {
   background: white;
 }
+
+.demo-button {
+  background: none;
+  border: 1.5px solid #bfc9db;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  transition: color 0.2s;
+  border-radius: 4px;
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+
+.demo-button:hover {
+  color: #007bff;
+  border-color: #007bff;
+  box-shadow: 0 4px 16px 0 rgba(37, 99, 235, 0.08);
+}

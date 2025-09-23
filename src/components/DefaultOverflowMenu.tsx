@@ -1,6 +1,15 @@
-import React from "react";
-import styles from "./OverflowList.module.css";
+import React, { useState } from "react";
 import { OverflowElementProps } from "./OverflowList";
+
+const DEFAULT_OVERFLOW_BUTTON_STYLES: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "4px",
+  border: "1px solid #ccc",
+  padding: "4px 8px",
+  fontSize: "12px",
+};
 
 /**
  * Simple default overflow menu component that displays hidden items in a basic dropdown
@@ -16,7 +25,7 @@ export const DefaultOverflowElement = React.forwardRef(function DefaultOverflowE
   const count = items.length;
 
   return (
-    <div ref={ref} className={styles.defaultOverflowButton}>
+    <div ref={ref} style={DEFAULT_OVERFLOW_BUTTON_STYLES}>
       {`+${count} more`}
     </div>
   );
