@@ -116,25 +116,21 @@ const VirtualizedDropdown = React.forwardRef<
             setScrollElement(node?.querySelector(".rt-ScrollAreaViewport") as HTMLDivElement | null);
           }}
           style={{
-            minWidth: "200px",
-            maxWidth: "400px",
             maxHeight: "300px",
             ...dropdownStyle,
           }}
         >
           <>
             {enableSearch && (
-              <div style={{ marginBottom: "8px" }}>
+              <div style={{ marginBottom: "8px", position: "sticky", top: 0, backgroundColor: "white" }}>
                 <input
+                  autoFocus
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
-                    width: "100%",
                     padding: "6px 8px",
-                    borderRadius: "4px",
-                    fontSize: "14px",
                   }}
                 />
               </div>
@@ -150,7 +146,6 @@ const VirtualizedDropdown = React.forwardRef<
                   gap: "8px",
                   alignItems: "flex-start",
                   position: "relative",
-                  border: "1px solid #ccc",
                   height: `${virtualizer.getTotalSize()}px`,
                   minWidth: `${containerWidth}px`,
                 }}
