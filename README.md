@@ -31,7 +31,7 @@ npm i react-responsive-overflow-list
 
 ## Usage
 
-> iIn real apps, you’ll typically wrap OverflowList in your own component—design tokens, accessible menus, virtualization, or search. See 'Wrap & extend' below and the demo for a full wrapper example.
+> In real apps, you’ll typically wrap OverflowList in your own component—design tokens, accessible menus, virtualization, or search. See 'Wrap & extend' below and the demo for a full wrapper example.
 
 ### Items + `renderItem` (most common)
 
