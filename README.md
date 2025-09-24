@@ -15,15 +15,13 @@ Responsive list for React that shows only items that fit and groups the rest int
 
 ## Features
 
-- **Responsive** (ResizeObserver-based)
-- **Two render modes**: items + `renderItem` **or** `children`
-- **Custom overflow** element (button/menu/details/etc.)
-- **TypeScript + generics**, comprehensive types
-- **Polymorphic** root via `as`
-- **Multi-row** via `maxRows`
-- **Performance toggle**: `flushImmediately`
-- **Lightweight**, simple default overflow element
-- **Minimal deps**: React peer deps only
+- Accurate & responsive: measures real layout after paint (ResizeObserver), not guessed widths
+- Two usage modes: `children` (simple) or `items + renderItem` (structured)
+- Customizable overflow element; ships with a lightweight default
+- Multi-row support (via `maxRows`)
+- Handles uneven widths, including a single ultra-wide item
+- TypeScript types; zero runtime deps (React as peers)
+- SSR-friendly: measurement runs on the client
 
 ## Install
 
@@ -33,7 +31,7 @@ npm i react-responsive-overflow-list
 
 ## Usage
 
-> In real apps you’ll usually **wrap `OverflowList`** with your own component (design tokens, a11y menus, virtualization, search). See **Recipes** below and the demo for a full wrapper.
+> iIn real apps, you’ll typically wrap OverflowList in your own component—design tokens, accessible menus, virtualization, or search. See 'Wrap & extend' below and the demo for a full wrapper example.
 
 ### Items + `renderItem` (most common)
 
