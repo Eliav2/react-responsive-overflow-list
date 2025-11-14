@@ -1,6 +1,5 @@
 import "./styles.css";
 
-import { useEffect } from "react";
 import { OverflowList } from "react-responsive-overflow-list";
 
 const WaTag: any = "wa-tag";
@@ -56,17 +55,13 @@ export default function App() {
               {item.name}
             </WaTag>
           )}
-          style={{
-            gap: "8px",
+          renderHiddenItem={(node, meta) => {
+            return (
+              <span key={meta.index} aria-hidden={!meta.visible} style={!meta.visible ? HIDDEN_ITEM_STYLES : undefined}>
+                {node}
+              </span>
+            );
           }}
-        />
-      </DemoContainer>
-
-      <DemoContainer>
-        <OverflowList
-          items={testTags}
-          maxRows={1}
-          renderItem={(item) => <OverflowItem key={item.id}>{item.name}</OverflowItem>}
           style={{
             gap: "8px",
           }}
@@ -75,16 +70,6 @@ export default function App() {
     </div>
   );
 }
-
-const OverflowItem = ({ children }: { children: React.ReactNode }) => {
-  useEffect(() => {
-    console.log("OverflowItem mounted");
-    return () => {
-      console.log("OverflowItem unmounted");
-    };
-  }, []);
-  return <span>{children}</span>;
-};
 
 const HIDDEN_ITEM_STYLES: React.CSSProperties = {
   position: "absolute",

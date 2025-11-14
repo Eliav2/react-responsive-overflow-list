@@ -5,15 +5,23 @@ import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const placeholderItems = Array.from({ length: 10 }, (_, index) => `Item ${index + 1}`);
 
-const codeSample = `const items = ["Item 1", "Item 2", /* ... */];
+const codeSample = `const placeholderItems = Array.from({ length: 10 }, (_, index) => \`Item \${index + 1}\`);
 
-const GrowingItem = ({ label }: { label: string }) => {
+const HIDDEN_ITEM_STYLES: React.CSSProperties = {
+  position: "absolute",
+  visibility: "hidden",
+  pointerEvents: "none",
+  top: 0,
+  left: 0,
+};
+
+function GrowingItem({ label, delay = 1200 }: { label: string; delay?: number }) {
   const [size, setSize] = useState(20);
 
   useEffect(() => {
-    const timer = setTimeout(() => setSize(50), 1500);
+    const timer = setTimeout(() => setSize(50), delay);
     return () => clearTimeout(timer);
-  }, []);
+  }, [delay]);
 
   return (
     <span
@@ -27,14 +35,25 @@ const GrowingItem = ({ label }: { label: string }) => {
       {label}
     </span>
   );
-};
+}
 
-export function ChangingSizeItems() {
+export function DynamicSizeExample() {
   return (
     <OverflowList
-      items={items}
-      renderItem={(item) => <GrowingItem label={item} />}
+      items={placeholderItems}
+      renderItem={(item, { index }) => (
+        <GrowingItem label={item} delay={800 + index * 150} />
+      )}
       style={{ gap: "8px" }}
+      renderHiddenItem={(node, meta) => (
+        <span
+          key={meta.index}
+          aria-hidden={!meta.visible}
+          style={!meta.visible ? HIDDEN_ITEM_STYLES : undefined}
+        >
+          {node}
+        </span>
+      )}
     />
   );
 }`;
@@ -81,8 +100,23 @@ export function DynamicSizeExample() {
           items={placeholderItems}
           renderItem={(item, { index }) => <GrowingItem label={item} delay={800 + index * 150} />}
           style={{ gap: "8px" }}
+          renderHiddenItem={(node, meta) => {
+            return (
+              <span key={meta.index} aria-hidden={!meta.visible} style={!meta.visible ? HIDDEN_ITEM_STYLES : undefined}>
+                {node}
+              </span>
+            );
+          }}
         />
       </div>
     </section>
   );
 }
+
+const HIDDEN_ITEM_STYLES: React.CSSProperties = {
+  position: "absolute",
+  visibility: "hidden",
+  pointerEvents: "none",
+  top: 0,
+  left: 0,
+};
