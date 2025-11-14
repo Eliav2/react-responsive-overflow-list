@@ -239,18 +239,13 @@ const OverflowListComponent = React.memo(
             );
           }
 
-          // return (
-          //   <span key={index} aria-hidden={!isVisible} style={!isVisible ? HIDDEN_ITEM_STYLES : undefined}>
-          //     {itemComponent}
-          //   </span>
-          // );
+          return (
+            <span key={index} aria-hidden={!isVisible} style={!isVisible ? HIDDEN_ITEM_STYLES : undefined}>
+              {itemComponent}
+            </span>
+          );
 
-          if (!isVisible) {
-            console.log("Hidden item", index);
-            return null;
-          }
-          // const itemComponent = renderItem(item as T, index);
-
+          if (!isVisible) return null;
           return <React.Fragment key={index}>{itemComponent}</React.Fragment>;
         })}
 
