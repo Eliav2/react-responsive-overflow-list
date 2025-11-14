@@ -112,19 +112,19 @@ See the **Flush Immediately** example in the live demo.
 
 ## API (most used)
 
-| Prop                  | Type                                    | Default      | Notes                                                                                                         |
-| --------------------- | --------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------- |
-| `items`               | `T[]`                                   | —            | Use with `renderItem`. Omit when using children.                                                              |
-| `renderItem`          | `(item: T, index: number) => ReactNode` | —            | How to render each item.                                                                                      |
-| `children`            | `ReactNode`                             | —            | Alternative to `items + renderItem`.                                                                          |
-| `as`                  | `React.ElementType`                     | `"div"`      | Polymorphic root element.                                                                                     |
-| `maxRows`             | `number`                                | `1`          | Visible rows before overflow.                                                                                 |
-| `maxVisibleItems`     | `number`                                | `100`        | Hard cap on visible items.                                                                                    |
-| `renderOverflow`      | `(hidden: T[]) => ReactNode`            | default chip | Custom overflow UI.                                                                                           |
-| `renderOverflowItem`  | `(item: T, i: number) => ReactNode`     | `renderItem` | For expanded lists/menus.                                                                                     |
-| `renderOverflowProps` | `Partial<OverflowElementProps<T>>`      | —            | Props for default overflow.                                                                                   |
-| `flushImmediately`    | `boolean`                               | `true`       | `true` (flushSync, no flicker) vs `false` (rAF, faster under resize).                                         |
-| `renderHiddenItem`    | `(node: ReactNode, meta) => ReactNode`  | internal     | Control visibility of hidden items (defaults to `React.Activity` if available, otherwise simply return null). |
+| Prop                   | Type                                    | Default      | Notes                                                                                                         |
+| ---------------------- | --------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------- |
+| `items`                | `T[]`                                   | —            | Use with `renderItem`. Omit when using children.                                                              |
+| `renderItem`           | `(item: T, index: number) => ReactNode` | —            | How to render each item.                                                                                      |
+| `children`             | `ReactNode`                             | —            | Alternative to `items + renderItem`.                                                                          |
+| `as`                   | `React.ElementType`                     | `"div"`      | Polymorphic root element.                                                                                     |
+| `maxRows`              | `number`                                | `1`          | Visible rows before overflow.                                                                                 |
+| `maxVisibleItems`      | `number`                                | `100`        | Hard cap on visible items.                                                                                    |
+| `renderOverflow`       | `(hidden: T[]) => ReactNode`            | default chip | Custom overflow UI.                                                                                           |
+| `renderOverflowItem`   | `(item: T, i: number) => ReactNode`     | `renderItem` | For expanded lists/menus.                                                                                     |
+| `renderOverflowProps`  | `Partial<OverflowElementProps<T>>`      | —            | Props for default overflow.                                                                                   |
+| `flushImmediately`     | `boolean`                               | `true`       | `true` (flushSync, no flicker) vs `false` (rAF, faster under resize).                                         |
+| `renderItemVisibility` | `(node: ReactNode, meta) => ReactNode`  | internal     | Control visibility of hidden items (defaults to `React.Activity` if available, otherwise simply return null). |
 
 **Styles:** Root uses `display:flex; flex-wrap:wrap; align-items:center;`. Override via `style`/`className`.
 
@@ -163,7 +163,7 @@ It’s **expected** you’ll wrap `OverflowList` for product needs (design syste
 ### Hidden items & React versions
 
 - In React 19.2+, hidden items use `React.Activity` so overflowed children stay mounted while toggling visibility.
-- In React 16–18, overflowed nodes unmount during measurement; pass `renderHiddenItem` if you need to keep custom
+- In React 16–18, overflowed nodes unmount during measurement; pass `renderItemVisibility` if you need to keep custom
   elements or skeletons mounted and control visibility yourself.
 
 ---

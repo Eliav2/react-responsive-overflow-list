@@ -55,7 +55,7 @@ export default function App() {
               {item.name}
             </WaTag>
           )}
-          renderHiddenItem={(node, meta) => {
+          renderItemVisibility={(node, meta) => {
             return (
               <span key={meta.index} aria-hidden={!meta.visible} style={!meta.visible ? HIDDEN_ITEM_STYLES : undefined}>
                 {node}

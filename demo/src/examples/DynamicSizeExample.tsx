@@ -45,7 +45,7 @@ export function DynamicSizeExample() {
         <GrowingItem label={item} delay={800 + index * 150} />
       )}
       style={{ gap: "8px" }}
-      renderHiddenItem={(node, meta) => (
+      renderItemVisibility={(node, meta) => (
         <span
           key={meta.index}
           aria-hidden={!meta.visible}
@@ -87,8 +87,8 @@ export function DynamicSizeExample() {
       <p>
         By default the list temporarily unmounts overflowed children while it measures, so elements that change size
         (e.g. skeletons growing from 20px to 50px) can flicker as they re-enter the DOM. React 19.2+ solves this via
-        <code>React.Activity</code>; in older versions you can pass <code>renderHiddenItem</code> to keep every child
-        mounted and simply hide the overflowed ones yourself.
+        <code>React.Activity</code>; in older versions you can pass <code>renderItemVisibility</code> to keep every
+        child mounted and simply hide the overflowed ones yourself.
       </p>
 
       <div className="code-preview">
@@ -102,7 +102,7 @@ export function DynamicSizeExample() {
           items={placeholderItems}
           renderItem={(item, { index }) => <GrowingItem label={item} delay={800 + index * 150} />}
           style={{ gap: "8px" }}
-          renderHiddenItem={(node, meta) => {
+          renderItemVisibility={(node, meta) => {
             return (
               <span key={meta.index} aria-hidden={!meta.visible} style={!meta.visible ? HIDDEN_ITEM_STYLES : undefined}>
                 {node}
@@ -111,7 +111,7 @@ export function DynamicSizeExample() {
           }}
         />
         <div className="demo-note" style={{ marginTop: "12px" }}>
-          <strong>Tip:</strong> In React &lt; 19.2, pass a <code>renderHiddenItem</code> callback like above to keep
+          <strong>Tip:</strong> In React &lt; 19.2, pass a <code>renderItemVisibility</code> callback like above to keep
           custom elements mounted. React 19.2+ users can rely on the built-in <code>React.Activity</code> that the
           component uses internally.
         </div>
