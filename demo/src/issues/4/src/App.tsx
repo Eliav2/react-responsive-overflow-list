@@ -1,6 +1,6 @@
 import "./styles.css";
 
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { OverflowList } from "react-responsive-overflow-list";
 
 const WaTag: any = "wa-tag";
@@ -33,15 +33,6 @@ const DemoContainer = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function App() {
-  const renderItem = useCallback(
-    (item: any) => (
-      <WaTag key={item.id} variant="brand">
-        {item.name}
-      </WaTag>
-    ),
-    []
-  );
-
   return (
     <div className="App">
       <div style={{ fontWeight: "bold", color: "#666", marginBottom: "0.5rem" }}>Basic spans</div>
@@ -60,11 +51,14 @@ export default function App() {
         <OverflowList
           items={testTags}
           maxRows={1}
-          renderItem={renderItem}
+          renderItem={(item, meta) => (
+            <WaTag key={item.id} variant="brand">
+              {item.name}
+            </WaTag>
+          )}
           style={{
             gap: "8px",
           }}
-          flushImmediately={false}
         />
       </DemoContainer>
 
@@ -76,7 +70,6 @@ export default function App() {
           style={{
             gap: "8px",
           }}
-          flushImmediately={false}
         />
       </DemoContainer>
     </div>
@@ -91,4 +84,12 @@ const OverflowItem = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
   return <span>{children}</span>;
+};
+
+const HIDDEN_ITEM_STYLES: React.CSSProperties = {
+  position: "absolute",
+  visibility: "hidden",
+  pointerEvents: "none",
+  top: 0,
+  left: 0,
 };

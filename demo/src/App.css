@@ -180,6 +180,19 @@ header p {
   white-space: nowrap;
 }
 
+.dynamic-size-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e3f2fd;
+  border: 1px solid #64b5f6;
+  border-radius: 8px;
+  font-size: 11px;
+  color: #1e88e5;
+  transition: width 0.3s ease, height 0.3s ease, line-height 0.3s ease;
+  white-space: nowrap;
+}
+
 /* Specialized Demo Container Styles */
 .demo-container.toolbar {
   background: #f8f9fa;
