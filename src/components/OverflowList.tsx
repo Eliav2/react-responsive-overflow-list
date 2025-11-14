@@ -31,6 +31,12 @@ type BaseOverflowListProps<T> = BaseComponentProps & {
   // if true, using flushSync to update the state immediately - this can affect performance but avoid flickering
   // if false, using requestAnimationFrame to update the state - this avoid forced reflow and improve performance
   flushImmediately?: boolean;
+
+  // use this if you want to override how hidden items are kept in the DOM while not affecting layout
+  // this function is called for item item in the list(even visible ones), you can control the visibility of the item by returning a different node or null
+  //   default: about react 19.2 new Activity component to control the visibility of the item while don't forcing mount/unmount of the item
+  //            below react 19.2 is simply null (causing rapid re-mount/unmount of the item)
+  renderHiddenItem?: (node: React.ReactNode, meta: RenderItemMeta) => React.ReactNode;
 };
 
 type OverflowListWithItems<T> = BaseOverflowListProps<T> & {
@@ -80,6 +86,7 @@ const OverflowListComponent = React.memo(
       renderItem = (item) => item as React.ReactNode,
       renderOverflowItem,
       renderOverflowProps,
+      renderHiddenItem,
       maxRows = 1,
       maxVisibleItems = 100,
       flushImmediately = true,
@@ -217,6 +224,24 @@ const OverflowListComponent = React.memo(
       ...containerProps.style,
     };
 
+    const finalRenderHiddenItem =
+      renderHiddenItem ??
+      ((node, meta) => {
+        // prefer react 19.2 new activity component to control the visibility of the item while don't forcing mount/unmount of the item
+        const Activity = React?.Activity;
+        if (Activity) {
+          return (
+            <Activity key={meta.index} mode={meta.visible ? "visible" : "hidden"}>
+              {node}
+            </Activity>
+          );
+        }
+
+        // below react 19.2, simply return null if the item is not visible
+        if (!meta.visible) return null;
+        return <React.Fragment key={meta.index}>{node}</React.Fragment>;
+      });
+
     return (
       <Component {...containerProps} ref={finalContainerRef} style={containerStyles}>
         {finalItems.map((item, index) => {
@@ -229,24 +254,7 @@ const OverflowListComponent = React.memo(
 
           const itemComponent = renderItem(item as T, { index, visible: isVisible });
 
-          // prefer react 19.2 new activity component to control the visibility of the item while don't forcing mount/unmount of the item
-          const Activity = React?.Activity;
-          if (Activity) {
-            return (
-              <Activity key={index} mode={isVisible ? "visible" : "hidden"}>
-                {itemComponent}
-              </Activity>
-            );
-          }
-
-          return (
-            <span key={index} aria-hidden={!isVisible} style={!isVisible ? HIDDEN_ITEM_STYLES : undefined}>
-              {itemComponent}
-            </span>
-          );
-
-          if (!isVisible) return null;
-          return <React.Fragment key={index}>{itemComponent}</React.Fragment>;
+          return finalRenderHiddenItem(itemComponent, { index, visible: isVisible });
         })}
 
         {clonedOverflowElement}
@@ -261,12 +269,4 @@ const DEFAULT_CONTAINER_STYLES: React.CSSProperties = {
   display: "flex",
   flexWrap: "wrap",
   contain: "layout style",
-};
-
-const HIDDEN_ITEM_STYLES: React.CSSProperties = {
-  position: "absolute",
-  visibility: "hidden",
-  pointerEvents: "none",
-  top: 0,
-  left: 0,
 };
