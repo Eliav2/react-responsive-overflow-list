@@ -1,9 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, Activity } from "react";
 import { useForkRef, useIsoLayoutEffect, useResizeObserver } from "../hooks";
 import { getRowPositionsData } from "../utils";
 import { DefaultOverflowElement } from "./DefaultOverflowMenu";
 
 type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
+
+type RenderItemMeta = {
+  visible: boolean;
+  index: number;
+};
 
 type BaseOverflowListProps<T> = BaseComponentProps & {
   // Polymorphic component prop - allows changing the host element
@@ -32,7 +37,7 @@ type OverflowListWithItems<T> = BaseOverflowListProps<T> & {
   // would define the items to render in the list
   items: T[];
   // would define the default item renderer, applied both to visible and overflow items
-  renderItem: (item: NoInfer<T>, index: number) => React.ReactNode;
+  renderItem: (item: NoInfer<T>, meta: RenderItemMeta) => React.ReactNode;
   children?: never;
 };
 
@@ -43,6 +48,10 @@ type OverflowListWithChildren<T> = BaseOverflowListProps<T> & {
 };
 
 export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithChildren<T>;
+
+export type OverflowListComponent = <T>(
+  props: OverflowListProps<T> & { ref?: React.Ref<HTMLElement> }
+) => React.ReactElement;
 
 export interface OverflowElementProps<T> {
   items: T[];
@@ -59,7 +68,7 @@ export interface OverflowElementProps<T> {
  * 2. "measuring overflow" render all items fit in the container, try to add the overflow indicator item to the container. check if it opens a new row, if so, remove the last item from the last row.
  * 3. "normal" phase shows only what fits within constraints. (this is the stable state that we want to keep)
  */
-export const OverflowList = React.memo(
+const OverflowListComponent = React.memo(
   React.forwardRef(function OverflowList<T>(props: OverflowListProps<T>, forwardedRef: React.Ref<HTMLElement>) {
     const {
       as: Component = "div",
@@ -217,8 +226,30 @@ export const OverflowList = React.memo(
               "measuring" ||
             // in 'normal' phase, show only the N items that fit
             index < finalVisibleCount;
-          if (!isVisible) return null;
-          const itemComponent = renderItem(item as T, index);
+
+          const itemComponent = renderItem(item as T, { index, visible: isVisible });
+
+          // prefer react 19.2 new activity component to control the visibility of the item while don't forcing mount/unmount of the item
+          const Activity = React?.Activity;
+          if (Activity) {
+            return (
+              <Activity key={index} mode={isVisible ? "visible" : "hidden"}>
+                {itemComponent}
+              </Activity>
+            );
+          }
+
+          // return (
+          //   <span key={index} aria-hidden={!isVisible} style={!isVisible ? HIDDEN_ITEM_STYLES : undefined}>
+          //     {itemComponent}
+          //   </span>
+          // );
+
+          if (!isVisible) {
+            console.log("Hidden item", index);
+            return null;
+          }
+          // const itemComponent = renderItem(item as T, index);
 
           return <React.Fragment key={index}>{itemComponent}</React.Fragment>;
         })}
@@ -227,10 +258,20 @@ export const OverflowList = React.memo(
       </Component>
     );
   })
-) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLElement> }) => React.ReactElement;
+);
+
+export const OverflowList: OverflowListComponent = OverflowListComponent as OverflowListComponent;
 
 const DEFAULT_CONTAINER_STYLES: React.CSSProperties = {
   display: "flex",
   flexWrap: "wrap",
   contain: "layout style",
+};
+
+const HIDDEN_ITEM_STYLES: React.CSSProperties = {
+  position: "absolute",
+  visibility: "hidden",
+  pointerEvents: "none",
+  top: 0,
+  left: 0,
 };

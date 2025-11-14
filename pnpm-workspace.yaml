@@ -1,9 +1,12 @@
 packages:
   - .
   - demo
-
-onlyBuiltDependencies:
-  - esbuild
-  - puppeteer
+  - demo/src/issues/*
 
 linkWorkspacePackages: true
+
+onlyBuiltDependencies:
+  - core-js
+  - core-js-pure
+  - esbuild
+  - puppeteer
