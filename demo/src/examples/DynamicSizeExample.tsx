@@ -85,8 +85,10 @@ export function DynamicSizeExample() {
     <section className="demo">
       <h2 id="dynamic-size-example">Changing Item Sizes After Load</h2>
       <p>
-        Simulates skeleton items that start tiny (20px) and expand to their full size (50px) after a short delay—useful
-        for testing measurements when children resize after initial render.
+        By default the list temporarily unmounts overflowed children while it measures, so elements that change size
+        (e.g. skeletons growing from 20px to 50px) can flicker as they re-enter the DOM. React 19.2+ solves this via
+        <code>React.Activity</code>; in older versions you can pass <code>renderHiddenItem</code> to keep every child
+        mounted and simply hide the overflowed ones yourself.
       </p>
 
       <div className="code-preview">
@@ -108,6 +110,11 @@ export function DynamicSizeExample() {
             );
           }}
         />
+        <div className="demo-note" style={{ marginTop: "12px" }}>
+          <strong>Tip:</strong> In React &lt; 19.2, pass a <code>renderHiddenItem</code> callback like above to keep
+          custom elements mounted. React 19.2+ users can rely on the built-in <code>React.Activity</code> that the
+          component uses internally.
+        </div>
       </div>
     </section>
   );
