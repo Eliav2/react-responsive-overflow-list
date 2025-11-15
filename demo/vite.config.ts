@@ -2,10 +2,14 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import vike from "vike/plugin";
 
+const isNetlify = process.env.NETLIFY === "true";
+
 export default defineConfig(() => {
   const appMode = process.env.VITE_APP_MODE || ("spa" as "spa" | "ssr");
   console.log(`VITE_APP_MODE is "${appMode}"`);
   const isProduction = process.env.NODE_ENV === "production";
+
+  const base = isNetlify ? "/" : isProduction ? "/react-responsive-overflow-list/" : "/";
 
   const plugins = appMode === "spa" ? [react()] : [react(), vike()];
   return {
@@ -16,6 +20,6 @@ export default defineConfig(() => {
       // Handle CommonJS modules
       // external: ["react-copy-to-clipboard"],
     },
-    base: isProduction ? "/react-responsive-overflow-list/" : "/",
+    base,
   };
 });
