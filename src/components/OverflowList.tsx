@@ -182,6 +182,12 @@ const OverflowListComponent = React.memo(
     };
 
     const updateOverflowIndicator = () => {
+      // Nothing left to subtract—either we already hid every visible item or there were none to begin with.
+      // Avoid looping indefinitely by exiting early.
+      if (finalVisibleCount <= 0) {
+        return false;
+      }
+
       if (!overflowRef.current) return false;
       const rowData = getRowPositionsData(containerRef, overflowRef);
       if (!rowData) return false;
