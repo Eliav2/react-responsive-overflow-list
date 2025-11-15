@@ -5,7 +5,7 @@ import { DefaultOverflowElement } from "./DefaultOverflowMenu";
 
 type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
 
-type RenderItemMeta = {
+export type RenderItemVisibilityMeta = {
   visible: boolean;
   index: number;
 };
@@ -33,14 +33,14 @@ type BaseOverflowListProps<T> = BaseComponentProps & {
   flushImmediately?: boolean;
 
   // customize how each item is shown/hidden during measurement so you can keep custom elements mounted
-  renderItemVisibility?: (node: React.ReactNode, meta: RenderItemMeta) => React.ReactNode;
+  renderItemVisibility?: (node: React.ReactNode, meta: RenderItemVisibilityMeta) => React.ReactNode;
 };
 
 type OverflowListWithItems<T> = BaseOverflowListProps<T> & {
   // would define the items to render in the list
   items: T[];
   // would define the default item renderer, applied both to visible and overflow items
-  renderItem: (item: NoInfer<T>, meta: RenderItemMeta) => React.ReactNode;
+  renderItem: (item: NoInfer<T>, index: number) => React.ReactNode;
   children?: never;
 };
 
@@ -249,7 +249,7 @@ const OverflowListComponent = React.memo(
             // in 'normal' phase, show only the N items that fit
             index < finalVisibleCount;
 
-          const itemComponent = renderItem(item as T, { index, visible: isVisible });
+          const itemComponent = renderItem(item as T, index);
 
           return finalRenderItemVisibility(itemComponent, { index, visible: isVisible });
         })}
