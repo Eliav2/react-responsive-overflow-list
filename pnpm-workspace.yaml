@@ -10,3 +10,9 @@ onlyBuiltDependencies:
   - core-js-pure
   - esbuild
   - puppeteer
+
+catalog:
+  react: ^19.2.0
+  "react-dom": ^19.2.0
+  "@types/react": ^19.2.0
+  "@types/react-dom": ^19.2.0
