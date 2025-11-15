@@ -3,13 +3,13 @@ import react from "@vitejs/plugin-react";
 import vike from "vike/plugin";
 
 const isNetlify = process.env.NETLIFY === "true";
+const isGithubPages = process.env.GITHUB_PAGES === "true";
 
 export default defineConfig(() => {
   const appMode = process.env.VITE_APP_MODE || ("spa" as "spa" | "ssr");
   console.log(`VITE_APP_MODE is "${appMode}"`);
-  const isProduction = process.env.NODE_ENV === "production";
 
-  const base = isNetlify ? "/" : isProduction ? "/react-responsive-overflow-list/" : "/";
+  const base = isNetlify ? "/" : isGithubPages ? "/react-responsive-overflow-list/" : "/";
 
   const plugins = appMode === "spa" ? [react()] : [react(), vike()];
   return {
