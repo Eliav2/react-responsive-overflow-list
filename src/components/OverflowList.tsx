@@ -231,14 +231,14 @@ const OverflowListComponent = React.memo(
       renderItemVisibility ??
       ((node, meta) => {
         // prefer react 19.2 new activity component to control the visibility of the item while don't forcing mount/unmount of the item
-        // const Activity = React?.Activity;
-        // if (Activity) {
-        //   return (
-        //     <Activity key={meta.index} mode={meta.visible ? "visible" : "hidden"}>
-        //       {node}
-        //     </Activity>
-        //   );
-        // }
+        const Activity = React?.Activity;
+        if (Activity) {
+          return (
+            <Activity key={meta.index} mode={meta.visible ? "visible" : "hidden"}>
+              {node}
+            </Activity>
+          );
+        }
 
         // below react 19.2, simply return null if the item is not visible
         if (!meta.visible) return null;
