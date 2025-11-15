@@ -13,7 +13,9 @@
     "dev:spa": "VITE_APP_MODE=spa vike dev",
     "build:ssr": "VITE_APP_MODE=ssr vike build",
     "build:spa": "VITE_APP_MODE=spa vike build",
-    "preview": "vike preview"
+    "preview": "vike preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@storybook/react-vite": "^10.0.7",
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.10",
     "@types/react-copy-to-clipboard": "^5.0.7",
@@ -41,9 +44,9 @@
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "eslint-plugin-storybook": "^10.0.7",
     "globals": "^16.3.0",
-    "preact": "^10.27.2",
-    "preact-render-to-string": "^6.6.1",
+    "storybook": "^10.0.7",
     "tslib": "^2.8.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",

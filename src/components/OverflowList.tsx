@@ -5,6 +5,11 @@ import { DefaultOverflowElement } from "./DefaultOverflowMenu";
 
 type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
 
+type RenderItemMeta = {
+  visible: boolean;
+  index: number;
+};
+
 type BaseOverflowListProps<T> = BaseComponentProps & {
   // Polymorphic component prop - allows changing the host element
   as?: React.ElementType;
@@ -26,13 +31,16 @@ type BaseOverflowListProps<T> = BaseComponentProps & {
   // if true, using flushSync to update the state immediately - this can affect performance but avoid flickering
   // if false, using requestAnimationFrame to update the state - this avoid forced reflow and improve performance
   flushImmediately?: boolean;
+
+  // customize how each item is shown/hidden during measurement so you can keep custom elements mounted
+  renderItemVisibility?: (node: React.ReactNode, meta: RenderItemMeta) => React.ReactNode;
 };
 
 type OverflowListWithItems<T> = BaseOverflowListProps<T> & {
   // would define the items to render in the list
   items: T[];
   // would define the default item renderer, applied both to visible and overflow items
-  renderItem: (item: NoInfer<T>, index: number) => React.ReactNode;
+  renderItem: (item: NoInfer<T>, meta: RenderItemMeta) => React.ReactNode;
   children?: never;
 };
 
@@ -43,6 +51,10 @@ type OverflowListWithChildren<T> = BaseOverflowListProps<T> & {
 };
 
 export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithChildren<T>;
+
+export type OverflowListComponent = <T>(
+  props: OverflowListProps<T> & { ref?: React.Ref<HTMLElement> }
+) => React.ReactElement;
 
 export interface OverflowElementProps<T> {
   items: T[];
@@ -59,7 +71,7 @@ export interface OverflowElementProps<T> {
  * 2. "measuring overflow" render all items fit in the container, try to add the overflow indicator item to the container. check if it opens a new row, if so, remove the last item from the last row.
  * 3. "normal" phase shows only what fits within constraints. (this is the stable state that we want to keep)
  */
-export const OverflowList = React.memo(
+const OverflowListComponent = React.memo(
   React.forwardRef(function OverflowList<T>(props: OverflowListProps<T>, forwardedRef: React.Ref<HTMLElement>) {
     const {
       as: Component = "div",
@@ -71,6 +83,7 @@ export const OverflowList = React.memo(
       renderItem = (item) => item as React.ReactNode,
       renderOverflowItem,
       renderOverflowProps,
+      renderItemVisibility,
       maxRows = 1,
       maxVisibleItems = 100,
       flushImmediately = true,
@@ -208,6 +221,24 @@ export const OverflowList = React.memo(
       ...containerProps.style,
     };
 
+    const finalRenderItemVisibility =
+      renderItemVisibility ??
+      ((node, meta) => {
+        // prefer react 19.2 new activity component to control the visibility of the item while don't forcing mount/unmount of the item
+        const Activity = React?.Activity;
+        if (Activity) {
+          return (
+            <Activity key={meta.index} mode={meta.visible ? "visible" : "hidden"}>
+              {node}
+            </Activity>
+          );
+        }
+
+        // below react 19.2, simply return null if the item is not visible
+        if (!meta.visible) return null;
+        return <React.Fragment key={meta.index}>{node}</React.Fragment>;
+      });
+
     return (
       <Component {...containerProps} ref={finalContainerRef} style={containerStyles}>
         {finalItems.map((item, index) => {
@@ -217,17 +248,19 @@ export const OverflowList = React.memo(
               "measuring" ||
             // in 'normal' phase, show only the N items that fit
             index < finalVisibleCount;
-          if (!isVisible) return null;
-          const itemComponent = renderItem(item as T, index);
 
-          return <React.Fragment key={index}>{itemComponent}</React.Fragment>;
+          const itemComponent = renderItem(item as T, { index, visible: isVisible });
+
+          return finalRenderItemVisibility(itemComponent, { index, visible: isVisible });
         })}
 
         {clonedOverflowElement}
       </Component>
     );
   })
-) as (props: OverflowListProps<any> & { ref?: React.Ref<HTMLElement> }) => React.ReactElement;
+);
+
+export const OverflowList: OverflowListComponent = OverflowListComponent as OverflowListComponent;
 
 const DEFAULT_CONTAINER_STYLES: React.CSSProperties = {
   display: "flex",

@@ -1,6 +1,6 @@
 {
   "name": "react-responsive-overflow-list",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "description": "A responsive React component that shows as many items as can fit within constraints, hiding overflow items behind a configurable overflow renderer",
   "module": "dist/index.js",
@@ -25,7 +25,7 @@
     "demo:dev": "pnpm --filter demo dev",
     "demo:build": "pnpm --filter demo build",
     "demo:build:prod": "NODE_ENV=production pnpm --filter demo build",
-    "dev:all": "pnpm run dev & pnpm run demo:dev"
+    "dev:all": "pnpm -r --parallel run dev"
   },
   "keywords": [
     "react",
@@ -43,9 +43,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "react": "^19.1.1",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "react": "^19.2.0",
     "tsdown": "^0.2.0",
     "typescript": "^5.0.0"
   },

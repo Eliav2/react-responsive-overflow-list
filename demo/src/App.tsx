@@ -9,6 +9,7 @@ import { RadixVirtualizationExample } from "./examples/RadixVirtualizationExampl
 import { FlushImmediatelyExample } from "./examples/FlushImmediatelyExample";
 import { OneItemWiderExample } from "./examples/OneItemWiderExample";
 import { ReverseOrderExample } from "./examples/ReverseOrderExample";
+import { DynamicSizeExample } from "./examples/DynamicSizeExample";
 import { Github } from "lucide-react";
 import "./App.css";
 
@@ -50,6 +51,7 @@ function App() {
           <FlushImmediatelyExample />
           <OneItemWiderExample />
           <ReverseOrderExample />
+          <DynamicSizeExample />
         </main>
 
         <footer>

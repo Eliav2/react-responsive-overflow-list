@@ -1,5 +1,15 @@
 # Changelog
 
+# Changelog
+
+## 0.3.0
+
+- Added a new `renderItemVisibility` prop so apps can decide how overflowed children stay mounted (supports React 19
+  `Activity` by default and makes it easier to integrate custom skeletons/widgets).
+- Default hidden-item handling keeps elements connected via either `Activity` (when available) or if not available, simply return null.
+- Demo now includes **DynamicSizeExample**, which simulates children that grow from 20px to 50px after load and
+  showcases custom hidden-item wrappers.
+
 ## 0.2.1
 
 some polishing, and build changes:

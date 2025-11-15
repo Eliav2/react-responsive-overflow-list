@@ -7,8 +7,9 @@ export default defineConfig(() => {
   console.log(`VITE_APP_MODE is "${appMode}"`);
   const isProduction = process.env.NODE_ENV === "production";
 
+  const plugins = appMode === "spa" ? [react()] : [react(), vike()];
   return {
-    plugins: [react(), vike()],
+    plugins,
     ssr: {
       // Don't externalize React for SSR
       noExternal: ["react-responsive-overflow-list", "react-syntax-highlighter", "@types/react-syntax-highlighter"],
