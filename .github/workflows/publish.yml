@@ -31,6 +31,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - run: pnpm -s test --if-present
       - run: pnpm -s build
+      - name: Build demo
+        run: pnpm -s demo:build
 
       # Read package name/version
       - name: Read package info
