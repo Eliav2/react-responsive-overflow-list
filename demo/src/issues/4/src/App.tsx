@@ -50,7 +50,7 @@ export default function App() {
         <OverflowList
           items={testTags}
           maxRows={1}
-          renderItem={(item, meta) => (
+          renderItem={(item) => (
             <WaTag key={item.id} variant="brand">
               {item.name}
             </WaTag>

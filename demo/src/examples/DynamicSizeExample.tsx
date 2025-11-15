@@ -41,7 +41,7 @@ export function DynamicSizeExample() {
   return (
     <OverflowList
       items={placeholderItems}
-      renderItem={(item, { index }) => (
+      renderItem={(item, index) => (
         <GrowingItem label={item} delay={800 + index * 150} />
       )}
       style={{ gap: "8px" }}
@@ -100,7 +100,7 @@ export function DynamicSizeExample() {
       <div className="demo-container">
         <OverflowList
           items={placeholderItems}
-          renderItem={(item, { index }) => <GrowingItem label={item} delay={800 + index * 150} />}
+          renderItem={(item, index) => <GrowingItem label={item} delay={800 + index * 150} />}
           style={{ gap: "8px" }}
           renderItemVisibility={(node, meta) => {
             return (

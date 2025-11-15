@@ -2,6 +2,11 @@
 
 # Changelog
 
+## 0.3.1
+
+- Restored the legacy `(item, index)` call signature for `renderItem` so existing code keeps working.
+- Exported `RenderItemVisibilityMeta` and updated `renderItemVisibility` to receive that metadata.
+
 ## 0.3.0
 
 - Added a new `renderItemVisibility` prop so apps can decide how overflowed children stay mounted (supports React 19
