@@ -21,5 +21,9 @@ export default defineConfig(() => {
       // external: ["react-copy-to-clipboard"],
     },
     base,
+    build: {
+      sourcemap: true,
+      minify: false,
+    },
   };
 });

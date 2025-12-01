@@ -12,8 +12,8 @@
     "dev:ssr": "VITE_APP_MODE=ssr vike dev",
     "dev:spa": "VITE_APP_MODE=spa vike dev",
     "build:ssr": "VITE_APP_MODE=ssr vike build",
-    "build:spa": "VITE_APP_MODE=spa vike build",
-    "preview": "vike preview",
+    "build:spa": "VITE_APP_MODE=spa vite build",
+    "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
