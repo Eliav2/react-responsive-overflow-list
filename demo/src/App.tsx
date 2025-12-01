@@ -10,6 +10,7 @@ import { FlushImmediatelyExample } from "./examples/FlushImmediatelyExample";
 import { OneItemWiderExample } from "./examples/OneItemWiderExample";
 import { ReverseOrderExample } from "./examples/ReverseOrderExample";
 import { DynamicSizeExample } from "./examples/DynamicSizeExample";
+import { ShrinkingContainerExample } from "./examples/ShrinkingContainerExample";
 import { Github } from "lucide-react";
 import "./App.css";
 
@@ -42,6 +43,7 @@ function App() {
         </header>
 
         <main>
+          <ShrinkingContainerExample />
           <BasicExample />
           <ChildrenPatternExample />
           <MultiRowExample />
