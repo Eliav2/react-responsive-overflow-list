@@ -6,6 +6,7 @@ on:
     paths:
       - src/**
       - demo/**
+      - registry/**
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -59,8 +60,14 @@ jobs:
       - name: Build library
         run: pnpm run build
 
+      - name: Build registry
+        run: pnpm run build:registry
+
       - name: Build demo
         run: pnpm run demo:build:prod
+
+      - name: Copy registry to demo output
+        run: cp -r public/r demo/dist/client/r
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
