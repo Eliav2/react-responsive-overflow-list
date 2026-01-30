@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
-/* Tell Tailwind to scan the registry and components folders for classes */
+/* Tell Tailwind to scan the registry, components, and routes folders for classes */
 @source "../../registry";
 @source "./components";
+@source "./routes";
 
 /* shadcn CSS variables for theming */
 @layer base {

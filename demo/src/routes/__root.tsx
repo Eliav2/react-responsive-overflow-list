@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import appCss from "../index.css?url";
+import shadcnCss from "../shadcn.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -19,6 +20,7 @@ export const Route = createRootRoute({
       },
     ],
     links: [
+      { rel: "stylesheet", href: shadcnCss },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/svg+xml", href: "/vite.svg" },
     ],
