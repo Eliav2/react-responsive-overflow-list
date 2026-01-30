@@ -2,6 +2,7 @@ import { useState } from "react";
 import { OverflowList } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { ExampleCard } from "../components/ExampleCard";
 
 const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew", "Kiwi", "Lemon"];
 const tags = ["React", "TypeScript", "CSS", "HTML", "JavaScript", "Node.js", "Express", "MongoDB", "Vite", "ESLint"];
@@ -11,9 +12,11 @@ export function MultiRowExample() {
   const [maxRows, setMaxRows] = useState(2);
 
   return (
-    <section className="demo">
-      <h2 id="multi-row-example">Multi-row Example</h2>
-      <p>Allow up to {maxRows} rows before overflow</p>
+    <ExampleCard
+      id="multi-row-example"
+      title="Multi-row Example"
+      description={`Allow up to ${maxRows} rows before overflow`}
+    >
       <div className="code-preview">
         <SyntaxHighlighter language="tsx" style={tomorrow}>
           {`<OverflowList
@@ -45,6 +48,6 @@ export function MultiRowExample() {
           style={{ gap: "4px" }}
         />
       </div>
-    </section>
+    </ExampleCard>
   );
 }

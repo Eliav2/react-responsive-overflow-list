@@ -1,12 +1,15 @@
 import { OverflowList } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { ExampleCard } from "../components/ExampleCard";
 
 export function ChildrenPatternExample() {
   return (
-    <section className="demo">
-      <h2 id="children-pattern">Children Pattern</h2>
-      <p>Using children instead of items array</p>
+    <ExampleCard
+      id="children-pattern"
+      title="Children Pattern"
+      description="Using children instead of items array"
+    >
       <div className="code-preview">
         <SyntaxHighlighter language="tsx" style={tomorrow}>
           {`<OverflowList>
@@ -26,6 +29,6 @@ export function ChildrenPatternExample() {
           <button className="action-button">Action 6</button>
         </OverflowList>
       </div>
-    </section>
+    </ExampleCard>
   );
 }

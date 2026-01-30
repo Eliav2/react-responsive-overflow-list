@@ -1,12 +1,15 @@
 import { OverflowList } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { ExampleCard } from "../components/ExampleCard";
 
 export function CustomHostElementExample() {
   return (
-    <section className="demo">
-      <h2 id="custom-host-element">Custom Host Element</h2>
-      <p>Using the 'as' prop to render as different HTML elements</p>
+    <ExampleCard
+      id="custom-host-element"
+      title="Custom Host Element"
+      description="Using the 'as' prop to render as different HTML elements"
+    >
       <div className="code-preview">
         <SyntaxHighlighter language="tsx" style={tomorrow}>
           {`<OverflowList as="nav" style={{ gap: "8px" }}>
@@ -35,6 +38,6 @@ export function CustomHostElementExample() {
           </a>
         </OverflowList>
       </div>
-    </section>
+    </ExampleCard>
   );
 }

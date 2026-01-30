@@ -3,6 +3,7 @@ import { OverflowList } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Switch } from "@radix-ui/themes";
+import { ExampleCard } from "../components/ExampleCard";
 
 const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew", "Kiwi", "Lemon"];
 
@@ -10,11 +11,13 @@ export function FlushImmediatelyExample() {
   const [flushImmediately, setFlushImmediately] = useState(false);
 
   return (
-    <section className="demo">
-      <h2 id="flush-immediately-example">Flush Immediately Example</h2>
-      <p>
+    <ExampleCard
+      id="flush-immediately-example"
+      title="Flush Immediately Example"
+    >
+      <p style={{ marginBottom: "20px", color: "#666", fontSize: "0.9rem" }}>
         Control how updates are applied when the container resizes.
-        <strong>flushImmediately={flushImmediately ? "true" : "false"}</strong>
+        <strong> flushImmediately={flushImmediately ? "true" : "false"}</strong>
         (default: true)
       </p>
       <div className="code-preview">
@@ -67,6 +70,6 @@ export function FlushImmediatelyExample() {
           style={{ gap: "4px" }}
         />
       </div>
-    </section>
+    </ExampleCard>
   );
 }

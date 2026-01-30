@@ -1,15 +1,15 @@
 import { OverflowList } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { ExampleCard } from "../components/ExampleCard";
 
 export function OneItemWiderExample() {
   return (
-    <section className="demo">
-      <h2 id="one-item-wider-than-container">One Item Wider Than Container</h2>
-      <p>
-        What happens when a single item is wider than the available container space? The component gracefully handles
-        this by showing only the overflow element.
-      </p>
+    <ExampleCard
+      id="one-item-wider-than-container"
+      title="One Item Wider Than Container"
+      description="What happens when a single item is wider than the available container space? The component gracefully handles this by showing only the overflow element."
+    >
       <div className="code-preview">
         <SyntaxHighlighter language="tsx" style={tomorrow}>
           {`<OverflowList
@@ -45,6 +45,6 @@ export function OneItemWiderExample() {
         <strong>Behavior:</strong> When a single item is wider than the container, the component shows only the overflow
         element (the "+X more" button), ensuring the layout remains stable.
       </div>
-    </section>
+    </ExampleCard>
   );
 }
