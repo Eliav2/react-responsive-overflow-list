@@ -1,14 +1,18 @@
 import { OverflowList } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { ExampleCard } from "../components/ExampleCard";
 
 const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew", "Kiwi", "Lemon"];
 
 export function BasicExample() {
   return (
-    <section className="demo">
-      <h2 id="basic-example">Basic Example</h2>
-      <p>Simple list with default overflow element</p>
+    <ExampleCard
+      id="basic-example"
+      title="Basic Example"
+      description="Simple list with default overflow element"
+      defaultExpanded
+    >
       <div className="code-preview">
         <SyntaxHighlighter language="tsx" style={tomorrow}>
           {`<OverflowList
@@ -33,6 +37,6 @@ export function BasicExample() {
           style={{ gap: "8px" }}
         />
       </div>
-    </section>
+    </ExampleCard>
   );
 }

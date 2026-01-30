@@ -4,16 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm dev:spa",
+    "dev": "vite dev --port 3000",
     "dev:local": "pnpm install --link-workspace-packages && pnpm dev",
     "dev:published": "pnpm install --no-link-workspace-packages && pnpm dev",
-    "build": "tsc -b && pnpm build:ssr",
+    "build": "tsc -b && vite build",
+    "build:static": "VITE_APP_MODE=static vite build",
     "lint": "eslint .",
-    "dev:ssr": "VITE_APP_MODE=ssr vike dev",
-    "dev:spa": "VITE_APP_MODE=spa vike dev",
-    "build:ssr": "VITE_APP_MODE=ssr vike build",
-    "build:spa": "VITE_APP_MODE=spa vike build",
-    "preview": "vike preview",
+    "preview": "vite preview",
+    "start": "node .output/server/index.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -22,12 +20,13 @@
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/themes": "^3.2.1",
+    "@tanstack/react-router": "^1.157.16",
+    "@tanstack/react-start": "^1.157.16",
     "@tanstack/react-virtual": "^3.13.12",
     "@types/react-syntax-highlighter": "^15.5.13",
     "autoprefixer": "^10.4.23",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "express": "^4.18.2",
     "lucide-react": "^0.544.0",
     "postcss": "^8.5.6",
     "react": "catalog:",
@@ -36,15 +35,13 @@
     "react-responsive-overflow-list": "workspace:*",
     "react-syntax-highlighter": "^15.6.6",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss": "^4.1.18",
-    "vike": "^0.4.240",
-    "vike-react": "^0.6.6",
-    "vite-plugin-ssr": "^0.4.142"
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@storybook/react-vite": "^10.0.7",
     "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/react-router-devtools": "^1.157.16",
     "@types/node": "^24.3.1",
     "@types/react": "catalog:",
     "@types/react-copy-to-clipboard": "^5.0.7",
@@ -55,10 +52,12 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "eslint-plugin-storybook": "^10.0.7",
     "globals": "^16.3.0",
+    "nitro": "3.0.1-alpha.2",
     "storybook": "^10.0.7",
     "tslib": "^2.8.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

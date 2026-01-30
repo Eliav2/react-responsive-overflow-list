@@ -10,8 +10,6 @@ import { FlushImmediatelyExample } from "./examples/FlushImmediatelyExample";
 import { OneItemWiderExample } from "./examples/OneItemWiderExample";
 import { ReverseOrderExample } from "./examples/ReverseOrderExample";
 import { DynamicSizeExample } from "./examples/DynamicSizeExample";
-import { ShadcnRadixExample } from "./examples/ShadcnRadixExample";
-import { ShadcnBaseUIExample } from "./examples/ShadcnBaseUIExample";
 import { Github } from "lucide-react";
 import "./App.css";
 
@@ -44,8 +42,6 @@ function App() {
         </header>
 
         <main>
-          <ShadcnRadixExample />
-          <ShadcnBaseUIExample />
           <BasicExample />
           <ChildrenPatternExample />
           <MultiRowExample />

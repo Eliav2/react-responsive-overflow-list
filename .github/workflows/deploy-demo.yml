@@ -27,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAGES: "true"
+      VITE_APP_MODE: "static"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,11 +64,14 @@ jobs:
       - name: Build registry
         run: pnpm run build:registry
 
-      - name: Build demo
-        run: pnpm run demo:build:prod
+      - name: Build demo (Static prerendering for GitHub Pages)
+        run: pnpm run demo:build
+
+      - name: Copy 404.html for GitHub Pages routing
+        run: cp demo/.output/public/index.html demo/.output/public/404.html
 
       - name: Copy registry to demo output
-        run: cp -r public/r demo/dist/client/r
+        run: cp -r public/r demo/.output/public/r
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -75,7 +79,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: demo/dist/client
+          path: demo/.output/public
 
   # Deployment job
   deploy:

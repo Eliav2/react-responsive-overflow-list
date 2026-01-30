@@ -2,19 +2,18 @@ import { RadixVirtualizedOverflowList } from "../components/RadixVirtualizedOver
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState } from "react";
+import { ExampleCard } from "../components/ExampleCard";
 
 const tags = ["React", "TypeScript", "CSS", "HTML", "JavaScript", "Node.js", "Express", "MongoDB", "Vite", "ESLint"];
 
 export function RadixVirtualizationExample() {
   const [maxRows, setMaxRows] = useState(1);
   return (
-    <section className="demo">
-      <h2 id="radix-ui-virtualization-example">Extending OverflowList</h2>
-      <p>
-        This is an example implementation showing how to wrap OverflowList with Radix UI dropdown and virtualization. In
-        real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your
-        specific needs, design system, etc.
-      </p>
+    <ExampleCard
+      id="radix-ui-virtualization-example"
+      title="Extending OverflowList"
+      description="This is an example implementation showing how to wrap OverflowList with Radix UI dropdown and virtualization. In real-world applications, it's expected that you'll wrap OverflowList with your own components tailored to your specific needs, design system, etc."
+    >
       <div className="code-preview">
         <SyntaxHighlighter language="tsx" style={tomorrow}>
           {`import { RadixVirtualizedOverflowList } from "../components/RadixVirtualizedOverflowList";
@@ -114,6 +113,6 @@ export function RadixVirtualizationExample() {
           </a>
         </p>
       </div>
-    </section>
+    </ExampleCard>
   );
 }

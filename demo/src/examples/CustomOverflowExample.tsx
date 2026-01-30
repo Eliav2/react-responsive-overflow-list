@@ -3,6 +3,7 @@ import { OverflowList, type OverflowElementProps } from "react-responsive-overfl
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { CollapsibleCodePreview } from "../components/CollapsibleCodePreview";
+import { ExampleCard } from "../components/ExampleCard";
 import { RadixOverflowMenu } from "./RadixOverflowMenu";
 import radixCodeExample from "./RadixOverflowMenu?raw";
 import { VirtualizedRadixOverflowMenu } from "./VirtualizedRadixOverflowMenu";
@@ -18,10 +19,11 @@ const CustomOverflowElement = React.forwardRef<HTMLDivElement, OverflowElementPr
 
 export function CustomOverflowExample() {
   return (
-    <section className="demo">
-      <h2 id="custom-overflow-example">Custom Overflow Element</h2>
-      <p>You would generally want to provide your own overflow element</p>
-
+    <ExampleCard
+      id="custom-overflow-example"
+      title="Custom Overflow Element"
+      description="You would generally want to provide your own overflow element"
+    >
       {/* Example 1: Simple overflow function */}
       <div className="example-section">
         <h3>Simple Overflow Function</h3>
@@ -154,6 +156,6 @@ const CustomOverflowElement = React.forwardRef<HTMLDivElement, { items: string[]
           reduced performance. The default of 100 provides a good balance between performance and usability.
         </div>
       </div>
-    </section>
+    </ExampleCard>
   );
 }

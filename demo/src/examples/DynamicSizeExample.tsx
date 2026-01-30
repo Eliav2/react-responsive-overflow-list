@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { OverflowList } from "react-responsive-overflow-list";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { ExampleCard } from "../components/ExampleCard";
 
 const placeholderItems = Array.from({ length: 10 }, (_, index) => `Item ${index + 1}`);
 
@@ -82,9 +83,11 @@ function GrowingItem({ label, delay = 1200 }: { label: string; delay?: number })
 
 export function DynamicSizeExample() {
   return (
-    <section className="demo">
-      <h2 id="dynamic-size-example">Changing Item Sizes After Load</h2>
-      <p>
+    <ExampleCard
+      id="dynamic-size-example"
+      title="Changing Item Sizes After Load"
+    >
+      <p style={{ marginBottom: "20px", color: "#666", fontSize: "0.9rem" }}>
         By default the list temporarily unmounts overflowed children while it measures, so elements that change size
         (e.g. skeletons growing from 20px to 50px) can flicker as they re-enter the DOM. React 19.2+ solves this via
         <code>React.Activity</code>; in older versions you can pass <code>renderItemVisibility</code> to keep every
@@ -116,7 +119,7 @@ export function DynamicSizeExample() {
           component uses internally.
         </div>
       </div>
-    </section>
+    </ExampleCard>
   );
 }
 
