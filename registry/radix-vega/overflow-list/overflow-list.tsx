@@ -40,6 +40,46 @@ const gapClasses = {
   lg: "gap-3",
 }
 
+/* -----------------------------------------------------------------------------
+ * OverflowDropdown
+ * Internal component with forwardRef to ensure proper measurements
+ * -------------------------------------------------------------------------- */
+
+interface OverflowDropdownProps<T> {
+  items: T[]
+  label: string
+  renderItem: (item: T, index: number) => React.ReactNode
+  renderOverflowItem?: (item: T, index: number) => React.ReactNode
+}
+
+const OverflowDropdownInner = <T,>(
+  { items, label, renderItem, renderOverflowItem }: OverflowDropdownProps<T>,
+  ref: React.ForwardedRef<HTMLButtonElement>
+) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button ref={ref}>{label}</Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end" className="max-h-[300px] overflow-y-auto">
+      {items.map((item, index) => (
+        <DropdownMenuItem key={index}>
+          {renderOverflowItem
+            ? renderOverflowItem(item, index)
+            : renderItem(item, index)}
+        </DropdownMenuItem>
+      ))}
+    </DropdownMenuContent>
+  </DropdownMenu>
+)
+
+const OverflowDropdown = React.forwardRef(OverflowDropdownInner) as <T>(
+  props: OverflowDropdownProps<T> & { ref?: React.ForwardedRef<HTMLButtonElement> }
+) => React.ReactElement
+
+/* -----------------------------------------------------------------------------
+ * OverflowList Component
+ * -------------------------------------------------------------------------- */
+
 function OverflowListInner<T>(
   {
     items,
@@ -63,20 +103,12 @@ function OverflowListInner<T>(
       maxVisibleItems={maxVisibleItems}
       className={cn("flex flex-wrap items-center", gapClasses[gap], className)}
       renderOverflow={(hiddenItems) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button>{overflowLabel(hiddenItems.length)}</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="max-h-[300px] overflow-y-auto">
-            {hiddenItems.map((item, index) => (
-              <DropdownMenuItem key={index}>
-                {renderOverflowItem
-                  ? renderOverflowItem(item, index)
-                  : renderItem(item, index)}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <OverflowDropdown
+          items={hiddenItems}
+          label={overflowLabel(hiddenItems.length)}
+          renderItem={renderItem}
+          renderOverflowItem={renderOverflowItem}
+        />
       )}
       {...props}
     />

@@ -77,8 +77,6 @@ export const navigation: NavSection[] = [
       {
         title: "shadcn/ui",
         href: "/docs/shadcn",
-        badge: "Coming Soon",
-        disabled: true,
       },
     ],
   },
