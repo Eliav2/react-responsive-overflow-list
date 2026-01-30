@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAGES: "true"
+      VITE_APP_MODE: "spa"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,8 +60,11 @@ jobs:
       - name: Build library
         run: pnpm run build
 
-      - name: Build demo
-        run: pnpm run demo:build:prod
+      - name: Build demo (SPA mode for GitHub Pages)
+        run: pnpm run demo:build
+
+      - name: Copy 404.html for GitHub Pages SPA routing
+        run: cp demo/.output/public/index.html demo/.output/public/404.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -68,7 +72,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: demo/dist/client
+          path: demo/.output/public
 
   # Deployment job
   deploy:
