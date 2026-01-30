@@ -41,7 +41,6 @@ export function ExampleCard({
           <h2 className="m-0 text-xl font-semibold">{title}</h2>
         </button>
         <button
-          className="shrink-0"
           onClick={copyLink}
           aria-label="Copy link to this example"
           title="Copy link"

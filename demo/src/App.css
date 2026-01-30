@@ -11,21 +11,21 @@
   line-height: 1.6;
 }
 
-header {
+.app header {
   text-align: center;
   margin-bottom: 40px;
   padding-bottom: 20px;
   border-bottom: 2px solid #f0f0f0;
 }
 
-header h1 {
+.app header h1 {
   color: #333;
   margin-bottom: 8px;
   font-size: 2.5rem;
   font-weight: 700;
 }
 
-header p {
+.app header p {
   color: #666;
   font-size: 1.1rem;
   margin: 0;

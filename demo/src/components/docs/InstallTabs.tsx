@@ -4,9 +4,10 @@ import { Check, Copy } from "lucide-react";
 const PACKAGE_NAME = "react-responsive-overflow-list";
 
 const managers = [
-  { id: "npm", label: "npm", command: `npm install ${PACKAGE_NAME}` },
   { id: "pnpm", label: "pnpm", command: `pnpm add ${PACKAGE_NAME}` },
+  { id: "bun", label: "bun", command: `bun add ${PACKAGE_NAME}` },
   { id: "yarn", label: "yarn", command: `yarn add ${PACKAGE_NAME}` },
+  { id: "npm", label: "npm", command: `npm install ${PACKAGE_NAME}` },
 ] as const;
 
 type ManagerId = (typeof managers)[number]["id"];
@@ -14,7 +15,7 @@ type ManagerId = (typeof managers)[number]["id"];
 const STORAGE_KEY = "preferred-package-manager";
 
 export function InstallTabs() {
-  const [selected, setSelected] = useState<ManagerId>("npm");
+  const [selected, setSelected] = useState<ManagerId>("pnpm");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {

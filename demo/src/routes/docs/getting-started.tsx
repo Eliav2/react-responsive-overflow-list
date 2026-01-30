@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { InstallTabs } from "../../components/docs/InstallTabs";
 import {
   PropsTable,
@@ -69,9 +71,9 @@ function GettingStartedPage() {
           The most common pattern uses an <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">items</code> array with a{" "}
           <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">renderItem</code> function:
         </p>
-        <div className="bg-gray-900 rounded-lg overflow-hidden my-4">
-          <pre className="m-0 p-4 overflow-x-auto">
-            <code className="text-gray-200 text-sm leading-relaxed">{`import { OverflowList } from "react-responsive-overflow-list";
+        <div className="code-preview">
+          <SyntaxHighlighter language="tsx" style={tomorrow}>
+            {`import { OverflowList } from "react-responsive-overflow-list";
 
 const items = ["One", "Two", "Three", "Four", "Five"];
 
@@ -84,8 +86,8 @@ export default function Example() {
       maxRows={1}
     />
   );
-}`}</code>
-          </pre>
+}`}
+          </SyntaxHighlighter>
         </div>
       </section>
 
@@ -97,15 +99,15 @@ export default function Example() {
           Alternatively, pass children directly instead of using{" "}
           <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">items + renderItem</code>:
         </p>
-        <div className="bg-gray-900 rounded-lg overflow-hidden my-4">
-          <pre className="m-0 p-4 overflow-x-auto">
-            <code className="text-gray-200 text-sm leading-relaxed">{`<OverflowList style={{ gap: 8 }}>
+        <div className="code-preview">
+          <SyntaxHighlighter language="tsx" style={tomorrow}>
+            {`<OverflowList style={{ gap: 8 }}>
   <button>A</button>
   <button>B</button>
   <button>C</button>
   <button>D</button>
-</OverflowList>`}</code>
-          </pre>
+</OverflowList>`}
+          </SyntaxHighlighter>
         </div>
       </section>
 
@@ -117,14 +119,14 @@ export default function Example() {
           Provide your own overflow UI (button, dropdown menu, etc.) via the{" "}
           <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">renderOverflow</code> prop:
         </p>
-        <div className="bg-gray-900 rounded-lg overflow-hidden my-4">
-          <pre className="m-0 p-4 overflow-x-auto">
-            <code className="text-gray-200 text-sm leading-relaxed">{`<OverflowList
+        <div className="code-preview">
+          <SyntaxHighlighter language="tsx" style={tomorrow}>
+            {`<OverflowList
   items={items}
   renderItem={(item) => <span>{item}</span>}
   renderOverflow={(hidden) => <button>+{hidden.length} more</button>}
-/>`}</code>
-          </pre>
+/>`}
+          </SyntaxHighlighter>
         </div>
       </section>
 

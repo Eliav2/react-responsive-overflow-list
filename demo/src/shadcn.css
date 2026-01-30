@@ -111,6 +111,11 @@
   * {
     border-color: hsl(var(--border));
   }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 /* Animation keyframes for shadcn components */
