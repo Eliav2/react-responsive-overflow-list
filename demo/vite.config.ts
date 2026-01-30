@@ -6,9 +6,9 @@ import { nitro } from "nitro/vite";
 
 const isNetlify = process.env.NETLIFY === "true";
 const isGithubPages = process.env.GITHUB_PAGES === "true";
-const isSpa = (process.env.VITE_APP_MODE ?? "spa") === "spa";
+const isStatic = (process.env.VITE_APP_MODE ?? "ssr") === "static";
 
-console.log(`VITE_APP_MODE is "${isSpa ? "spa" : "ssr"}"`);
+console.log(`VITE_APP_MODE is "${isStatic ? "static" : "ssr"}"`);
 
 const base = isNetlify ? "/" : isGithubPages ? "/react-responsive-overflow-list/" : "/";
 
@@ -22,23 +22,18 @@ export default defineConfig({
       projects: ["./tsconfig.json"],
     }),
     tanstackStart({
-      // SPA mode configuration (per official start-basic-static example)
-      ...(isSpa && {
-        spa: {
-          enabled: true,
-          prerender: {
-            crawlLinks: true,
-          },
-        },
-        prerender: {
-          failOnError: false,
-        },
-      }),
+      // Static prerendering: full SSR at build time, generates complete HTML files
+      // Used for GitHub Pages - pre-renders all pages as static HTML
+      prerender: {
+        enabled: isStatic || isGithubPages,
+        crawlLinks: true,
+        failOnError: false,
+      },
     }),
     // IMPORTANT: viteReact must come AFTER tanstackStart
     viteReact(),
-    // nitro only needed for SSR mode
-    ...(!isSpa ? [nitro()] : []),
+    // nitro needed for SSR server and static prerendering
+    nitro(),
   ],
   ssr: {
     noExternal: [

@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAGES: "true"
-      VITE_APP_MODE: "spa"
+      VITE_APP_MODE: "static"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,10 +60,10 @@ jobs:
       - name: Build library
         run: pnpm run build
 
-      - name: Build demo (SPA mode for GitHub Pages)
+      - name: Build demo (Static prerendering for GitHub Pages)
         run: pnpm run demo:build
 
-      - name: Copy 404.html for GitHub Pages SPA routing
+      - name: Copy 404.html for GitHub Pages routing
         run: cp demo/.output/public/index.html demo/.output/public/404.html
 
       - name: Setup Pages
