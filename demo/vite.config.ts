@@ -4,6 +4,7 @@ import viteReact from "@vitejs/plugin-react";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { nitro } from "nitro/vite";
 import tailwindcss from "@tailwindcss/vite";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 import path from "path";
 
 const isNetlify = process.env.NETLIFY === "true";
@@ -38,6 +39,14 @@ export default defineConfig({
     viteReact(),
     nitro(),
     tailwindcss(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: "../public/r",
+          dest: ".",
+        },
+      ],
+    }),
   ],
   ssr: {
     noExternal: [
