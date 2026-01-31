@@ -1,4 +1,4 @@
-import { useLocation } from "@tanstack/react-router";
+import { useLocation, Link } from "@tanstack/react-router";
 import {
   navigation,
   type NavItem,
@@ -56,8 +56,8 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
           <ul className="list-none m-0 p-0">
             {section.items.map((item: NavItem) => (
               <li key={item.href}>
-                <a
-                  href={item.href}
+                <Link
+                  to={item.href}
                   onClick={(e) => handleClick(e, item)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-md no-underline text-sm transition-colors ${
                     isActive(item)
@@ -74,7 +74,7 @@ export function SidebarNav({ onNavigate }: SidebarNavProps) {
                       {item.badge}
                     </span>
                   )}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

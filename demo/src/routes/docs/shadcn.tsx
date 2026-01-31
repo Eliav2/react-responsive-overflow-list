@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShadcnInstallTabs } from "../../components/docs/ShadcnInstallTabs";
 import { ShadcnOverflowListExample } from "../../examples/ShadcnOverflowListExample";
 
@@ -15,9 +15,9 @@ function ShadcnPage() {
       </h1>
       <p className="text-lg text-gray-600 mb-8 leading-relaxed">
         Install the OverflowList component via the shadcn CLI. See the{" "}
-        <a href="/docs/api" className="text-blue-600 hover:underline">
+        <Link to="/docs/api" className="text-blue-600 hover:underline">
           API Reference
-        </a>{" "}
+        </Link>{" "}
         for props documentation.
       </p>
 

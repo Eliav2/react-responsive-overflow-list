@@ -1,4 +1,5 @@
 import { Github, Menu, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -17,12 +18,12 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
           >
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <a
-            href="/docs/getting-started"
+          <Link
+            to="/docs/getting-started"
             className="text-gray-900 font-semibold text-base no-underline hover:text-blue-600 transition-colors"
           >
             react-responsive-overflow-list
-          </a>
+          </Link>
         </div>
         <div className="flex items-center gap-3">
           <a

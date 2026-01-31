@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { InstallTabs } from "../../components/docs/InstallTabs";
@@ -136,9 +136,9 @@ export default function Example() {
         </h2>
         <p className="text-gray-700 leading-relaxed mb-4">
           Here are the most commonly used props. See the{" "}
-          <a href="/docs/api" className="text-blue-600 hover:underline">
+          <Link to="/docs/api" className="text-blue-600 hover:underline">
             API Reference
-          </a>{" "}
+          </Link>{" "}
           for the complete list.
         </p>
         <PropsTable props={keyProps} />
@@ -150,21 +150,21 @@ export default function Example() {
         </h2>
         <ul className="space-y-2 text-gray-700">
           <li>
-            <a
-              href="/docs/examples"
+            <Link
+              to="/docs/examples"
               className="text-blue-600 hover:underline font-medium"
             >
               Browse Examples
-            </a>{" "}
+            </Link>{" "}
             — See all usage patterns with live demos
           </li>
           <li>
-            <a
-              href="/docs/api"
+            <Link
+              to="/docs/api"
               className="text-blue-600 hover:underline font-medium"
             >
               API Reference
-            </a>{" "}
+            </Link>{" "}
             — Complete props and types documentation
           </li>
         </ul>
