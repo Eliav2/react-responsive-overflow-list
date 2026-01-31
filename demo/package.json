@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prebuild": "pnpm -w build:registry",
     "dev": "vite dev --port 3000",
     "dev:local": "pnpm install --link-workspace-packages && pnpm dev",
     "dev:published": "pnpm install --no-link-workspace-packages && pnpm dev",
