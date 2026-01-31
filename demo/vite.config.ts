@@ -42,7 +42,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: "../public/r",
+          src: path.resolve(__dirname, "../public/r"),
           dest: ".",
         },
       ],
