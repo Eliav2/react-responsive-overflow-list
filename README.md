@@ -32,6 +32,20 @@ Responsive list for React that shows only items that fit and groups the rest int
 npm i react-responsive-overflow-list
 ```
 
+### shadcn/ui
+
+Install as a styled shadcn component with dropdown menu overflow:
+
+```bash
+# Radix UI primitives (recommended)
+npx shadcn@latest add https://eliav2.github.io/react-responsive-overflow-list/r/styles/radix-vega/overflow-list.json
+
+# Base UI primitives
+npx shadcn@latest add https://eliav2.github.io/react-responsive-overflow-list/r/styles/base-vega/overflow-list.json
+```
+
+See [shadcn/ui docs](https://eliav2.github.io/react-responsive-overflow-list/docs/shadcn) for usage.
+
 ## Usage
 
 > In real apps, you’ll typically wrap OverflowList in your own component—design tokens, accessible menus, virtualization, or search. See 'Wrap & extend' below and the demo for a full wrapper example.
