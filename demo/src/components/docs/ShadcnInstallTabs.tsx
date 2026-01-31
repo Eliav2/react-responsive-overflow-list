@@ -8,13 +8,13 @@ const variants = [
     id: "radix",
     label: "Radix UI",
     command: `npx shadcn@latest add ${BASE_URL}/radix-vega/overflow-list.json`,
-    description: "Uses shadcn Button and DropdownMenu components",
+    description: "Uses shadcn radix primitives",
   },
   {
     id: "base-ui",
     label: "Base UI",
     command: `npx shadcn@latest add ${BASE_URL}/base-vega/overflow-list.json`,
-    description: "Uses @base-ui/react Menu component",
+    description: "Uses shadcn base-ui primitives",
   },
 ] as const;
 

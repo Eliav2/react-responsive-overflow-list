@@ -4,6 +4,7 @@ import viteReact from "@vitejs/plugin-react";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { nitro } from "nitro/vite";
 import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 
 const isNetlify = process.env.NETLIFY === "true";
 const isGithubPages = process.env.GITHUB_PAGES === "true";
@@ -18,24 +19,24 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   plugins: [
     tsConfigPaths({
-      projects: ["./tsconfig.json"],
+      projects: ["./tsconfig.app.json"],
     }),
     tanstackStart({
-      // Static prerendering: full SSR at build time, generates complete HTML files
-      // Used for GitHub Pages - pre-renders all pages as static HTML
       prerender: {
         enabled: isStatic || isGithubPages,
         crawlLinks: true,
         failOnError: false,
       },
     }),
-    // IMPORTANT: viteReact must come AFTER tanstackStart
     viteReact(),
-    // nitro needed for SSR server and static prerendering
     nitro(),
-    // Tailwind CSS
     tailwindcss(),
   ],
   ssr: {

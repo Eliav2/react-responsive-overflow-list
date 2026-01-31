@@ -8,8 +8,8 @@
       "type": "registry:ui",
       "title": "Overflow List",
       "description": "A responsive list that shows items that fit and hides overflow in a Base UI menu. Automatically recalculates on resize.",
-      "dependencies": ["react-responsive-overflow-list", "@base-ui/react"],
-      "registryDependencies": ["button"],
+      "dependencies": ["react-responsive-overflow-list"],
+      "registryDependencies": ["button", "dropdown-menu"],
       "files": [
         {
           "path": "registry/base-vega/overflow-list/overflow-list.tsx",

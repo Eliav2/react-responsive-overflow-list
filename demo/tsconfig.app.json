@@ -21,13 +21,10 @@
     /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
-    },
-
-    /* Path aliases */
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "~/*": ["./src/*"],
+      "@/components/shadcn-radix-ui/*": ["./src/components/shadcn-radix-ui/*"],
+      "@/components/shadcn-base-ui/*": ["./src/components/shadcn-base-ui/*"]
     },
 
     /* Linting */
@@ -38,5 +35,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "../registry"]
+  "include": ["src"],
+  "exclude": ["../registry"]
 }

@@ -16,6 +16,15 @@ export const navigation: NavSection[] = [
     title: "Getting Started",
     items: [{ title: "Introduction", href: "/docs/getting-started" }],
   },
+    {
+    title: "Integrations",
+    items: [
+      {
+        title: "shadcn/ui",
+        href: "/docs/shadcn",
+      },
+    ],
+  },
   {
     title: "Examples",
     items: [
@@ -70,14 +79,5 @@ export const navigation: NavSection[] = [
   {
     title: "API Reference",
     items: [{ title: "Props & Types", href: "/docs/api" }],
-  },
-  {
-    title: "Integrations",
-    items: [
-      {
-        title: "shadcn/ui",
-        href: "/docs/shadcn",
-      },
-    ],
   },
 ];

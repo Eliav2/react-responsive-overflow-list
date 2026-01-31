@@ -1,5 +1,8 @@
 "use client"
 
+// Demo wrapper with direct imports to shadcn-radix-ui components
+// Registry component uses @/components/ui/* which resolves via user's shadcn setup
+
 import * as React from "react"
 import {
   OverflowList as OverflowListPrimitive,
@@ -10,8 +13,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+} from "@/components/shadcn-radix-ui/dropdown-menu"
+import { Button } from "@/components/shadcn-radix-ui/button"
 import { cn } from "@/lib/utils"
 
 export const OverflowList = React.forwardRef(
@@ -49,13 +52,10 @@ export const OverflowList = React.forwardRef(
   )
 ) as <T>(props: OverflowListProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }) => React.ReactElement
 
-/** Extract the items-based variant from the primitive's union type */
 type PrimitiveItemsProps<T> = Extract<PrimitiveOverflowListProps<T>, { items: T[] }>
 
-/** Extended props for the Base UI styled variant */
 export interface OverflowListProps<T>
   extends Omit<PrimitiveItemsProps<T>, "renderOverflow" | "renderOverflowProps"> {
-  /** Text for overflow trigger button */
   overflowLabel?: (count: number) => string
 }
 
@@ -72,8 +72,8 @@ const OverflowDropdown = React.forwardRef(
     ref: React.ForwardedRef<HTMLButtonElement>
   ) => (
     <DropdownMenu>
-      <DropdownMenuTrigger ref={ref} render={<Button variant="outline" />}>
-        {label}
+      <DropdownMenuTrigger asChild>
+        <Button ref={ref} variant="outline">{label}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-h-75 overflow-y-auto">
         {items.map((item, index) => (

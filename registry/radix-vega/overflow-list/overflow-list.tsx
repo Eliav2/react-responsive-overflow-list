@@ -1,7 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { OverflowList as OverflowListPrimitive } from "react-responsive-overflow-list"
+import {
+  OverflowList as OverflowListPrimitive,
+  type OverflowListProps as PrimitiveOverflowListProps,
+} from "react-responsive-overflow-list"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,97 +14,28 @@ import {
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-/* -----------------------------------------------------------------------------
- * OverflowList
- * A responsive list that shows as many items as fit, with overflow in a dropdown
- * -------------------------------------------------------------------------- */
-
-export interface OverflowListProps<T>
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {
-  /** Array of items to render */
-  items: T[]
-  /** Render function for visible items */
-  renderItem: (item: T, index: number) => React.ReactNode
-  /** Optional render function for items in the overflow dropdown */
-  renderOverflowItem?: (item: T, index: number) => React.ReactNode
-  /** Maximum number of rows before overflow (default: 1) */
-  maxRows?: number
-  /** Maximum visible items regardless of space (default: 100) */
-  maxVisibleItems?: number
-  /** Text for overflow trigger button */
-  overflowLabel?: (count: number) => string
-  /** Gap between items: "sm" | "md" | "lg" */
-  gap?: "sm" | "md" | "lg"
-}
-
-const gapClasses = {
-  sm: "gap-1",
-  md: "gap-2",
-  lg: "gap-3",
-}
-
-/* -----------------------------------------------------------------------------
- * OverflowDropdown
- * Internal component with forwardRef to ensure proper measurements
- * -------------------------------------------------------------------------- */
-
-interface OverflowDropdownProps<T> {
-  items: T[]
-  label: string
-  renderItem: (item: T, index: number) => React.ReactNode
-  renderOverflowItem?: (item: T, index: number) => React.ReactNode
-}
-
-const OverflowDropdownInner = <T,>(
-  { items, label, renderItem, renderOverflowItem }: OverflowDropdownProps<T>,
-  ref: React.ForwardedRef<HTMLButtonElement>
-) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button ref={ref}>{label}</Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" className="max-h-[300px] overflow-y-auto">
-      {items.map((item, index) => (
-        <DropdownMenuItem key={index}>
-          {renderOverflowItem
-            ? renderOverflowItem(item, index)
-            : renderItem(item, index)}
-        </DropdownMenuItem>
-      ))}
-    </DropdownMenuContent>
-  </DropdownMenu>
-)
-
-const OverflowDropdown = React.forwardRef(OverflowDropdownInner) as <T>(
-  props: OverflowDropdownProps<T> & { ref?: React.ForwardedRef<HTMLButtonElement> }
-) => React.ReactElement
-
-/* -----------------------------------------------------------------------------
- * OverflowList Component
- * -------------------------------------------------------------------------- */
-
-function OverflowListInner<T>(
-  {
-    items,
-    renderItem,
-    renderOverflowItem,
-    maxRows = 1,
-    maxVisibleItems = 100,
-    overflowLabel = (count) => `+${count} more`,
-    gap = "md",
-    className,
-    ...props
-  }: OverflowListProps<T>,
-  ref: React.ForwardedRef<HTMLDivElement>
-) {
-  return (
+export const OverflowList = React.forwardRef(
+  <T,>(
+    {
+      items,
+      renderItem,
+      renderOverflowItem,
+      maxRows = 1,
+      maxVisibleItems = 100,
+      overflowLabel = (count) => `+${count} more`,
+      className,
+      ...props
+    }: OverflowListProps<T>,
+    ref: React.ForwardedRef<HTMLDivElement>
+  ) => (
     <OverflowListPrimitive
       ref={ref}
+      data-slot="overflow-list"
       items={items}
       renderItem={renderItem}
       maxRows={maxRows}
       maxVisibleItems={maxVisibleItems}
-      className={cn("flex flex-wrap items-center", gapClasses[gap], className)}
+      className={cn("items-center gap-2", className)}
       renderOverflow={(hiddenItems) => (
         <OverflowDropdown
           items={hiddenItems}
@@ -113,11 +47,42 @@ function OverflowListInner<T>(
       {...props}
     />
   )
+) as <T>(props: OverflowListProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }) => React.ReactElement
+
+/** Extract the items-based variant from the primitive's union type */
+type PrimitiveItemsProps<T> = Extract<PrimitiveOverflowListProps<T>, { items: T[] }>
+
+/** Extended props for the Radix/shadcn styled variant */
+export interface OverflowListProps<T>
+  extends Omit<PrimitiveItemsProps<T>, "renderOverflow" | "renderOverflowProps"> {
+  /** Text for overflow trigger button */
+  overflowLabel?: (count: number) => string
 }
 
-// Use type assertion to preserve generic while using forwardRef
-export const OverflowList = React.forwardRef(OverflowListInner) as <T>(
-  props: OverflowListProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> }
-) => React.ReactElement
+interface OverflowDropdownProps<T> {
+  items: T[]
+  label: string
+  renderItem: (item: T, index: number) => React.ReactNode
+  renderOverflowItem?: (item: T, index: number) => React.ReactNode
+}
 
-export default OverflowList
+const OverflowDropdown = React.forwardRef(
+  <T,>(
+    { items, label, renderItem, renderOverflowItem }: OverflowDropdownProps<T>,
+    ref: React.ForwardedRef<HTMLButtonElement>
+  ) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button ref={ref} variant="outline">{label}</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="max-h-75 overflow-y-auto">
+        {items.map((item, index) => (
+          <DropdownMenuItem key={index}>
+            {renderOverflowItem ? renderOverflowItem(item, index) : renderItem(item, index)}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+) as <T>(props: OverflowDropdownProps<T> & { ref?: React.ForwardedRef<HTMLButtonElement> }) => React.ReactElement
+
