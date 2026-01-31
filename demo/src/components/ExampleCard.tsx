@@ -29,29 +29,29 @@ export function ExampleCard({
   };
 
   return (
-    <section className="example-card" id={id}>
-      <div className="example-card-header">
+    <section className="mb-6 border border-gray-200 rounded-lg bg-white overflow-hidden scroll-mt-24" id={id}>
+      <div className="flex items-center justify-between px-6 py-5 bg-gray-50 border-b border-gray-200">
         <button
-          className="example-card-toggle"
+          className="inline-flex items-center gap-3 bg-transparent border-none cursor-pointer text-left p-0 text-gray-800 hover:text-blue-600"
+          style={{ display: 'inline-flex', alignItems: 'center' }}
           onClick={() => setIsExpanded(!isExpanded)}
           aria-expanded={isExpanded}
         >
-          {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-          <h2>{title}</h2>
+          <span className="shrink-0">{isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}</span>
+          <h2 className="m-0 text-xl font-semibold">{title}</h2>
         </button>
         <button
-          className="example-card-link"
           onClick={copyLink}
           aria-label="Copy link to this example"
           title="Copy link"
         >
-          {linkCopied ? <Check size={16} className="copy-success" /> : <Link size={16} />}
+          {linkCopied ? <Check size={16} color="#16a34a" /> : <Link size={16} color="#4b5563" />}
         </button>
       </div>
 
       {isExpanded && (
-        <div className="example-card-content">
-          {description && <p className="example-card-description">{description}</p>}
+        <div className="p-6">
+          {description && <p className="mt-0 mb-5 text-gray-600 text-sm">{description}</p>}
           {children}
         </div>
       )}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "eliav2",
+  "homepage": "https://github.com/eliav2/react-responsive-overflow-list",
+  "items": [
+    {
+      "name": "overflow-list",
+      "type": "registry:ui",
+      "title": "Overflow List",
+      "description": "A responsive list that shows items that fit and hides overflow in a Base UI menu. Automatically recalculates on resize.",
+      "dependencies": ["react-responsive-overflow-list"],
+      "registryDependencies": ["button", "dropdown-menu"],
+      "files": [
+        {
+          "path": "registry/base-vega/overflow-list/overflow-list.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/overflow-list.tsx"
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,8 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "build:registry": "shadcn build ./registry/radix-vega/registry.json -o ./public/r/styles/radix-vega && shadcn build ./registry/base-vega/registry.json -o ./public/r/styles/base-vega",
+    "build:all": "pnpm build && pnpm build:registry",
     "dev": "tsdown --watch",
     "lint": "eslint src --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
@@ -41,11 +43,13 @@
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@base-ui/react": "^1.1.0",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "react": "catalog:",
+    "shadcn": "^3.7.0",
     "tsdown": "^0.2.0",
     "typescript": "^5.0.0"
   },

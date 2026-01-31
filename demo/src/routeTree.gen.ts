@@ -9,38 +9,110 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DocsRouteRouteImport } from './routes/docs/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsShadcnRouteImport } from './routes/docs/shadcn'
+import { Route as DocsGettingStartedRouteImport } from './routes/docs/getting-started'
+import { Route as DocsExamplesRouteImport } from './routes/docs/examples'
+import { Route as DocsApiRouteImport } from './routes/docs/api'
 
+const DocsRouteRoute = DocsRouteRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsShadcnRoute = DocsShadcnRouteImport.update({
+  id: '/shadcn',
+  path: '/shadcn',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsGettingStartedRoute = DocsGettingStartedRouteImport.update({
+  id: '/getting-started',
+  path: '/getting-started',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsExamplesRoute = DocsExamplesRouteImport.update({
+  id: '/examples',
+  path: '/examples',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
+const DocsApiRoute = DocsApiRouteImport.update({
+  id: '/api',
+  path: '/api',
+  getParentRoute: () => DocsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/docs': typeof DocsRouteRouteWithChildren
+  '/docs/api': typeof DocsApiRoute
+  '/docs/examples': typeof DocsExamplesRoute
+  '/docs/getting-started': typeof DocsGettingStartedRoute
+  '/docs/shadcn': typeof DocsShadcnRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/docs': typeof DocsRouteRouteWithChildren
+  '/docs/api': typeof DocsApiRoute
+  '/docs/examples': typeof DocsExamplesRoute
+  '/docs/getting-started': typeof DocsGettingStartedRoute
+  '/docs/shadcn': typeof DocsShadcnRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/docs': typeof DocsRouteRouteWithChildren
+  '/docs/api': typeof DocsApiRoute
+  '/docs/examples': typeof DocsExamplesRoute
+  '/docs/getting-started': typeof DocsGettingStartedRoute
+  '/docs/shadcn': typeof DocsShadcnRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/docs'
+    | '/docs/api'
+    | '/docs/examples'
+    | '/docs/getting-started'
+    | '/docs/shadcn'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/docs'
+    | '/docs/api'
+    | '/docs/examples'
+    | '/docs/getting-started'
+    | '/docs/shadcn'
+  id:
+    | '__root__'
+    | '/'
+    | '/docs'
+    | '/docs/api'
+    | '/docs/examples'
+    | '/docs/getting-started'
+    | '/docs/shadcn'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DocsRouteRoute: typeof DocsRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +120,58 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/shadcn': {
+      id: '/docs/shadcn'
+      path: '/shadcn'
+      fullPath: '/docs/shadcn'
+      preLoaderRoute: typeof DocsShadcnRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/getting-started': {
+      id: '/docs/getting-started'
+      path: '/getting-started'
+      fullPath: '/docs/getting-started'
+      preLoaderRoute: typeof DocsGettingStartedRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/examples': {
+      id: '/docs/examples'
+      path: '/examples'
+      fullPath: '/docs/examples'
+      preLoaderRoute: typeof DocsExamplesRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
+    '/docs/api': {
+      id: '/docs/api'
+      path: '/api'
+      fullPath: '/docs/api'
+      preLoaderRoute: typeof DocsApiRouteImport
+      parentRoute: typeof DocsRouteRoute
+    }
   }
 }
 
+interface DocsRouteRouteChildren {
+  DocsApiRoute: typeof DocsApiRoute
+  DocsExamplesRoute: typeof DocsExamplesRoute
+  DocsGettingStartedRoute: typeof DocsGettingStartedRoute
+  DocsShadcnRoute: typeof DocsShadcnRoute
+}
+
+const DocsRouteRouteChildren: DocsRouteRouteChildren = {
+  DocsApiRoute: DocsApiRoute,
+  DocsExamplesRoute: DocsExamplesRoute,
+  DocsGettingStartedRoute: DocsGettingStartedRoute,
+  DocsShadcnRoute: DocsShadcnRoute,
+}
+
+const DocsRouteRouteWithChildren = DocsRouteRoute._addFileChildren(
+  DocsRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DocsRouteRoute: DocsRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
