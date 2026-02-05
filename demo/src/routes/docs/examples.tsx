@@ -12,6 +12,7 @@ import { FlushImmediatelyExample } from "../../examples/FlushImmediatelyExample"
 import { OneItemWiderExample } from "../../examples/OneItemWiderExample";
 import { ReverseOrderExample } from "../../examples/ReverseOrderExample";
 import { DynamicSizeExample } from "../../examples/DynamicSizeExample";
+import { DifferentHeightsExample } from "../../examples/DifferentHeightsExample";
 
 export const Route = createFileRoute("/docs/examples")({
   component: ExamplesPage,
@@ -39,6 +40,7 @@ function ExamplesPage() {
           <OneItemWiderExample />
           <ReverseOrderExample />
           <DynamicSizeExample />
+          <DifferentHeightsExample />
         </div>
       </div>
     </Theme>
