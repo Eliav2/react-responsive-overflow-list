@@ -14,24 +14,28 @@ export function groupNodesByTopPosition(nodes: HTMLElement[]): Record<number, No
   if (nodes.length === 0) return {};
 
   const result: Record<number, NodePosition> = {};
+  let lastRowKey: number | undefined;
 
   nodes.forEach((node) => {
     const rect = node.getBoundingClientRect();
     const top = Math.round(rect.top);
     const bottom = Math.round(rect.bottom);
 
-    if (!result[top]) {
+    // Check if this element overlaps vertically with the last row
+    const lastRow = lastRowKey !== undefined ? result[lastRowKey] : undefined;
+    if (lastRow && top < lastRow.bottom && bottom > lastRow.top) {
+      lastRow.top = Math.min(lastRow.top, top);
+      lastRow.bottom = Math.max(lastRow.bottom, bottom);
+      lastRow.elements.add(node);
+    } else {
       result[top] = {
         elements: new Set<HTMLElement>(),
         bottom: bottom,
         top: top,
       };
-    } else {
-      // Update bottom to be the maximum bottom of all elements in this row
-      result[top].bottom = Math.max(result[top].bottom, bottom);
+      result[top].elements.add(node);
+      lastRowKey = top;
     }
-
-    result[top].elements.add(node);
   });
 
   return result;
