@@ -74,6 +74,11 @@ export const navigation: NavSection[] = [
         href: "/docs/examples#dynamic-size-example",
         isAnchor: true,
       },
+      {
+        title: "Different Heights",
+        href: "/docs/examples#different-heights-example",
+        isAnchor: true,
+      },
     ],
   },
   {
