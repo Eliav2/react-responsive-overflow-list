@@ -2,6 +2,10 @@
 
 # Changelog
 
+## 0.3.2
+
+- Fixed incorrect row grouping when items have different heights (e.g., with `alignItems: "center"`). Items on the same visual row are now correctly detected via vertical overlap instead of exact `top` pixel matching.
+
 ## 0.3.1
 
 - Restored the legacy `(item, index)` call signature for `renderItem` so existing code keeps working.

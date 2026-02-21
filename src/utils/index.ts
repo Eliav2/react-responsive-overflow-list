@@ -11,7 +11,6 @@ export interface NodePosition {
 }
 
 export function groupNodesByTopPosition(nodes: HTMLElement[]): Record<number, NodePosition> {
-  console.log("Grouping nodes by tops position:", nodes);
   if (nodes.length === 0) return {};
 
   const result: Record<number, NodePosition> = {};
@@ -63,7 +62,6 @@ export function getRowPositionsData(
 
   // Group elements by their vertical position (rows)
   const itemsSizesMap = groupNodesByTopPosition(children);
-  console.log("Items Sizes Map:", itemsSizesMap);
 
   // Get all the vertical positions (rows)
   const rowPositions = Object.keys(itemsSizesMap).map(Number);
