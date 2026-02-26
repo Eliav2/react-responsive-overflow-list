@@ -2,6 +2,10 @@
 
 # Changelog
 
+## 0.3.3
+
+- Fixed flex items inflating the container during measurement phase due to CSS `min-width: auto` default. Added `minWidth: 0` to the default container styles, preventing items from overflowing their row constraints (e.g., tags spreading to multiple rows despite `maxRows={1}`).
+
 ## 0.3.2
 
 - Fixed incorrect row grouping when items have different heights (e.g., with `alignItems: "center"`). Items on the same visual row are now correctly detected via vertical overlap instead of exact `top` pixel matching.

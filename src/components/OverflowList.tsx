@@ -273,4 +273,5 @@ const DEFAULT_CONTAINER_STYLES: React.CSSProperties = {
   display: "flex",
   flexWrap: "wrap",
   contain: "layout style",
+  minWidth: 0,
 };
