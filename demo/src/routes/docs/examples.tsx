@@ -13,6 +13,7 @@ import { OneItemWiderExample } from "../../examples/OneItemWiderExample";
 import { ReverseOrderExample } from "../../examples/ReverseOrderExample";
 import { DynamicSizeExample } from "../../examples/DynamicSizeExample";
 import { DifferentHeightsExample } from "../../examples/DifferentHeightsExample";
+import { HeadlessHookExample } from "../../examples/HeadlessHookExample";
 
 export const Route = createFileRoute("/docs/examples")({
   component: ExamplesPage,
@@ -31,6 +32,7 @@ function ExamplesPage() {
 
         <div className="flex flex-col gap-6">
           <BasicExample />
+          <HeadlessHookExample />
           <ChildrenPatternExample />
           <MultiRowExample />
           <CustomOverflowExample />

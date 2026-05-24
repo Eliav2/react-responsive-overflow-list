@@ -146,6 +146,56 @@ See the **Flush Immediately** example in the live demo.
 
 ---
 
+## Headless hook (`useOverflowList`)
+
+Same measurement engine, bring your own layout. Use this when the `<OverflowList />` render shape doesn't fit — e.g. a filter chip bar with custom slots, a layout that interleaves overflow logic with other elements, or any case where you want full control of the JSX.
+
+Attach `containerRef` to your wrap container and `overflowIndicatorRef` to your `+N` element. Render **all** items during the `"measuring"` phase so widths are observable; **unmount** overflowed items (or use `display:none` / `React.Activity`) in the `"normal"` phase — they must not consume layout space, or the overflow indicator can't fit on the last row.
+
+```tsx
+import { useOverflowList } from "react-responsive-overflow-list";
+
+const items = ["One", "Two", "Three", "Four", "Five", "Six"];
+
+export function CustomChipBar() {
+  const { containerRef, overflowIndicatorRef, visibleCount, hiddenCount, phase, showOverflow } =
+    useOverflowList<HTMLDivElement, HTMLSpanElement>({ itemCount: items.length, maxRows: 1 });
+
+  return (
+    <div ref={containerRef} style={{ display: "flex", flexWrap: "wrap", gap: 8, minWidth: 0 }}>
+      {items.map((item, index) => {
+        const visible = phase === "measuring" || index < visibleCount;
+        if (!visible) return null;
+        return <span key={index} style={{ padding: 4 }}>{item}</span>;
+      })}
+      {showOverflow && <span ref={overflowIndicatorRef}>+{hiddenCount} more</span>}
+    </div>
+  );
+}
+```
+
+### Hook options
+
+| Option             | Type      | Default | Notes                                                      |
+| ------------------ | --------- | ------- | ---------------------------------------------------------- |
+| `itemCount`        | `number`  | —       | Total items the consumer will render.                      |
+| `maxRows`          | `number`  | `1`     | Visible rows before overflow.                              |
+| `maxVisibleItems`  | `number`  | `100`   | Hard cap on visible items.                                 |
+| `flushImmediately` | `boolean` | `true`  | `true` (flushSync, no flicker) vs `false` (rAF, smoother). |
+
+### Hook return
+
+| Property               | Type                                                  | Notes                                                                              |
+| ---------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `containerRef`         | `React.RefObject<T \| null>`                          | Attach to the flex-wrap container.                                                 |
+| `overflowIndicatorRef` | `React.RefObject<T \| null>`                          | Attach to the `+N` indicator element so its width is measured.                     |
+| `visibleCount`         | `number`                                              | Final count of items that fit (already accounts for the indicator's reserved row). |
+| `hiddenCount`          | `number`                                              | `itemCount - visibleCount`.                                                        |
+| `phase`                | `"normal" \| "measuring" \| "measuring-overflow-indicator"` | Gate item visibility on this — render all during `"measuring"`.                    |
+| `showOverflow`         | `boolean`                                             | `true` when the overflow indicator should be rendered.                             |
+
+---
+
 ## Wrap & extend
 
 It’s **expected** you’ll wrap `OverflowList` for product needs (design system styling, a11y menus, virtualization, search). for example:

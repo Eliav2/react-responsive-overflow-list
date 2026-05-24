@@ -30,6 +30,11 @@ export const navigation: NavSection[] = [
     items: [
       { title: "Basic", href: "/docs/examples#basic-example", isAnchor: true },
       {
+        title: "Headless Hook",
+        href: "/docs/examples#headless-hook-example",
+        isAnchor: true,
+      },
+      {
         title: "Children Pattern",
         href: "/docs/examples#children-pattern",
         isAnchor: true,
