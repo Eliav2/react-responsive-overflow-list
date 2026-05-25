@@ -10,6 +10,7 @@ import { FlushImmediatelyExample } from "./examples/FlushImmediatelyExample";
 import { OneItemWiderExample } from "./examples/OneItemWiderExample";
 import { ReverseOrderExample } from "./examples/ReverseOrderExample";
 import { DynamicSizeExample } from "./examples/DynamicSizeExample";
+import { HeadlessHookExample } from "./examples/HeadlessHookExample";
 import { Github } from "lucide-react";
 import "./App.css";
 
@@ -43,6 +44,7 @@ function App() {
 
         <main>
           <BasicExample />
+          <HeadlessHookExample />
           <ChildrenPatternExample />
           <MultiRowExample />
           <CustomOverflowExample />

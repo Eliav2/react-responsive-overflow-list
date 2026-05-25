@@ -16,7 +16,7 @@ export const navigation: NavSection[] = [
     title: "Getting Started",
     items: [{ title: "Introduction", href: "/docs/getting-started" }],
   },
-    {
+  {
     title: "Integrations",
     items: [
       {
@@ -29,6 +29,11 @@ export const navigation: NavSection[] = [
     title: "Examples",
     items: [
       { title: "Basic", href: "/docs/examples#basic-example", isAnchor: true },
+      {
+        title: "Headless Hook",
+        href: "/docs/examples#headless-hook-example",
+        isAnchor: true,
+      },
       {
         title: "Children Pattern",
         href: "/docs/examples#children-pattern",

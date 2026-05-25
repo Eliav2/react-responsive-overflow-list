@@ -1,6 +1,5 @@
-import React, { useRef, useState } from "react";
-import { useForkRef, useIsoLayoutEffect, useResizeObserver } from "../hooks";
-import { getRowPositionsData } from "../utils";
+import React from "react";
+import { useForkRef, useOverflowList } from "../hooks";
 import { DefaultOverflowElement } from "./DefaultOverflowMenu";
 
 type BaseComponentProps = React.HTMLAttributes<HTMLElement>;
@@ -53,7 +52,7 @@ type OverflowListWithChildren<T> = BaseOverflowListProps<T> & {
 export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithChildren<T>;
 
 export type OverflowListComponent = <T>(
-  props: OverflowListProps<T> & { ref?: React.Ref<HTMLElement> }
+  props: OverflowListProps<T> & { ref?: React.Ref<HTMLElement> },
 ) => React.ReactElement;
 
 export interface OverflowElementProps<T> {
@@ -65,11 +64,8 @@ export interface OverflowElementProps<T> {
  * hiding overflow items behind a configurable overflow renderer.
  * Automatically recalculates visible items on resize.
  *
- * Technical details:
- * Uses a three-phases approach:
- * 1. "measuring" renders all items to calculate positions,
- * 2. "measuring overflow" render all items fit in the container, try to add the overflow indicator item to the container. check if it opens a new row, if so, remove the last item from the last row.
- * 3. "normal" phase shows only what fits within constraints. (this is the stable state that we want to keep)
+ * Thin wrapper around `useOverflowList`: that hook owns the measurement state
+ * machine; this component handles rendering items and the overflow indicator.
  */
 const OverflowListComponent = React.memo(
   React.forwardRef(function OverflowList<T>(props: OverflowListProps<T>, forwardedRef: React.Ref<HTMLElement>) {
@@ -87,20 +83,22 @@ const OverflowListComponent = React.memo(
       maxRows = 1,
       maxVisibleItems = 100,
       flushImmediately = true,
-
       ...containerProps
     } = props;
 
-    const [visibleCount, setVisibleCount] = useState(items.length);
-    const [subtractCount, setSubtractCount] = useState(0);
-    const [phase, setPhase] = useState<"normal" | "measuring" | "measuring-overflow-indicator">("normal");
-
-    const containerRef = useRef<HTMLElement>(null);
+    const {
+      containerRef,
+      overflowIndicatorRef,
+      visibleCount: finalVisibleCount,
+      phase,
+      showOverflow,
+    } = useOverflowList<HTMLElement, HTMLElement>({
+      itemCount: items.length,
+      maxRows,
+      maxVisibleItems,
+      flushImmediately,
+    });
     const finalContainerRef = useForkRef(containerRef, forwardedRef);
-    const finalVisibleCount = visibleCount - subtractCount;
-
-    const overflowCount = items.length - finalVisibleCount;
-    const showOverflow = overflowCount > 0 && phase !== "measuring";
 
     const finalRenderOverflow = renderOverflow?.(items.slice(finalVisibleCount) as T[]) ?? (
       <DefaultOverflowElement items={items.slice(finalVisibleCount) as T[]} {...renderOverflowProps} />
@@ -108,104 +106,8 @@ const OverflowListComponent = React.memo(
 
     const overflowElement = showOverflow ? finalRenderOverflow : null;
 
-    const overflowRef = useRef<HTMLElement>(null);
     // @ts-expect-error - ref is not exposed as type in jsx elements but it exists
-    const finalOverflowRef = useForkRef(overflowRef, overflowElement?.ref);
-
-    // Reset state when items change
-    useIsoLayoutEffect(() => {
-      setPhase("measuring");
-      setVisibleCount(items.length);
-      setSubtractCount(0);
-    }, [items.length, maxRows]);
-
-    useIsoLayoutEffect(() => {
-      // in measurement, evaluate results
-      if (phase === "measuring") {
-        countVisibleItems();
-        setPhase("measuring-overflow-indicator");
-      }
-    }, [phase]);
-
-    useIsoLayoutEffect(() => {
-      // After placing the overflow indicator, evaluate if it ends up opening a new row
-      if (phase === "measuring-overflow-indicator") {
-        const updateWasNeeded = updateOverflowIndicator();
-        if (!updateWasNeeded) {
-          setPhase("normal");
-        }
-      }
-    }, [phase, subtractCount]);
-
-    // if the container dimensions change, re-measure
-    const containerDims = useResizeObserver(containerRef, flushImmediately);
-    useIsoLayoutEffect(() => {
-      if (phase === "normal") {
-        setPhase("measuring");
-        setSubtractCount(0);
-      }
-    }, [containerDims]);
-
-    // Unified method that handles both growing and shrinking
-    // this function is called in measuring phase, and it is used to measure how many items can fit in the container
-    const countVisibleItems = () => {
-      const rowData = getRowPositionsData(containerRef, overflowRef);
-      if (!rowData) return;
-
-      const { itemsSizesMap, rowPositions } = rowData;
-
-      // edge case: if only 1 item is given, check if its width is bigger than the container width, if so set the maxRows to 0 (there is not enough space for the item, so we showing overflow indicator)
-      if (items.length === 1) {
-        const itemRef = itemsSizesMap[rowPositions[0]].elements.values().next().value;
-        const containerWidth = containerRef.current?.getBoundingClientRect().width ?? 0;
-        const itemWidth = itemRef?.getBoundingClientRect().width ?? 0;
-
-        if (itemWidth > containerWidth) {
-          setVisibleCount(0);
-        } else setVisibleCount(1);
-        return;
-      }
-
-      // Only take up to maxRows
-      const visibleRowPositions = rowPositions.slice(0, maxRows);
-
-      // only items in rows that conform to the maxRows constraint can be visible
-      let fittingCount = visibleRowPositions.reduce((acc, position) => {
-        return acc + itemsSizesMap[position].elements.size;
-      }, 0);
-
-      // Ensure we respect maxVisibleItems
-      fittingCount = Math.min(fittingCount, maxVisibleItems);
-
-      // Only update state if the number of visible items has changed
-      setVisibleCount(fittingCount);
-    };
-
-    const updateOverflowIndicator = () => {
-      // Nothing left to subtract—either we already hid every visible item or there were none to begin with.
-      // Avoid looping indefinitely by exiting early.
-      if (finalVisibleCount <= 0) {
-        return false;
-      }
-
-      if (!overflowRef.current) return false;
-      const rowData = getRowPositionsData(containerRef, overflowRef);
-      if (!rowData) return false;
-
-      const { rowPositions, itemsSizesMap } = rowData;
-
-      const overflowRect = overflowRef.current.getBoundingClientRect();
-      const overflowMiddleY = overflowRect.top + overflowRect.height / 2;
-      const lastRowTop = rowPositions[rowPositions.length - 1];
-      const lastRow = itemsSizesMap[lastRowTop];
-
-      // if the overflow indicator item opens a new row(we check it by the middle of the item)
-      if (overflowMiddleY > lastRow.bottom) {
-        setSubtractCount((c) => c + 1);
-        return true;
-      }
-      return false;
-    };
+    const finalOverflowRef = useForkRef(overflowIndicatorRef, overflowElement?.ref);
 
     // Cloned overflow element that ensures ref is passed so we could measure dimensions on this element
     const clonedOverflowElement = overflowElement
@@ -230,9 +132,10 @@ const OverflowListComponent = React.memo(
     const finalRenderItemVisibility =
       renderItemVisibility ??
       ((node, meta) => {
-        // prefer react 19.2 new activity component to control the visibility of the item while don't forcing mount/unmount of the item
-        // @ts-ignore
-        const Activity = React?.Activity;
+        // prefer react 19.2 new Activity component to control visibility without forcing mount/unmount
+        // @ts-ignore -- Activity is an experimental React 19.2 API not yet in types
+        const Activity = React.Activity;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (Activity) {
           return (
             <Activity key={meta.index} mode={meta.visible ? "visible" : "hidden"}>
@@ -264,7 +167,7 @@ const OverflowListComponent = React.memo(
         {clonedOverflowElement}
       </Component>
     );
-  })
+  }),
 );
 
 export const OverflowList: OverflowListComponent = OverflowListComponent as OverflowListComponent;
