@@ -76,8 +76,10 @@ function FilterChipBar({ tags, onClear }: { tags: string[]; onClear: () => void 
 }
 
 function FilterChipBar({ tags }: { tags: string[] }) {
-  const { containerRef, overflowIndicatorRef, visibleCount, hiddenCount, phase, showOverflow } =
-    useOverflowList<HTMLDivElement, HTMLSpanElement>({ itemCount: tags.length, maxRows: 1 });
+  const { containerRef, overflowIndicatorRef, visibleCount, hiddenCount, phase, showOverflow } = useOverflowList<
+    HTMLDivElement,
+    HTMLSpanElement
+  >({ itemCount: tags.length, maxRows: 1 });
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>

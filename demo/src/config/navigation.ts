@@ -16,7 +16,7 @@ export const navigation: NavSection[] = [
     title: "Getting Started",
     items: [{ title: "Introduction", href: "/docs/getting-started" }],
   },
-    {
+  {
     title: "Integrations",
     items: [
       {

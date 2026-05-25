@@ -25,9 +25,8 @@ function ExamplesPage() {
       <div className="max-w-full">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Examples</h1>
         <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-          Explore different usage patterns and features of the OverflowList
-          component. Resize the demo containers to see the responsive behavior
-          in action.
+          Explore different usage patterns and features of the OverflowList component. Resize the demo containers to see
+          the responsive behavior in action.
         </p>
 
         <div className="flex flex-col gap-6">

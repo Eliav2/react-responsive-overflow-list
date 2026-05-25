@@ -19,7 +19,7 @@ interface DefaultOverflowElementProps<T> extends OverflowElementProps<T> {}
 
 export const DefaultOverflowElement = React.forwardRef(function DefaultOverflowElement<T>(
   props: DefaultOverflowElementProps<T>,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const { items } = props;
   const count = items.length;
