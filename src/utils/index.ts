@@ -47,7 +47,7 @@ export function groupNodesByTopPosition(nodes: HTMLElement[]): Record<number, No
  */
 export function getRowPositionsData(
   containerRef: React.RefObject<HTMLElement | null>,
-  overflowRef: React.RefObject<HTMLElement | null>
+  overflowRef: React.RefObject<HTMLElement | null>,
 ): {
   itemsSizesMap: Record<number, NodePosition>;
   rowPositions: number[];

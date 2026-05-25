@@ -52,7 +52,7 @@ type OverflowListWithChildren<T> = BaseOverflowListProps<T> & {
 export type OverflowListProps<T> = OverflowListWithItems<T> | OverflowListWithChildren<T>;
 
 export type OverflowListComponent = <T>(
-  props: OverflowListProps<T> & { ref?: React.Ref<HTMLElement> }
+  props: OverflowListProps<T> & { ref?: React.Ref<HTMLElement> },
 ) => React.ReactElement;
 
 export interface OverflowElementProps<T> {
@@ -167,7 +167,7 @@ const OverflowListComponent = React.memo(
         {clonedOverflowElement}
       </Component>
     );
-  })
+  }),
 );
 
 export const OverflowList: OverflowListComponent = OverflowListComponent as OverflowListComponent;
