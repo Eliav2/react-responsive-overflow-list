@@ -126,8 +126,15 @@ export function useOverflowList<
     const lastRowTop = rowPositions[rowPositions.length - 1];
     const lastRow = itemsSizesMap[lastRowTop];
 
-    // if the overflow indicator item opens a new row(we check it by the middle of the item)
-    if (overflowMiddleY > lastRow.bottom) {
+    // The visible items themselves may occupy more than maxRows once the container
+    // settles at its final (narrower) width — countVisibleItems measured them while
+    // all items were rendered (a wider container if it is a content-sized flex item).
+    const itemRowCount = rowPositions.length;
+
+    // Subtract if either the visible items overflow maxRows, or the overflow
+    // indicator opens a new row below the last item row.
+    const indicatorOpensNewRow = overflowMiddleY > lastRow.bottom;
+    if (itemRowCount > maxRows || indicatorOpensNewRow) {
       setSubtractCount((c) => c + 1);
       return true;
     }
