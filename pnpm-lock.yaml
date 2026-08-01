@@ -22,10 +22,6 @@ catalogs:
 importers:
 
   .:
-    dependencies:
-      react-dom:
-        specifier: '>=16.8.0'
-        version: 19.1.1(react@19.1.1)
     devDependencies:
       '@base-ui/react':
         specifier: ^1.1.0
@@ -42,6 +38,9 @@ importers:
       react:
         specifier: 'catalog:'
         version: 19.1.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.1.1(react@19.1.1)
       shadcn:
         specifier: ^3.7.0
         version: 3.7.0(@types/node@24.5.2)(hono@4.11.7)(typescript@5.8.3)
