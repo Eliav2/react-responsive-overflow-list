@@ -24,6 +24,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    // Guard against bundling two react-dom copies (workspace lib resolves its
+    // auto-installed peer independently of the demo; a version split makes
+    // flushSync from the lib a silent no-op in production builds).
+    dedupe: ["react", "react-dom"],
   },
   plugins: [
     tsConfigPaths({
