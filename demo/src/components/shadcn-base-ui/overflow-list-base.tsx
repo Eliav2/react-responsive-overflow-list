@@ -1,7 +1,9 @@
 "use client";
 
-// Demo wrapper with direct imports to shadcn-base-ui components
-// Registry component uses @/components/ui/* which resolves via user's shadcn setup
+// GENERATED FILE — do not edit.
+// Source: registry/base-vega/overflow-list/overflow-list.tsx
+// The registry copy imports `@/components/ui/*`, which resolves through a consumer's own shadcn setup.
+// This copy points at the demo's vendored components instead. Regenerate with `pnpm sync:registry`.
 
 import * as React from "react";
 import {
@@ -15,9 +17,13 @@ type PrimitiveItemsProps<T> = Extract<PrimitiveOverflowListProps<T>, { items: T[
 type PrimitiveChildrenProps = Extract<PrimitiveOverflowListProps<unknown>, { children: React.ReactNode }>;
 
 interface OverflowListItemsProps<T> extends Omit<PrimitiveItemsProps<T>, "renderOverflow" | "renderOverflowProps"> {
+  /** Trigger label for the overflow popover. */
   overflowLabel?: (count: number) => string;
+  /** Optional renderer for items inside the overflow popover. Falls back to `renderItem`. */
   renderOverflowItem?: (item: T, index: number) => React.ReactNode;
+  /** Replace the entire popover body. Bypasses the per-item wrapper. */
   renderOverflowContent?: (hiddenItems: T[]) => React.ReactNode;
+  /** Tailwind classes merged onto `PopoverContent` — override max-height/scroll/width per instance. */
   popoverContentClassName?: string;
   children?: never;
 }
@@ -37,6 +43,7 @@ export const OverflowList = React.forwardRef(function OverflowList<T>(
   props: OverflowListProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
+  // Extract wrapper-specific props so they don't leak to the DOM via {...primitiveProps}.
   const {
     overflowLabel = (count) => `+${count}`,
     popoverContentClassName,
