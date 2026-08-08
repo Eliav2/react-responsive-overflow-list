@@ -11,7 +11,7 @@
 
 import { useRef, useState } from "react";
 
-import { getContentSignature, getRowPositionsData } from "../utils";
+import { getContentSignature, getRowPositionsData, isSameContentSignature } from "../utils";
 import { useIsoLayoutEffect } from "./useIsoLayoutEffect";
 import { useResizeObserver } from "./useResizeObserver";
 
@@ -188,7 +188,7 @@ export function useOverflowList<
   // change that matters is invisible to any dependency we could list. Recording and comparing both read
   // the same settled DOM, so a pass that changes nothing externally records a matching signature and does
   // not re-enter measuring.
-  const settledSignatureRef = useRef<{ width: number; height: number } | null>(null);
+  const settledSignatureRef = useRef<number[] | null>(null);
   useIsoLayoutEffect(() => {
     if (phase !== "normal") {
       // Mid-pass: whatever we recorded belongs to the previous settled layout.
@@ -209,7 +209,7 @@ export function useOverflowList<
     // drift over 300 frames), while a real change can be tiny — a counter going from `5` to `6` in a font
     // with proportional digits, `system-ui` included, moves the width by as little as 0.008px. Any
     // tolerance would discard those to guard against jitter that does not occur.
-    if (signature.width !== settled.width || signature.height !== settled.height) {
+    if (!isSameContentSignature(signature, settled)) {
       settledSignatureRef.current = null;
       setPhase("measuring");
       setSubtractCount(0);

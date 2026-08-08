@@ -3,25 +3,30 @@ import { useEffect, useRef, useState } from "react";
 import { OverflowList } from "react-responsive-overflow-list";
 
 /**
- * Repro for https://github.com/Eliav2/react-responsive-overflow-list/issues/21
+ * Regression cover for https://github.com/Eliav2/react-responsive-overflow-list/issues/21
  *
- * Filter tabs with counter badges. The badges grow as data arrives, so the *items* get wider while no
- * item is added or removed. Measurement is only re-triggered by `[itemCount, maxRows]` or by the
- * container's own ResizeObserver, and neither fires: `itemCount` is constant and the container's width is
- * set from outside. `visibleCount` therefore stays at whatever fit before the badges grew, and the wider
- * items plus the overflow indicator no longer fit on one line.
+ * Every list here must stay within its `maxRows` through the whole badge-growth sequence, in both
+ * directions. Story names describe the bug each one reproduced, matching `WrapsDespiteMaxRows1` (#17) and
+ * `CollapsesToBareIndicator` (#23).
  *
- * The catch — and why this is hard to see — is that the component usually *rescues itself*: when the
- * items wrap, the container gets taller, `useResizeObserver` reports the height change, and a fresh
- * measuring pass runs. The bug only becomes visible when the container's box **cannot** change, which is
- * the normal shape of a tab bar: a fixed height. Then nothing ever re-triggers measurement and the
- * indicator sits on row 2 indefinitely.
+ * Filter tabs with counter badges. The badges grow as data arrives, so the *items* get wider while no item
+ * is added or removed. Measurement used to be re-triggered only by `[itemCount, maxRows]` or by the
+ * container's own ResizeObserver, and neither fires here: `itemCount` is constant and the container's width
+ * is set from outside. `visibleCount` therefore stayed at whatever fit before the badges grew, and the
+ * wider items plus the overflow indicator no longer fit on one line.
  *
- * So the reported Firefox/Chromium split is not really about the engine. It is about whether the
+ * What made it hard to see is that the component usually *rescued itself*: when the items wrap, the
+ * container gets taller, `useResizeObserver` reports the height change, and a fresh measuring pass runs. It
+ * only stayed broken when the container's box **could not** change, the normal shape of a tab bar: a fixed
+ * height. Then nothing re-triggered measurement and the indicator sat on row 2 indefinitely.
+ *
+ * So the reported Firefox/Chromium split was not really about the engine. It was about whether the
  * container's box is free to change in the layout it happens to sit in.
  *
- * `Remount` forces a fresh measuring pass at the current widths. It fixes the layout, which is the whole
- * point: the measurement logic is right, the state is just stale.
+ * The fix compares the settled content signature after every commit, so a size change re-triggers a pass
+ * on its own. `Remount` remains useful as a control: it forces a fresh pass at the current widths, and it
+ * produced the same result as the fix does, which is what showed the measurement logic was right all along
+ * and only the state was stale.
  */
 const TABS = ["Overview", "Assets", "Issues", "Policies", "Reports"];
 
@@ -149,8 +154,9 @@ const Issue21Repro = ({ maxRows = 1, containerWidth = 340, fixedHeight = true }:
         {violated && <strong style={{ color: "#c00" }}>← maxRows violated</strong>}
       </div>
 
-      {/* The width is set from outside, so growing items never change the list's width. With
-          fixedHeight, wrapping cannot change its height either, so its ResizeObserver never fires. */}
+      {/* The width is set from outside, so growing items never change the list's width. With fixedHeight,
+          wrapping cannot change its height either, so its ResizeObserver never fires and the content
+          signature is the only thing left to notice the change. */}
       <div
         style={{
           width: containerWidth,
@@ -178,8 +184,9 @@ const Issue21Repro = ({ maxRows = 1, containerWidth = 340, fixedHeight = true }:
       </div>
 
       <span style={{ fontSize: 12, color: "#666", maxWidth: 620 }}>
-        Neither the item count nor the list's box changes, so nothing re-triggers measurement. Drag the red
-        box to park it near a fit boundary, then step the stages.
+        Neither the item count nor the list's box changes here, so the only signal left is that the items
+        themselves changed size. Drag the red box to park it near a fit boundary, then step the stages: the
+        row count must stay within maxRows the whole way up and back down.
       </span>
     </div>
   );
@@ -195,23 +202,29 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * The bug. Fixed-height tab bar, `maxRows={1}`. Step from "no badge" to "99+" and the indicator drops to
- * row 2 and stays there. Reproduces at every width from 300px to 540px. `Remount` clears it.
+ * The case that was broken. Fixed-height tab bar, `maxRows={1}`.
+ *
+ * Expected: one row at every stage, items moving into `More (N)` as the badges grow and back out as they
+ * shrink. Before the fix the indicator dropped to row 2 at the first badge and stayed there, at every width
+ * from 300px to 540px.
  */
 export const FixedHeightIndicatorWraps: Story = {
   args: { maxRows: 1, containerWidth: 340, fixedHeight: true },
 };
 
 /**
- * Control: same growth, height left elastic. Wrapping makes the list taller, its ResizeObserver fires, a
- * new measuring pass runs, and the row count snaps back to 1. This is why the bug looks intermittent and
- * engine-specific in the wild.
+ * Control: same growth, height left elastic. This one was already correct before the fix — wrapping makes
+ * the list taller, its ResizeObserver fires, and a new pass restores one row. Which is why the bug looked
+ * intermittent and engine-specific in the wild.
  */
 export const ElasticHeightSelfHeals: Story = {
   args: { maxRows: 1, containerWidth: 340, fixedHeight: false },
 };
 
-/** The same staleness with two rows allowed, to show the violation is about `maxRows`, not about "1". */
+/**
+ * The same case with two rows allowed, to show the constraint honoured is `maxRows` and not "1". Expected:
+ * two rows throughout, never three.
+ */
 export const FixedHeightMaxRows2: Story = {
   args: { maxRows: 2, containerWidth: 260, fixedHeight: true },
 };

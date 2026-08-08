@@ -61,8 +61,8 @@ function isLaidOutInFlow(child: Element): boolean {
 }
 
 /**
- * Signature of the sizes of everything currently laid out in the container, the overflow indicator
- * included. Not a measurement — only a value to compare against itself across renders.
+ * Sizes of everything currently laid out in the container, in order, the overflow indicator included. Not
+ * a measurement — only a value to compare against itself across renders.
  *
  * Measurement is re-triggered when the container's own box changes or when `itemCount`/`maxRows` change,
  * so items that change size on their own (a counter badge growing from `9` to `10`, say) leave the visible
@@ -71,31 +71,39 @@ function isLaidOutInFlow(child: Element): boolean {
  * this signature catches both directions: items growing past the row, and items shrinking so that more of
  * them would now fit.
  *
- * Each size is weighted by the child's position, so that changes cancelling out across items are still
- * seen. A plain total would miss them, and a total is not sufficient: which items fit is decided by the
- * running sum along the row, not by the sum of all of them. At capacity 120, widths `[40, 40, 40]` fit two
- * items while `[90, 20, 10]` fit one, on the same total.
+ * Kept as the ordered sequence of sizes rather than reduced to a total, because no scalar can stand in for
+ * it. Which items fit is decided by the running sum along the row, not by the sum of all of them: at
+ * capacity 100, widths `[40, 60]` fit both items while `[50, 55]` fit one. Any accumulation collides on
+ * pairs like those — a plain total misses two counters swapping values, and weighting each size by its
+ * position still maps `[40, 60]` and `[50, 55]` to the same number.
  *
- * Values stay exact under comparison: engines lay out on a fractional-pixel grid (1/64px in Chromium), and
- * scaling those by a small integer and summing them is exactly representable in a double.
+ * Collecting the sizes rather than accumulating them costs nothing measurable; the `getBoundingClientRect`
+ * and `getComputedStyle` reads dominate either way. The sequence is also short: this only runs once
+ * settled, where the overflowed items are hidden and excluded, so its length tracks the visible count.
  */
-export function getContentSignature(
-  containerRef: React.RefObject<HTMLElement | null>,
-): { width: number; height: number } | null {
+export function getContentSignature(containerRef: React.RefObject<HTMLElement | null>): number[] | null {
   if (!containerRef.current) return null;
 
-  let width = 0;
-  let height = 0;
-  let position = 0;
+  const signature: number[] = [];
   for (const child of Array.from(containerRef.current.children)) {
     if (!isLaidOutInFlow(child)) continue;
-    position += 1;
     const rect = child.getBoundingClientRect();
-    width += rect.width * position;
-    height += rect.height * position;
+    signature.push(rect.width, rect.height);
   }
 
-  return { width, height };
+  return signature;
+}
+
+/**
+ * Compares two content signatures. Length first: comparing only by index would silently treat a truncated
+ * sequence as unchanged.
+ */
+export function isSameContentSignature(a: number[], b: number[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }
 
 /**
