@@ -10,8 +10,9 @@ import { OverflowList } from "react-responsive-overflow-list";
  * excluding only the overflow indicator. Two kinds of child break that assumption:
  *
  * 1. **Overflowed items kept mounted but hidden** — what React 19.2's `Activity mode="hidden"` does,
- *    and therefore what the default `renderItemVisibility` does. A `display: none` element has no
- *    layout box, so its rect reads as all zeros and it groups into a phantom row keyed at `top: 0`.
+ *    and therefore what the default `renderItemVisibility` does, so no third-party library is needed to
+ *    hit this. A `display: none` element has no layout box, so its rect reads as all zeros and it groups
+ *    into a phantom row keyed at `top: 0`.
  *
  * 2. **Focus guards** — popover libraries put guards next to an open trigger. They are real children of
  *    the container but `position: fixed`, so they are out of flow and their top lands outside the
@@ -37,9 +38,22 @@ const containerStyle: React.CSSProperties = {
 };
 
 /**
- * The consumer keeps overflowed items mounted (so their state survives) and hides them with
- * `display: none` — the same thing `Activity mode="hidden"` does on React 19.2, spelled out here so
- * the repro does not depend on the React version.
+ * No `renderItemVisibility`, so this is the default: on React 19.2 overflowed items stay mounted inside
+ * `Activity mode="hidden"`, which renders them with `display: none`. No third-party library involved.
+ */
+const ActivityRepro = ({ maxRows = 1 }: { maxRows?: number }) => (
+  <OverflowList
+    items={ITEMS}
+    maxRows={maxRows}
+    renderItem={(item) => <span style={itemStyle}>{item}</span>}
+    renderOverflow={(hidden) => <span style={indicatorStyle}>+{hidden.length}</span>}
+    style={containerStyle}
+  />
+);
+
+/**
+ * The same thing spelled out by the consumer instead of by `Activity`, so this list reproduces the bug
+ * on React versions below 19.2 too.
  */
 const HiddenItemsRepro = ({ maxRows = 1 }: { maxRows?: number }) => (
   <OverflowList
@@ -139,15 +153,19 @@ const section: React.CSSProperties = { display: "flex", flexDirection: "column",
 const NonItemChildrenRepro = ({ maxRows = 1 }: { maxRows?: number }) => (
   <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "flex-start" }}>
     <section style={section}>
-      <strong>1. Overflowed items kept mounted with `display: none`</strong>
+      <strong>1. Default `renderItemVisibility` (React 19.2 `Activity`)</strong>
+      <ActivityRepro maxRows={maxRows} />
+    </section>
+    <section style={section}>
+      <strong>2. Overflowed items kept mounted with `display: none` by the consumer</strong>
       <HiddenItemsRepro maxRows={maxRows} />
     </section>
     <section style={section}>
-      <strong>2. Focus guards next to the first item</strong>
+      <strong>3. Focus guards next to the first item</strong>
       <FocusGuardsRepro maxRows={maxRows} />
     </section>
     <section style={section}>
-      <strong>3. Live popover trigger inside the list</strong>
+      <strong>4. Live popover trigger inside the list</strong>
       <span style={{ fontSize: 12, color: "#666" }}>
         Open "Filter ▾" and toggle a checkbox — the item count changes while the guards are mounted.
       </span>

@@ -2,7 +2,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.4.2
 
 - Fixed the list collapsing to a bare overflow indicator when the container held children that are not items. Row
   measurement grouped every container child by its `top`, so a child that is not laid out together with the items still
