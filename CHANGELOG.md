@@ -2,6 +2,16 @@
 
 # Changelog
 
+## 0.4.3
+
+- Fixed a stale visible count when items change size on their own (#21). Measurement was only re-triggered by
+  `itemCount`/`maxRows` changing or by the container's own ResizeObserver, so items that grow or shrink while the
+  container's box stays put — a counter badge going from `9` to `10` in a tab bar — never caused a new pass. Usually the
+  resulting wrap makes the container taller and its ResizeObserver rescues it, which is why this looked intermittent and
+  browser-specific; when the container has a fixed height nothing re-triggers a pass and the overflow indicator sits on a
+  second row indefinitely, violating `maxRows`. The settled content signature is now compared after each commit, so both
+  directions are caught: items growing past the row, and items shrinking so more of them would fit again.
+
 ## 0.4.2
 
 - Fixed the list collapsing to a bare overflow indicator when the container held children that are not items. Row

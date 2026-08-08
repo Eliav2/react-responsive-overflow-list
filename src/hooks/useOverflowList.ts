@@ -11,7 +11,7 @@
 
 import { useRef, useState } from "react";
 
-import { getRowPositionsData } from "../utils";
+import { getContentSignature, getRowPositionsData, isSameContentSignature } from "../utils";
 import { useIsoLayoutEffect } from "./useIsoLayoutEffect";
 import { useResizeObserver } from "./useResizeObserver";
 
@@ -174,6 +174,47 @@ export function useOverflowList<
       setSubtractCount(0);
     }
   }, [containerDims]);
+
+  // The container's ResizeObserver only reports the container's *own* box. Items that change size while
+  // the container's box stays put (a counter badge growing from `9` to `10` in a fixed-height tab bar)
+  // therefore never trigger a new pass, and the visible count stays stale — see
+  // https://github.com/Eliav2/react-responsive-overflow-list/issues/21.
+  //
+  // So while settled, keep a signature of the sizes we settled at and compare it after every render. Any
+  // difference means the items are no longer the size the current visible count was chosen for, in either
+  // direction: grown past the row, or shrunk so that more of them would now fit.
+  //
+  // Deliberately has no dependency array — the whole point is to run on every commit, since the size
+  // change that matters is invisible to any dependency we could list. Recording and comparing both read
+  // the same settled DOM, so a pass that changes nothing externally records a matching signature and does
+  // not re-enter measuring.
+  const settledSignatureRef = useRef<number[] | null>(null);
+  useIsoLayoutEffect(() => {
+    if (phase !== "normal") {
+      // Mid-pass: whatever we recorded belongs to the previous settled layout.
+      settledSignatureRef.current = null;
+      return;
+    }
+
+    const signature = getContentSignature(containerRef);
+    if (!signature) return;
+
+    const settled = settledSignatureRef.current;
+    if (!settled) {
+      settledSignatureRef.current = signature;
+      return;
+    }
+
+    // Compared exactly, with no tolerance. An unchanged layout reads back bit-identical (measured: zero
+    // drift over 300 frames), while a real change can be tiny — a counter going from `5` to `6` in a font
+    // with proportional digits, `system-ui` included, moves the width by as little as 0.008px. Any
+    // tolerance would discard those to guard against jitter that does not occur.
+    if (!isSameContentSignature(signature, settled)) {
+      settledSignatureRef.current = null;
+      setPhase("measuring");
+      setSubtractCount(0);
+    }
+  });
 
   return {
     containerRef,
