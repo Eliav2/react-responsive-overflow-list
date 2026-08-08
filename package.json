@@ -3,16 +3,22 @@
   "version": "0.4.1",
   "type": "module",
   "description": "A responsive React component that shows as many items as can fit within constraints, hiding overflow items behind a configurable overflow renderer",
-  "module": "dist/index.js",
-  "main": "dist/index.cjs",
-  "types": "dist/index.d.ts",
+  "module": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
+  "sideEffects": false,
   "files": [
     "dist",
     "src"
@@ -44,19 +50,21 @@
     "react-dom": ">=16.8.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/core": "^0.18.1",
     "@base-ui/react": "^1.1.0",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "publint": "^0.3.8",
     "react": "catalog:",
     "react-dom": "catalog:",
     "shadcn": "^3.7.0",
-    "tsdown": "^0.2.0",
+    "tsdown": "^0.22.14",
     "typescript": "^5.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Eliav2/react-responsive-overflow-list"
+    "url": "git+https://github.com/Eliav2/react-responsive-overflow-list.git"
   },
   "bugs": {
     "url": "https://github.com/eliav2/react-responsive-overflow-list/issues"

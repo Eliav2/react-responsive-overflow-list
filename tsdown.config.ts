@@ -5,5 +5,10 @@ export default defineConfig({
   format: ["cjs", "esm"],
   dts: true,
   sourcemap: true,
-  external: ["react", "react-dom"],
+  // Keep the published layout: dist/index.js (ESM) + dist/index.cjs (CJS).
+  fixedExtension: false,
+  // Guard the package manifest and declaration output so the resolution bugs
+  // from issue #19 fail the build instead of reaching npm.
+  attw: true,
+  publint: true,
 });
