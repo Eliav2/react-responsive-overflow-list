@@ -139,6 +139,7 @@ See the **Flush Immediately** example in the live demo.
 | `renderOverflowProps`  | `Partial<OverflowElementProps<T>>`                               | —            | Props for default overflow.                                                                                   |
 | `flushImmediately`     | `boolean`                                                        | `true`       | `true` (flushSync, no flicker) vs `false` (rAF, faster under resize).                                         |
 | `renderItemVisibility` | `(node: ReactNode, meta: RenderItemVisibilityMeta) => ReactNode` | internal     | Control visibility of hidden items (defaults to `React.Activity` if available, otherwise simply return null). |
+| `observeItemSizes`     | `boolean`                                                        | `false`      | Also re-measure when an item's own size changes with no render (web font swap, image load, CSS transition, drag handle). Costs one `ResizeObserver` over the children. |
 
 **Styles:** Root uses `display:flex; flex-wrap:wrap; align-items:center;`. Override via `style`/`className`.
 
@@ -182,6 +183,7 @@ export function CustomChipBar() {
 | `maxRows`          | `number`  | `1`     | Visible rows before overflow.                              |
 | `maxVisibleItems`  | `number`  | `100`   | Hard cap on visible items.                                 |
 | `flushImmediately` | `boolean` | `true`  | `true` (flushSync, no flicker) vs `false` (rAF, smoother). |
+| `observeItemSizes` | `boolean` | `false` | Re-measure on item-driven size changes that skip React entirely. |
 
 ### Hook return
 
@@ -216,6 +218,19 @@ It’s **expected** you’ll wrap `OverflowList` for product needs (design syste
 
 `flushImmediately=true` → immediate, flicker-free (uses `flushSync`).
 `flushImmediately=false` → defer with rAF; smoother under rapid resize, may flicker.
+
+### When measurement re-runs
+
+- **every render** — item sizes are compared against the sizes the current count was chosen for, and a pass
+  runs if they differ
+- **container resize**
+- **children resize** — only with `observeItemSizes`
+
+The first two miss size changes React is not involved in: a web font swapping in, an image loading, a CSS
+transition, a drag handle. `observeItemSizes` covers those, off by default. A re-measure waits for one
+animation frame with no further size change, so a drag or animation costs one pass when it stops rather than
+one per frame; measured at 100 items, frame times while dragging match leaving it off. Toggle it live in the
+`Behaviour/ResizableChildren` stories.
 
 ### Edge cases handled
 

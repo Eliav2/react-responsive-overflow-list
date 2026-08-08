@@ -12,6 +12,7 @@ import { FlushImmediatelyExample } from "../../examples/FlushImmediatelyExample"
 import { OneItemWiderExample } from "../../examples/OneItemWiderExample";
 import { ReverseOrderExample } from "../../examples/ReverseOrderExample";
 import { DynamicSizeExample } from "../../examples/DynamicSizeExample";
+import { ObserveItemSizesExample } from "../../examples/ObserveItemSizesExample";
 import { DifferentHeightsExample } from "../../examples/DifferentHeightsExample";
 import { HeadlessHookExample } from "../../examples/HeadlessHookExample";
 
@@ -41,6 +42,7 @@ function ExamplesPage() {
           <OneItemWiderExample />
           <ReverseOrderExample />
           <DynamicSizeExample />
+          <ObserveItemSizesExample />
           <DifferentHeightsExample />
         </div>
       </div>

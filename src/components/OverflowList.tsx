@@ -33,6 +33,12 @@ type BaseOverflowListProps<T> = BaseComponentProps & {
 
   // customize how each item is shown/hidden during measurement so you can keep custom elements mounted
   renderItemVisibility?: (node: React.ReactNode, meta: RenderItemVisibilityMeta) => React.ReactNode;
+
+  // also re-measure when an item's own size changes without a render (default false)
+  // covers changes React is not involved in: a web font swapping in, an image inside an item loading, a CSS
+  // transition on an item's width, a drag handle. Costs a ResizeObserver over every child, so it is opt-in.
+  // see UseOverflowListOptions.observeItemSizes for the full rationale and the measurements behind it.
+  observeItemSizes?: boolean;
 };
 
 type OverflowListWithItems<T> = BaseOverflowListProps<T> & {
@@ -83,6 +89,9 @@ const OverflowListComponent = React.memo(
       maxRows = 1,
       maxVisibleItems = 100,
       flushImmediately = true,
+      // Deliberately not defaulted here. `useOverflowList` owns the default, and a second copy of it in this
+      // file would just be a place for the two to drift apart.
+      observeItemSizes,
       ...containerProps
     } = props;
 
@@ -97,6 +106,7 @@ const OverflowListComponent = React.memo(
       maxRows,
       maxVisibleItems,
       flushImmediately,
+      observeItemSizes,
     });
     const finalContainerRef = useForkRef(containerRef, forwardedRef);
 

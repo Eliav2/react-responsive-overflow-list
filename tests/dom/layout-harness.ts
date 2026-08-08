@@ -138,12 +138,45 @@ export function installLayoutHarness({ containerWidth }: HarnessOptions) {
     return Object.assign(list, { item: (i: number) => list[i] ?? null }) as unknown as DOMRectList;
   };
 
-  const observers = new Set<{ target: Element; callback: ResizeObserverCallback; observer: ResizeObserver }>();
+  interface Observation {
+    target: Element;
+    callback: ResizeObserverCallback;
+    observer: ResizeObserver;
+    /** Which box was requested. This model does not distinguish them, but the choice still matters: measured
+     * in Chrome, a child's padding or border changing fires a border-box observer and not a content-box one,
+     * while `getBoundingClientRect` moves either way. Recorded so a test can assert what was asked for. */
+    box: ResizeObserverBoxOptions;
+  }
+
+  const observers = new Set<Observation>();
+
+  /** Delivers one observation with its target's current box, the shape a browser reports. */
+  function notifyOne({ target, callback, observer }: Observation) {
+    const rect = target.getBoundingClientRect();
+    callback(
+      [
+        {
+          target,
+          contentRect: rect,
+          borderBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
+          contentBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
+          devicePixelContentBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
+        } as unknown as ResizeObserverEntry,
+      ],
+      observer,
+    );
+  }
 
   class HarnessResizeObserver implements ResizeObserver {
     constructor(private readonly callback: ResizeObserverCallback) {}
-    observe(target: Element) {
-      observers.add({ target, callback: this.callback, observer: this });
+    observe(target: Element, options?: ResizeObserverOptions) {
+      const entry = { target, callback: this.callback, observer: this, box: options?.box ?? "content-box" };
+      observers.add(entry);
+      // A real ResizeObserver delivers an initial observation for every target it starts observing, so a
+      // consumer has its box before anything resizes. Delivered synchronously here rather than in a
+      // microtask, so that it lands during mount instead of being flushed by whatever a test does first.
+      // Otherwise a test's own first notification stands in for it and looks like a change.
+      notifyOne(entry);
     }
     unobserve(target: Element) {
       for (const entry of observers) if (entry.target === target && entry.observer === this) observers.delete(entry);
@@ -157,21 +190,7 @@ export function installLayoutHarness({ containerWidth }: HarnessOptions) {
 
   /** Fires every observer with its target's current box, as a browser would after a layout change. */
   const notifyResizeObservers = () => {
-    for (const { target, callback, observer } of [...observers]) {
-      const rect = target.getBoundingClientRect();
-      callback(
-        [
-          {
-            target,
-            contentRect: rect,
-            borderBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
-            contentBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
-            devicePixelContentBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
-          } as unknown as ResizeObserverEntry,
-        ],
-        observer,
-      );
-    }
+    for (const observation of [...observers]) notifyOne(observation);
   };
 
   return {
@@ -181,6 +200,10 @@ export function installLayoutHarness({ containerWidth }: HarnessOptions) {
       notifyResizeObservers();
     },
     notifyResizeObservers,
+    /** Every target currently observed, and which box it was registered with. */
+    observedBoxes() {
+      return [...observers].map(({ target, box }) => ({ target, box }));
+    },
     restore() {
       Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
       Element.prototype.getClientRects = originalGetClientRects;

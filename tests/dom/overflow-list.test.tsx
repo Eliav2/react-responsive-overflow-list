@@ -4,12 +4,17 @@
 
 import { act, cleanup, render } from "@testing-library/react";
 import * as React from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OverflowList } from "../../src";
 import { HARNESS_ROW_HEIGHT, installLayoutHarness } from "./layout-harness";
 
 const ITEM_WIDTH = 100;
 const INDICATOR_WIDTH = 40;
+/** Advances past the item observer's quiet-frame wait, which is two chained frames. */
+function advanceToSettled() {
+  vi.advanceTimersToNextFrame();
+  vi.advanceTimersToNextFrame();
+}
 
 let harness: ReturnType<typeof installLayoutHarness> | null = null;
 
@@ -34,6 +39,8 @@ interface ListOptions {
   keepHiddenItemsMounted?: boolean;
   /** Called on every render of the list, to count measurement passes. */
   onRender?: () => void;
+  /** Opt into re-measuring on item-driven size changes. */
+  observeItemSizes?: boolean;
 }
 
 /** Renders a list in the harness and returns helpers for asserting what ended up visible. */
@@ -46,6 +53,7 @@ function renderList(options: ListOptions) {
     fixedHeight,
     keepHiddenItemsMounted,
     onRender,
+    observeItemSizes,
   } = options;
 
   harness = installLayoutHarness({ containerWidth });
@@ -57,6 +65,7 @@ function renderList(options: ListOptions) {
     <OverflowList
       items={items}
       maxRows={maxRows}
+      observeItemSizes={observeItemSizes}
       data-test-container=""
       {...(fixedHeight !== undefined ? { "data-test-fixed-height": String(fixedHeight) } : {})}
       renderItem={(item) => {
@@ -264,12 +273,25 @@ describe("settling", () => {
     expect(list.rowCount()).toBe(1);
   });
 
-  it("settles to the same result when a resize reports an unchanged box", () => {
-    // `useResizeObserver` stores a fresh object per notification, so an unchanged box still re-runs a pass.
-    // Browsers only fire when the box actually changes, so this is wasted work rather than a bug — what
-    // matters here is that it converges on the same answer instead of drifting.
-    const list = renderList({ containerWidth: 250, itemCount: 5 });
+  it("does not start a pass when a resize reports an unchanged box", () => {
+    // An observer fires once when it starts observing, and hiding or revealing an element can produce a
+    // notification without its box moving. `useResizeObserver` used to store a fresh object per
+    // notification, so each of those cost a full re-measure downstream.
+    const itemCount = 5;
+    let renderItemCalls = 0;
+    // Height pinned, so the container's box is genuinely identical across notifications. Without pinning it
+    // the box really does change while measuring settles, and a notification reporting that is not churn.
+    const list = renderList({
+      containerWidth: 250,
+      itemCount,
+      fixedHeight: HARNESS_ROW_HEIGHT,
+      onRender: () => {
+        renderItemCalls += 1;
+      },
+    });
+
     const before = list.visibleLabels();
+    const afterSettling = renderItemCalls;
 
     act(() => {
       harness!.notifyResizeObservers();
@@ -278,7 +300,159 @@ describe("settling", () => {
       harness!.notifyResizeObservers();
     });
 
+    expect(renderItemCalls).toBe(afterSettling);
     expect(list.visibleLabels()).toEqual(before);
     expect(list.rowCount()).toBe(1);
+  });
+});
+
+describe("observeItemSizes", () => {
+  /** Widens every laid-out child in the DOM, with no re-render, the way a drag handle or a late font would. */
+  function widenLaidOutChildren(container: HTMLElement, width: number) {
+    for (const child of Array.from(container.children)) {
+      if (child.getClientRects().length > 0) child.setAttribute("data-test-width", String(width));
+    }
+  }
+
+  it("is off by default, so the children are not observed", () => {
+    // The default has to stay off: the whole point of the option is that a list which never needs it pays
+    // nothing. Asserted on what gets observed rather than on behaviour, since "nothing happened" is also what
+    // a broken test looks like.
+    const list = renderList({ containerWidth: 250, itemCount: 5 });
+    const container = list.container();
+
+    const observedChildren = harness!.observedBoxes().filter(({ target }) => target.parentElement === container);
+
+    expect(observedChildren).toEqual([]);
+    // The container itself is still observed, which is what drives every other invalidation path.
+    expect(harness!.observedBoxes().some(({ target }) => target === container)).toBe(true);
+  });
+
+  it("leaves an item-driven change unnoticed when off", () => {
+    const list = renderList({
+      containerWidth: 250,
+      itemWidths: [100, 100, 100, 100, 100],
+      fixedHeight: HARNESS_ROW_HEIGHT,
+    });
+
+    expect(list.visibleLabels()).toEqual(["item0", "item1", "+3"]);
+
+    act(() => {
+      widenLaidOutChildren(list.container(), 140);
+      harness!.notifyResizeObservers();
+    });
+
+    // The container's box cannot change and nothing rendered, so the count is stale by design.
+    expect(list.visibleLabels()).toEqual(["item0", "item1", "+3"]);
+  });
+
+  it("observes the children on their border box when on", () => {
+    // Not something this layout model can show by behaviour, and not cosmetic either: measured in Chrome, a
+    // child's padding or border changing fires a border-box observer and not a content-box one, while the
+    // signature reads `getBoundingClientRect`, which moves either way. Left on the default box the observer
+    // would stay silent for exactly the changes the check is looking for, so assert what was asked for.
+    const list = renderList({ containerWidth: 250, itemCount: 5, observeItemSizes: true });
+    const container = list.container();
+
+    const childBoxes = harness!.observedBoxes().filter(({ target }) => target.parentElement === container);
+
+    expect(childBoxes.length).toBeGreaterThan(0);
+    expect(childBoxes.every(({ box }) => box === "border-box")).toBe(true);
+  });
+
+  it("stops observing children that leave the container", () => {
+    // The observed set is re-synced per commit rather than rebuilt, so a missed removal is not visible in the
+    // list's behaviour: it just retains detached nodes and keeps being notified about them.
+    const list = renderList({
+      containerWidth: 250,
+      itemWidths: [100, 100, 100, 100, 100],
+      observeItemSizes: true,
+      fixedHeight: HARNESS_ROW_HEIGHT,
+    });
+
+    expect(harness!.observedBoxes().length).toBeGreaterThan(1);
+
+    list.setItemWidths([100, 100]);
+
+    expect(harness!.observedBoxes().filter(({ target }) => !target.isConnected)).toEqual([]);
+  });
+
+  describe("when on", () => {
+    beforeEach(() => {
+      // The item-driven path waits for sizes to hold still, so these drive the clock rather than sleep.
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("re-measures when an item's box changes with no React involvement", () => {
+      const list = renderList({
+        containerWidth: 250,
+        itemWidths: [100, 100, 100, 100, 100],
+        observeItemSizes: true,
+        fixedHeight: HARNESS_ROW_HEIGHT,
+      });
+
+      expect(list.visibleLabels()).toEqual(["item0", "item1", "+3"]);
+
+      // The observer's initial observation of each child arms the wait, so let that settle before the change
+      // under test, or the change reads as "still moving" and waits another frame.
+      act(() => {
+        advanceToSettled();
+      });
+
+      act(() => {
+        widenLaidOutChildren(list.container(), 140);
+        harness!.notifyResizeObservers();
+        advanceToSettled();
+      });
+
+      expect(list.rowCount()).toBe(1);
+      expect(list.visibleLabels()).toEqual(["item0", "+4"]);
+    });
+
+    it("waits for the sizes to hold still before measuring", () => {
+      // A dragged handle or an animating width notifies on every frame. Re-measuring per frame is what the
+      // quiet-frame wait exists to avoid, so notifications that keep arriving must keep the pass waiting.
+      const itemCount = 5;
+      let renderItemCalls = 0;
+      const list = renderList({
+        containerWidth: 250,
+        itemWidths: Array.from({ length: itemCount }, () => 100),
+        observeItemSizes: true,
+        fixedHeight: HARNESS_ROW_HEIGHT,
+        onRender: () => {
+          renderItemCalls += 1;
+        },
+      });
+
+      act(() => {
+        advanceToSettled();
+      });
+      const settled = renderItemCalls;
+      const before = list.visibleLabels();
+
+      // Ten frames of a still-moving size: each notification arrives before the previous could settle.
+      act(() => {
+        for (let frame = 1; frame <= 10; frame++) {
+          widenLaidOutChildren(list.container(), 100 + frame * 4);
+          harness!.notifyResizeObservers();
+          vi.advanceTimersToNextFrame();
+        }
+      });
+
+      expect(renderItemCalls).toBe(settled);
+      expect(list.visibleLabels()).toEqual(before);
+
+      // Now the sizes hold still, and exactly one pass runs against the final sizes.
+      act(() => {
+        advanceToSettled();
+      });
+
+      expect(list.rowCount()).toBe(1);
+      expect(list.visibleLabels()).toEqual(["item0", "+4"]);
+    });
   });
 });
