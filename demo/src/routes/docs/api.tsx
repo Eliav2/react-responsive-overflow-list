@@ -72,6 +72,13 @@ const allProps: PropDefinition[] = [
     description:
       "Control visibility of hidden items. Defaults to React.Activity (19.2+) or null.",
   },
+  {
+    name: "observeItemSizes",
+    type: "boolean",
+    default: "false",
+    description:
+      "Also re-measure when an item's own size changes with no render: a web font swapping in, an image loading, a CSS transition, a drag handle. Costs one ResizeObserver over the children, so it is opt-in.",
+  },
 ];
 
 function ApiPage() {
