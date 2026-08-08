@@ -2,6 +2,17 @@
 
 # Changelog
 
+## Unreleased
+
+- Fixed named exports failing to type-check under `moduleResolution: "Node16"` / `"NodeNext"` (#19). The published
+  declarations were split across barrel files that re-exported without file extensions (`export * from "./components"`),
+  which Node16 ESM resolution cannot resolve, so the package appeared to have no exported members. Declarations are now
+  emitted as a single bundled `dist/index.d.ts` / `dist/index.d.cts` with no relative imports.
+- Fixed the `exports` map handing CommonJS consumers the ESM declaration file. `types` is now nested per condition, so
+  `require()` resolves to `dist/index.d.cts`.
+- Added `sideEffects: false` for better tree-shaking.
+- Build now runs `attw` and `publint` so packaging regressions fail the build.
+
 ## 0.3.3
 
 - Fixed flex items inflating the container during measurement phase due to CSS `min-width: auto` default. Added `minWidth: 0` to the default container styles, preventing items from overflowing their row constraints (e.g., tags spreading to multiple rows despite `maxRows={1}`).
