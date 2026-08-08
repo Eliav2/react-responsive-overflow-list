@@ -10,8 +10,10 @@
 // 3. "normal" phase shows only what fits within constraints. (this is the stable state that we want to keep)
 
 import { useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { getContentSignature, getRowPositionsData, isSameContentSignature } from "../utils";
+import { useChildrenResizeObserver } from "./useChildrenResizeObserver";
 import { useIsoLayoutEffect } from "./useIsoLayoutEffect";
 import { useResizeObserver } from "./useResizeObserver";
 
@@ -30,6 +32,23 @@ export interface UseOverflowListOptions {
    * If false, using requestAnimationFrame to update the state - this avoid forced reflow and improve performance.
    */
   flushImmediately?: boolean;
+  /**
+   * Also re-measure when an item's own size changes without a render (default false).
+   *
+   * Item sizes normally change as part of a render, and the per-commit content check already covers that. The
+   * gap is a size change React is not involved in at all: a web font swapping in, an image inside an item
+   * finishing its load, a CSS transition on an item's width, a user dragging a resize handle. Nothing renders,
+   * so nothing checks, and the visible count stays whatever it was.
+   *
+   * That gap is often hidden. When items grow enough to wrap, the container itself gets taller, its own
+   * ResizeObserver reports that, and a pass runs. It only stays broken when the container's box cannot change:
+   * a fixed-height bar, or any change that shrinks items, since shrinking never wraps.
+   *
+   * Off by default because it means a ResizeObserver over every child. Measured in Chrome at 100 items, the
+   * cost is not detectable, since a pass waits for the sizes to hold still (identical frame times to off), but
+   * it is still work a list that never needs it should not do.
+   */
+  observeItemSizes?: boolean;
 }
 
 export interface UseOverflowListReturn<
@@ -61,6 +80,7 @@ export function useOverflowList<
   maxRows = 1,
   maxVisibleItems = 100,
   flushImmediately = true,
+  observeItemSizes = false,
 }: UseOverflowListOptions): UseOverflowListReturn<TContainer, TOverflow> {
   const [visibleCount, setVisibleCount] = useState(itemCount);
   const [subtractCount, setSubtractCount] = useState(0);
@@ -189,7 +209,7 @@ export function useOverflowList<
   // the same settled DOM, so a pass that changes nothing externally records a matching signature and does
   // not re-enter measuring.
   const settledSignatureRef = useRef<number[] | null>(null);
-  useIsoLayoutEffect(() => {
+  const checkContentSignature = () => {
     if (phase !== "normal") {
       // Mid-pass: whatever we recorded belongs to the previous settled layout.
       settledSignatureRef.current = null;
@@ -214,6 +234,24 @@ export function useOverflowList<
       setPhase("measuring");
       setSubtractCount(0);
     }
+  };
+
+  useIsoLayoutEffect(checkContentSignature);
+
+  // `observeItemSizes` opts into running that same check when an item's box changes with no render at all.
+  // The check decides everything, which is what keeps this from looping: settling hides the overflowed items,
+  // hiding them notifies the observer, but hidden children are excluded from the signature, so the signature
+  // it computes matches the one just recorded and the check does nothing.
+  //
+  // Flushed the same way a container resize is, and for the same reason. The observer runs its callback inside
+  // an animation frame, before that frame paints, so committing synchronously there lands the corrected count
+  // in the frame that is about to be drawn. Left as a scheduled update, the frame can paint the pre-correction
+  // layout first, which is visible as the overflowing item appearing for a beat before it folds into the
+  // indicator. Note this is only about the frame the wait ends on: while sizes are still moving there is
+  // deliberately no pass at all, so the stale layout during a drag is expected and is what keeps it cheap.
+  useChildrenResizeObserver(containerRef, observeItemSizes, () => {
+    if (flushImmediately) flushSync(checkContentSignature);
+    else checkContentSignature();
   });
 
   return {

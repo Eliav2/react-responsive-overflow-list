@@ -14,6 +14,7 @@ export function useResizeObserver<T extends HTMLElement | null>(
 ): ResizeObserverDimensions | null {
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const [dimensions, setDimensions] = useState<ResizeObserverDimensions | null>(null);
+  const lastDimensionsRef = useRef<ResizeObserverDimensions | null>(null);
 
   // Initialize resize observer
   useEffect(() => {
@@ -24,12 +25,30 @@ export function useResizeObserver<T extends HTMLElement | null>(
       if (entries[0]) {
         const entry = entries[0];
         const updateDimensions = () => {
-          setDimensions({
+          const next: ResizeObserverDimensions = {
             width: entry.borderBoxSize[0]?.inlineSize ?? entry.target.clientWidth,
             height: entry.borderBoxSize[0]?.blockSize ?? entry.target.clientHeight,
             contentWidth: entry.contentRect.width,
             contentHeight: entry.contentRect.height,
-          });
+          };
+
+          // Consumers key off the returned object's identity, so storing a fresh object per notification made
+          // every notification look like a change. Notifications reporting the same box do happen: an observer
+          // delivers one when it starts observing, and hiding or revealing an element can produce one without
+          // its box moving. Each of those cost a full re-measure downstream.
+          const last = lastDimensionsRef.current;
+          if (
+            last &&
+            last.width === next.width &&
+            last.height === next.height &&
+            last.contentWidth === next.contentWidth &&
+            last.contentHeight === next.contentHeight
+          ) {
+            return;
+          }
+
+          lastDimensionsRef.current = next;
+          setDimensions(next);
         };
 
         if (flushImmediately) {
