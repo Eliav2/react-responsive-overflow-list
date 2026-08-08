@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "pnpm -w sync:registry && pnpm -w build:registry",
+    "prebuild": "pnpm -w sync:registry && pnpm -w build:registry && pnpm build:storybook",
     "dev": "vite dev --port 3000",
     "dev:local": "pnpm install --link-workspace-packages && pnpm dev",
     "dev:published": "pnpm install --no-link-workspace-packages && pnpm dev",
@@ -14,7 +14,8 @@
     "preview": "vite preview",
     "start": "node .output/server/index.mjs",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "build:storybook": "storybook build -o public/storybook"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",

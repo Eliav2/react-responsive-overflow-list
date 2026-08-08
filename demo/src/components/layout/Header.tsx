@@ -26,6 +26,13 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
           </Link>
         </div>
         <div className="flex items-center gap-3">
+          {/* Not a router Link: Storybook is a separate build served as a static subdirectory of this site. */}
+          <a
+            href={`${import.meta.env.BASE_URL}storybook/`}
+            className="text-sm text-gray-600 no-underline hover:text-gray-900 transition-colors"
+          >
+            Storybook
+          </a>
           <a
             href="https://github.com/eliav2/react-responsive-overflow-list"
             target="_blank"
