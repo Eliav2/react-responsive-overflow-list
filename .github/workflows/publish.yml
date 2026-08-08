@@ -29,7 +29,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - run: pnpm -s test --if-present
+      # `--if-present` must precede the script name or pnpm forwards it to the script instead of consuming
+      # it. It sat here harmlessly while there was no `test` script, since pnpm skipped the missing script and
+      # forwarded nothing. Once one existed the flag reached vitest, which rejects it, and publishing failed
+      # for two releases. The guard has no purpose now that the script is permanent.
+      - run: pnpm -s test
       - run: pnpm -s build
       - name: Build demo
         run: pnpm -s demo:build
