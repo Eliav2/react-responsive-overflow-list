@@ -54,3 +54,15 @@ jobs:
 
       - name: Type-check demo
         run: pnpm --filter demo exec tsc -b
+
+      - name: Build Storybook
+        run: pnpm --filter demo build:storybook
+
+      # `storybook build` exits 0 having emitted only the manager when its Vite config is wrong — that is how
+      # it behaved while it was picking up the demo's tanstack-start config. Assert the story preview and the
+      # story index actually exist, or a broken Storybook ships silently.
+      - name: Verify the Storybook preview was built
+        run: |
+          test -f demo/public/storybook/iframe.html
+          test -f demo/public/storybook/index.json
+          node -e "const n=Object.keys(require('./demo/public/storybook/index.json').entries).length; if(!n) throw new Error('no stories indexed'); console.log(n+' stories indexed')"
