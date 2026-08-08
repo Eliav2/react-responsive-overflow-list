@@ -9,7 +9,7 @@
   container's box stays put — a counter badge going from `9` to `10` in a tab bar — never caused a new pass. Usually the
   resulting wrap makes the container taller and its ResizeObserver rescues it, which is why this looked intermittent and
   browser-specific; when the container has a fixed height nothing re-triggers a pass and the overflow indicator sits on a
-  second row indefinitely, violating `maxRows`. The settled content footprint is now compared after each commit, so both
+  second row indefinitely, violating `maxRows`. The settled content signature is now compared after each commit, so both
   directions are caught: items growing past the row, and items shrinking so more of them would fit again.
 
 ## 0.4.2

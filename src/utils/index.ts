@@ -61,27 +61,38 @@ function isLaidOutInFlow(child: Element): boolean {
 }
 
 /**
- * Total size of everything currently laid out in the container, the overflow indicator included.
+ * Signature of the sizes of everything currently laid out in the container, the overflow indicator
+ * included. Not a measurement — only a value to compare against itself across renders.
  *
- * Used as a change signal, not as a measurement: measurement is only re-triggered when the container's
- * own box changes or when `itemCount`/`maxRows` change, so items that change size on their own (a counter
- * badge growing from `9` to `10`, say) leave the visible count stale. Usually the wrap that follows makes
- * the container taller and its ResizeObserver rescues us, but when the container's box is fixed — an
- * ordinary tab bar — nothing ever re-triggers a pass. Comparing this value across renders catches both
- * directions: items growing past the row, and items shrinking so more of them would now fit.
+ * Measurement is re-triggered when the container's own box changes or when `itemCount`/`maxRows` change,
+ * so items that change size on their own (a counter badge growing from `9` to `10`, say) leave the visible
+ * count stale. Usually the wrap that follows makes the container taller and its ResizeObserver rescues us,
+ * but when the container's box is fixed — an ordinary tab bar — nothing ever re-triggers a pass. Comparing
+ * this signature catches both directions: items growing past the row, and items shrinking so that more of
+ * them would now fit.
+ *
+ * Each size is weighted by the child's position, so that changes cancelling out across items are still
+ * seen. A plain total would miss them, and a total is not sufficient: which items fit is decided by the
+ * running sum along the row, not by the sum of all of them. At capacity 120, widths `[40, 40, 40]` fit two
+ * items while `[90, 20, 10]` fit one, on the same total.
+ *
+ * Values stay exact under comparison: engines lay out on a fractional-pixel grid (1/64px in Chromium), and
+ * scaling those by a small integer and summing them is exactly representable in a double.
  */
-export function getContentFootprint(
+export function getContentSignature(
   containerRef: React.RefObject<HTMLElement | null>,
 ): { width: number; height: number } | null {
   if (!containerRef.current) return null;
 
   let width = 0;
   let height = 0;
+  let position = 0;
   for (const child of Array.from(containerRef.current.children)) {
     if (!isLaidOutInFlow(child)) continue;
+    position += 1;
     const rect = child.getBoundingClientRect();
-    width += rect.width;
-    height += rect.height;
+    width += rect.width * position;
+    height += rect.height * position;
   }
 
   return { width, height };

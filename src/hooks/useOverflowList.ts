@@ -11,7 +11,7 @@
 
 import { useRef, useState } from "react";
 
-import { getContentFootprint, getRowPositionsData } from "../utils";
+import { getContentSignature, getRowPositionsData } from "../utils";
 import { useIsoLayoutEffect } from "./useIsoLayoutEffect";
 import { useResizeObserver } from "./useResizeObserver";
 
@@ -180,34 +180,37 @@ export function useOverflowList<
   // therefore never trigger a new pass, and the visible count stays stale — see
   // https://github.com/Eliav2/react-responsive-overflow-list/issues/21.
   //
-  // So while settled, keep the footprint we settled at and compare it after every render. Any difference
-  // means the items are no longer the size the current visible count was chosen for, in either direction:
-  // grown past the row, or shrunk so that more of them would now fit.
+  // So while settled, keep a signature of the sizes we settled at and compare it after every render. Any
+  // difference means the items are no longer the size the current visible count was chosen for, in either
+  // direction: grown past the row, or shrunk so that more of them would now fit.
   //
   // Deliberately has no dependency array — the whole point is to run on every commit, since the size
   // change that matters is invisible to any dependency we could list. Recording and comparing both read
-  // the same settled DOM, so a pass that changes nothing externally records a matching footprint and does
+  // the same settled DOM, so a pass that changes nothing externally records a matching signature and does
   // not re-enter measuring.
-  const settledFootprintRef = useRef<{ width: number; height: number } | null>(null);
+  const settledSignatureRef = useRef<{ width: number; height: number } | null>(null);
   useIsoLayoutEffect(() => {
     if (phase !== "normal") {
       // Mid-pass: whatever we recorded belongs to the previous settled layout.
-      settledFootprintRef.current = null;
+      settledSignatureRef.current = null;
       return;
     }
 
-    const footprint = getContentFootprint(containerRef);
-    if (!footprint) return;
+    const signature = getContentSignature(containerRef);
+    if (!signature) return;
 
-    const settled = settledFootprintRef.current;
+    const settled = settledSignatureRef.current;
     if (!settled) {
-      settledFootprintRef.current = footprint;
+      settledSignatureRef.current = signature;
       return;
     }
 
-    // Sub-pixel tolerance, so fractional layout jitter does not keep re-measuring.
-    if (Math.abs(footprint.width - settled.width) > 0.5 || Math.abs(footprint.height - settled.height) > 0.5) {
-      settledFootprintRef.current = null;
+    // Compared exactly, with no tolerance. An unchanged layout reads back bit-identical (measured: zero
+    // drift over 300 frames), while a real change can be tiny — a counter going from `5` to `6` in a font
+    // with proportional digits, `system-ui` included, moves the width by as little as 0.008px. Any
+    // tolerance would discard those to guard against jitter that does not occur.
+    if (signature.width !== settled.width || signature.height !== settled.height) {
+      settledSignatureRef.current = null;
       setPhase("measuring");
       setSubtractCount(0);
     }
