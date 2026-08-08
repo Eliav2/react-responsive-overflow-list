@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+- Fixed the list collapsing to a bare overflow indicator when the container held children that are not items. Row
+  measurement grouped every container child by its `top`, so a child that is not laid out together with the items still
+  counted as a row, and since 0.4.1's `itemRowCount > maxRows` check that made the overflow indicator subtract items
+  until nothing was left. Two cases hit this: overflowed items kept mounted but hidden (what React 19.2's
+  `Activity mode="hidden"` does, and therefore what the default `renderItemVisibility` does), and the `position: fixed`
+  focus guards popover libraries render next to an open trigger. Children with no client rects and out-of-flow children
+  are now excluded from measurement.
 - Fixed named exports failing to type-check under `moduleResolution: "Node16"` / `"NodeNext"` (#19). The published
   declarations were split across barrel files that re-exported without file extensions (`export * from "./components"`),
   which Node16 ESM resolution cannot resolve, so the package appeared to have no exported members. Declarations are now

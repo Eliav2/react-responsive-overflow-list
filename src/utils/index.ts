@@ -56,8 +56,28 @@ export function getRowPositionsData(
   if (!containerRef.current) return null;
 
   const container = containerRef.current;
-  const children = Array.from(container.children).filter((child) => overflowRef.current !== child) as HTMLElement[];
+  const children = Array.from(container.children).filter((child) => {
+    if (overflowRef.current === child) return false;
 
+    // A child with no client rects is not laid out at all — `display: none`, the `hidden` attribute, or
+    // an overflowed item kept mounted but hidden (that is what React 19.2's `Activity mode="hidden"`
+    // does, and it is the default `renderItemVisibility`). Its rect reads as all zeros, so it would be
+    // grouped into a phantom row keyed at top 0.
+    if (child.getClientRects().length === 0) return false;
+
+    // An out-of-flow child is not a flex item, so it never takes part in a row either. Popover
+    // libraries put focus guards next to an open trigger this way (Base UI wraps the trigger in
+    // `position: fixed` 1px spans), and their top lands outside the items' row.
+    const { position } = getComputedStyle(child);
+    if (position === "absolute" || position === "fixed") return false;
+
+    return true;
+  }) as HTMLElement[];
+
+  // Row keys are read in ascending numeric order, so any of the children filtered out above would sort
+  // ahead of the real items and be measured as the first row — which reports a visible count of however
+  // many non-items there were, and (since v0.4.1's `itemRowCount > maxRows` check) makes
+  // `updateOverflowIndicator` subtract until the list collapses to a bare overflow indicator.
   if (children.length === 0) return null;
 
   // Group elements by their vertical position (rows)
